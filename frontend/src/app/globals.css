@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 15, 23, 42;
+  --background-rgb: 248, 250, 252;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background-color: #f1f5f9;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  touch-action: manipulation; /* Eliminate 300ms tap delay on touchscreens */
+  -webkit-tap-highlight-color: transparent;
+  user-select: none; /* Avoid accidental text selection on POS touchscreen terminals */
+}
+
+/* Allow text selection in specific inputs and receipt preview */
+input, textarea, .allow-select {
+  user-select: text;
+}
+
+/* Custom compact scrollbar for catalog and cart */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Thermal Receipt Print Styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #thermal-receipt, #thermal-receipt * {
+    visibility: visible;
+  }
+
+  #thermal-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    margin: 0;
+    padding: 0;
+    color: black !important;
+    background: white !important;
+    font-family: monospace !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+  }
+
+  @page {
+    margin: 0;
+    size: 80mm auto;
+  }
+}
