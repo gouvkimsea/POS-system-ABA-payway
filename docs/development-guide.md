@@ -32,6 +32,8 @@
    pnpm dev
    ```
 
+## Development Commands
+
 - `pnpm dev`: Runs both API and Web servers in parallel.
 - `pnpm build`: Builds all workspace packages and applications.
 - `pnpm lint`: Lints all workspaces with ESLint.
@@ -39,6 +41,7 @@
 - `pnpm format`: Formats code with Prettier.
 - `pnpm test:connections`: Validates PostgreSQL and Redis connectivity.
 - `pnpm test:auth`: Runs the complete authentication and RBAC integration test suite.
+- `pnpm test:pos`: Runs the complete POS and checkout API integration test suite.
 
 ## Seed User Accounts
 
