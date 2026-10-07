@@ -1,5 +1,8 @@
-// Enterprise Point of Sale (POS) Foundation Schema
-// Supports multi-store scalability, audit logs, and localization
+// ==============================================================================
+// Enterprise Point of Sale (POS) Database Schema
+// Multi-Business, Multi-Store, Multi-Register Architecture
+// Database Engine: PostgreSQL 16 with Prisma ORM
+// ==============================================================================
 
 generator client {
   provider = "prisma-client-js"
@@ -10,106 +13,858 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  SUPER_ADMIN
-  ADMIN
-  MANAGER
-  CASHIER
+// ------------------------------------------------------------------------------
+// ENUMS
+// ------------------------------------------------------------------------------
+
+enum DeviceType {
+  TERMINAL
+  TABLET
+  MOBILE
+  DESKTOP
 }
 
+enum SessionStatus {
+  OPEN
+  CLOSED
+}
+
+enum CashMovementType {
+  CASH_IN
+  CASH_OUT
+  FLOAT_ADD
+  PAY_OUT
+}
+
+enum StockMovementType {
+  SALE
+  REFUND
+  PURCHASE
+  ADJUSTMENT_IN
+  ADJUSTMENT_OUT
+  TRANSFER_IN
+  TRANSFER_OUT
+  DAMAGE
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  PARTIALLY_REFUNDED
+  REFUNDED
+  VOIDED
+  CANCELLED
+}
+
+enum DiscountType {
+  NONE
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+enum PaymentMethodType {
+  CASH
+  DIGITAL_QR
+  CARD
+  BANK_TRANSFER
+  CUSTOMER_CREDIT
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum SyncStatus {
+  PENDING
+  PROCESSED
+  CONFLICT
+  FAILED
+}
+
+// ------------------------------------------------------------------------------
+// 1. BUSINESS & MULTI-STORE TENANCY
+// ------------------------------------------------------------------------------
+
 model Business {
-  id              String         @id @default(uuid())
-  name            String
-  code            String         @unique
-  taxNumber       String?
-  phone           String?
-  email           String?
-  address         String?
-  defaultCurrency String         @default("USD")
-  baseExchangeRate Decimal       @default(4100.00) @db.Decimal(12, 4)
-  timezone        String         @default("Asia/Phnom_Penh")
-  isActive        Boolean        @default(true)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id               String    @id @default(uuid())
+  name             String
+  code             String    @unique
+  taxNumber        String?
+  phone            String?
+  email            String?
+  address          String?
+  defaultCurrency  String    @default("USD")
+  baseExchangeRate Decimal   @default(4100.00) @db.Decimal(12, 4) // 1 USD = 4100 KHR
+  timezone         String    @default("Asia/Phnom_Penh")
+  logoUrl          String?
+  isActive         Boolean   @default(true)
+  deletedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
-  stores          Store[]
-  users           User[]
-  auditLogs       AuditLog[]
+  stores           Store[]
+  users            User[]
+  roles            Role[]
+  categories       Category[]
+  brands           Brand[]
+  suppliers        Supplier[]
+  products         Product[]
+  customers        Customer[]
+  orders           Order[]
+  discounts        Discount[]
+  taxes            Tax[]
+  paymentMethods   PaymentMethod[]
+  expenses         Expense[]
+  auditLogs        AuditLog[]
 
+  @@index([deletedAt])
   @@map("businesses")
 }
 
 model Store {
-  id          String     @id @default(uuid())
-  businessId  String
-  name        String
-  code        String
-  phone       String?
-  address     String?
-  isActive    Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id             String    @id @default(uuid())
+  businessId     String
+  name           String
+  code           String
+  phone          String?
+  email          String?
+  address        String?
+  receiptHeader  String?
+  receiptFooter  String?
+  isActive       Boolean   @default(true)
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  business    Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  users       User[]
-  auditLogs   AuditLog[]
+  business           Business            @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  userRoles          UserRole[]
+  devices            Device[]
+  cashRegisters      CashRegister[]
+  inventoryLocations InventoryLocation[]
+  inventory          Inventory[]
+  stockMovements     StockMovement[]
+  orders             Order[]
+  expenses           Expense[]
+  auditLogs          AuditLog[]
+  syncQueues         SyncQueue[]
 
   @@unique([businessId, code])
   @@index([businessId])
+  @@index([deletedAt])
   @@map("stores")
 }
 
-model User {
-  id           String     @id @default(uuid())
-  businessId   String
-  storeId      String?
-  username     String     @unique
-  email        String?    @unique
-  passwordHash String
-  pinCodeHash  String?
-  fullName     String
-  role         Role       @default(CASHIER)
-  isActive     Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+// ------------------------------------------------------------------------------
+// 2. USERS, ROLES & PERMISSIONS (RBAC)
+// ------------------------------------------------------------------------------
 
-  business     Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  store        Store?     @relation(fields: [storeId], references: [id], onDelete: SetNull)
-  auditLogs    AuditLog[]
+model User {
+  id           String    @id @default(uuid())
+  businessId   String
+  username     String    @unique
+  email        String?   @unique
+  passwordHash String
+  pinCodeHash  String?   // 4-6 digit fast touch PIN
+  fullName     String
+  phone        String?
+  isActive     Boolean   @default(true)
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  business       Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  userRoles      UserRole[]
+  sessions       RegisterSession[]
+  cashMovements  CashMovement[]
+  stockMovements StockMovement[]
+  orders         Order[]
+  expenses       Expense[]
+  auditLogs      AuditLog[]
 
   @@index([businessId])
-  @@index([storeId])
+  @@index([username])
+  @@index([deletedAt])
   @@map("users")
 }
 
-model SystemSetting {
+model Role {
   id          String   @id @default(uuid())
-  key         String   @unique
-  value       String
+  businessId  String
+  name        String
   description String?
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@map("system_settings")
+  business        Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+
+  @@unique([businessId, name])
+  @@index([businessId])
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  code        String   @unique // e.g. "orders:create", "inventory:adjust"
+  name        String
+  category    String   // e.g. "Sales", "Inventory", "Reports", "Admin"
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  rolePermissions RolePermission[]
+
+  @@index([category])
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model UserRole {
+  id         String   @id @default(uuid())
+  userId     String
+  roleId     String
+  storeId    String?  // Null means business-wide, otherwise store-scoped
+  assignedAt DateTime @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role  Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  store Store? @relation(fields: [storeId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, roleId, storeId])
+  @@index([userId])
+  @@index([roleId])
+  @@index([storeId])
+  @@map("user_roles")
+}
+
+// ------------------------------------------------------------------------------
+// 3. CATALOG: CATEGORIES, BRANDS, SUPPLIERS, PRODUCTS, VARIANTS
+// ------------------------------------------------------------------------------
+
+model Category {
+  id          String    @id @default(uuid())
+  businessId  String
+  name        String
+  code        String?
+  parentId    String?
+  color       String?   @default("#4f46e5")
+  icon        String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  business Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryHierarchy")
+  products Product[]
+
+  @@unique([businessId, name])
+  @@index([businessId])
+  @@index([parentId])
+  @@index([deletedAt])
+  @@map("categories")
+}
+
+model Brand {
+  id          String    @id @default(uuid())
+  businessId  String
+  name        String
+  description String?
+  isActive    Boolean   @default(true)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@unique([businessId, name])
+  @@index([businessId])
+  @@index([deletedAt])
+  @@map("brands")
+}
+
+model Supplier {
+  id            String    @id @default(uuid())
+  businessId    String
+  name          String
+  contactPerson String?
+  phone         String?
+  email         String?
+  address       String?
+  taxId         String?
+  isActive      Boolean   @default(true)
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@index([businessId])
+  @@index([deletedAt])
+  @@map("suppliers")
+}
+
+model Product {
+  id              String    @id @default(uuid())
+  businessId      String
+  categoryId      String?
+  brandId         String?
+  supplierId      String?
+  name            String
+  sku             String
+  barcode         String?
+  description     String?
+  costPriceUSD    Decimal   @default(0.00) @db.Decimal(12, 2)
+  sellingPriceUSD Decimal   @default(0.00) @db.Decimal(12, 2)
+  sellingPriceKHR Decimal   @default(0.00) @db.Decimal(12, 2)
+  taxRate         Decimal   @default(0.10) @db.Decimal(6, 4) // 10%
+  isTaxInclusive  Boolean   @default(true)
+  trackInventory  Boolean   @default(true)
+  alertLowStock   Int       @default(5)
+  unit            String    @default("pcs")
+  imageUrl        String?
+  isActive        Boolean   @default(true)
+  deletedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  business       Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  category       Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  brand          Brand?           @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  supplier       Supplier?        @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  variants       ProductVariant[]
+  inventory      Inventory[]
+  stockMovements StockMovement[]
+  orderItems     OrderItem[]
+
+  // High-frequency POS indexes
+  @@unique([businessId, sku])
+  @@index([businessId])
+  @@index([categoryId])
+  @@index([barcode])
+  @@index([businessId, name])
+  @@index([deletedAt])
+  @@map("products")
+}
+
+model ProductVariant {
+  id              String    @id @default(uuid())
+  productId       String
+  name            String
+  sku             String
+  barcode         String?
+  costPriceUSD    Decimal   @default(0.00) @db.Decimal(12, 2)
+  sellingPriceUSD Decimal   @default(0.00) @db.Decimal(12, 2)
+  sellingPriceKHR Decimal   @default(0.00) @db.Decimal(12, 2)
+  isActive        Boolean   @default(true)
+  deletedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  inventory      Inventory[]
+  stockMovements StockMovement[]
+  orderItems     OrderItem[]
+
+  // High-frequency POS indexes
+  @@unique([productId, sku])
+  @@index([productId])
+  @@index([barcode])
+  @@index([deletedAt])
+  @@map("product_variants")
+}
+
+// ------------------------------------------------------------------------------
+// 4. INVENTORY, LOCATIONS & STOCK MOVEMENTS
+// ------------------------------------------------------------------------------
+
+model InventoryLocation {
+  id          String   @id @default(uuid())
+  storeId     String
+  name        String
+  code        String
+  description String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  store          Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  inventory      Inventory[]
+  stockMovements StockMovement[]
+
+  @@unique([storeId, code])
+  @@index([storeId])
+  @@map("inventory_locations")
+}
+
+model Inventory {
+  id               String   @id @default(uuid())
+  storeId          String
+  locationId       String
+  productId        String
+  variantId        String?
+  quantity         Decimal  @default(0) @db.Decimal(12, 3)
+  reservedQuantity Decimal  @default(0) @db.Decimal(12, 3)
+  minStockLevel    Decimal  @default(5) @db.Decimal(12, 3)
+  maxStockLevel    Decimal? @db.Decimal(12, 3)
+  updatedAt        DateTime @updatedAt
+
+  store    Store             @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  location InventoryLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  product  Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant  ProductVariant?   @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  // Fast inventory check per store and product
+  @@index([storeId, locationId, productId])
+  @@index([storeId])
+  @@index([productId])
+  @@index([variantId])
+  @@map("inventory")
+}
+
+model StockMovement {
+  id             String            @id @default(uuid())
+  storeId        String
+  locationId     String
+  productId      String
+  variantId      String?
+  type           StockMovementType
+  quantityChange Decimal           @db.Decimal(12, 3)
+  quantityBefore Decimal           @db.Decimal(12, 3)
+  quantityAfter  Decimal           @db.Decimal(12, 3)
+  unitCost       Decimal           @default(0.00) @db.Decimal(12, 2)
+  referenceType  String            // "ORDER", "REFUND", "ADJUSTMENT", "TRANSFER"
+  referenceId    String?
+  notes          String?
+  createdById    String
+  createdAt      DateTime          @default(now())
+
+  store     Store             @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  location  InventoryLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  product   Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant   ProductVariant?   @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  createdBy User              @relation(fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([storeId])
+  @@index([productId])
+  @@index([referenceId])
+  @@index([createdAt])
+  @@map("stock_movements")
+}
+
+// ------------------------------------------------------------------------------
+// 5. CUSTOMERS & LOYALTY
+// ------------------------------------------------------------------------------
+
+model Customer {
+  id               String    @id @default(uuid())
+  businessId       String
+  name             String
+  phone            String?
+  email            String?
+  address          String?
+  taxNumber        String?
+  loyaltyPoints    Int       @default(0)
+  creditBalanceUSD Decimal   @default(0.00) @db.Decimal(12, 2)
+  deletedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  orders   Order[]
+
+  // Fast customer search by phone or name
+  @@index([businessId])
+  @@index([phone])
+  @@index([businessId, name])
+  @@index([deletedAt])
+  @@map("customers")
+}
+
+// ------------------------------------------------------------------------------
+// 6. CASH REGISTERS, SESSIONS & CASH MOVEMENTS
+// ------------------------------------------------------------------------------
+
+model CashRegister {
+  id        String   @id @default(uuid())
+  storeId   String
+  name      String
+  code      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store    Store             @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  sessions RegisterSession[]
+  orders   Order[]
+
+  @@unique([storeId, code])
+  @@index([storeId])
+  @@map("cash_registers")
+}
+
+model RegisterSession {
+  id                  String        @id @default(uuid())
+  registerId          String
+  cashierId           String
+  openedAt            DateTime      @default(now())
+  closedAt            DateTime?
+  status              SessionStatus @default(OPEN)
+
+  openingFloatUSD     Decimal       @default(0.00) @db.Decimal(12, 2)
+  openingFloatKHR     Decimal       @default(0.00) @db.Decimal(12, 2)
+  expectedCashUSD     Decimal       @default(0.00) @db.Decimal(12, 2)
+  expectedCashKHR     Decimal       @default(0.00) @db.Decimal(12, 2)
+  actualCashUSD       Decimal?      @db.Decimal(12, 2)
+  actualCashKHR       Decimal?      @db.Decimal(12, 2)
+  differenceUSD       Decimal?      @db.Decimal(12, 2)
+  differenceKHR       Decimal?      @db.Decimal(12, 2)
+
+  totalSalesCount     Int           @default(0)
+  totalSalesUSD       Decimal       @default(0.00) @db.Decimal(12, 2)
+  totalSalesKHR       Decimal       @default(0.00) @db.Decimal(12, 2)
+  closingNotes        String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  register      CashRegister   @relation(fields: [registerId], references: [id], onDelete: Cascade)
+  cashier       User           @relation(fields: [cashierId], references: [id], onDelete: Restrict)
+  cashMovements CashMovement[]
+  orders        Order[]
+
+  @@index([registerId])
+  @@index([cashierId])
+  @@index([status])
+  @@map("register_sessions")
+}
+
+model CashMovement {
+  id              String           @id @default(uuid())
+  sessionId       String
+  cashierId       String
+  type            CashMovementType
+  amountUSD       Decimal          @default(0.00) @db.Decimal(12, 2)
+  amountKHR       Decimal          @default(0.00) @db.Decimal(12, 2)
+  reason          String
+  referenceNumber String?
+  createdAt       DateTime         @default(now())
+
+  session RegisterSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  cashier User            @relation(fields: [cashierId], references: [id], onDelete: Restrict)
+
+  @@index([sessionId])
+  @@index([cashierId])
+  @@map("cash_movements")
+}
+
+// ------------------------------------------------------------------------------
+// 7. TAXES & DISCOUNTS
+// ------------------------------------------------------------------------------
+
+model Tax {
+  id          String   @id @default(uuid())
+  businessId  String
+  name        String
+  code        String
+  rate        Decimal  @db.Decimal(6, 4) // e.g. 0.1000 for 10%
+  isInclusive Boolean  @default(true)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, code])
+  @@index([businessId])
+  @@map("taxes")
+}
+
+model Discount {
+  id                String       @id @default(uuid())
+  businessId        String
+  name              String
+  code              String?
+  type              DiscountType @default(PERCENTAGE)
+  value             Decimal      @db.Decimal(12, 2) // percentage (e.g. 15.00) or fixed amount
+  minOrderAmountUSD Decimal?     @db.Decimal(12, 2)
+  startDate         DateTime?
+  endDate           DateTime?
+  isActive          Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([code])
+  @@map("discounts")
+}
+
+// ------------------------------------------------------------------------------
+// 8. PAYMENT METHODS
+// ------------------------------------------------------------------------------
+
+model PaymentMethod {
+  id         String            @id @default(uuid())
+  businessId String
+  name       String
+  code       String            // "CASH", "KHQR_ABA", "CARD", "BANK_TRANSFER"
+  type       PaymentMethodType @default(CASH)
+  isActive   Boolean           @default(true)
+  isDefault  Boolean           @default(false)
+  config     Json?             // Gateway parameters, Merchant IDs, QR configs
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  payments Payment[]
+  expenses Expense[]
+
+  @@unique([businessId, code])
+  @@index([businessId])
+  @@map("payment_methods")
+}
+
+// ------------------------------------------------------------------------------
+// 9. ORDERS, ORDER ITEMS, PAYMENTS & RECEIPTS
+// ------------------------------------------------------------------------------
+
+model Order {
+  id                String       @id @default(uuid())
+  orderNumber       String       @unique // E.g. "ORD-20261007-0001"
+  businessId        String
+  storeId           String
+  registerId        String?
+  sessionId         String?
+  cashierId         String
+  customerId        String?
+  status            OrderStatus  @default(COMPLETED)
+
+  currency          String       @default("USD")
+  exchangeRateKHR   Decimal      @default(4100.00) @db.Decimal(12, 4)
+
+  subtotalUSD       Decimal      @db.Decimal(12, 2)
+  discountType      DiscountType @default(NONE)
+  discountValue     Decimal      @default(0.00) @db.Decimal(12, 2)
+  discountAmountUSD Decimal      @default(0.00) @db.Decimal(12, 2)
+  taxRate           Decimal      @default(0.10) @db.Decimal(6, 4)
+  taxAmountUSD      Decimal      @default(0.00) @db.Decimal(12, 2)
+  totalUSD          Decimal      @db.Decimal(12, 2)
+  totalKHR          Decimal      @db.Decimal(12, 2)
+
+  paidUSD           Decimal      @default(0.00) @db.Decimal(12, 2)
+  paidKHR           Decimal      @default(0.00) @db.Decimal(12, 2)
+  totalPaidUSD      Decimal      @default(0.00) @db.Decimal(12, 2)
+  changeUSD         Decimal      @default(0.00) @db.Decimal(12, 2)
+  changeKHR         Decimal      @default(0.00) @db.Decimal(12, 2)
+
+  notes             String?
+  offlineSyncId     String?      @unique
+  isOfflineCreated  Boolean      @default(false)
+  syncedAt          DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  business Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  store    Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  register CashRegister?    @relation(fields: [registerId], references: [id], onDelete: SetNull)
+  session  RegisterSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  cashier  User             @relation(fields: [cashierId], references: [id], onDelete: Restrict)
+  customer Customer?        @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  items    OrderItem[]
+  payments Payment[]
+  receipt  Receipt?
+
+  // High-frequency POS lookup indexes
+  @@index([businessId])
+  @@index([storeId])
+  @@index([orderNumber])
+  @@index([customerId])
+  @@index([sessionId])
+  @@index([storeId, createdAt])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id                String   @id @default(uuid())
+  orderId           String
+  productId         String
+  variantId         String?
+  productName       String
+  sku               String
+  barcode           String?
+  quantity          Decimal  @db.Decimal(12, 3)
+  unitCostUSD       Decimal  @default(0.00) @db.Decimal(12, 2)
+  unitPriceUSD      Decimal  @db.Decimal(12, 2)
+  unitPriceKHR      Decimal  @db.Decimal(12, 2)
+  discountAmountUSD Decimal  @default(0.00) @db.Decimal(12, 2)
+  taxAmountUSD      Decimal  @default(0.00) @db.Decimal(12, 2)
+  subtotalUSD       Decimal  @db.Decimal(12, 2)
+  totalUSD          Decimal  @db.Decimal(12, 2)
+  totalKHR          Decimal  @db.Decimal(12, 2)
+  notes             String?
+  createdAt         DateTime @default(now())
+
+  order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id], onDelete: Restrict)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  orderId         String
+  paymentMethodId String
+  amountUSD       Decimal       @db.Decimal(12, 2)
+  amountKHR       Decimal       @db.Decimal(12, 2)
+  tenderAmountUSD Decimal       @default(0.00) @db.Decimal(12, 2)
+  tenderAmountKHR Decimal       @default(0.00) @db.Decimal(12, 2)
+  changeUSD       Decimal       @default(0.00) @db.Decimal(12, 2)
+  changeKHR       Decimal       @default(0.00) @db.Decimal(12, 2)
+  transactionRef  String?
+  status          PaymentStatus @default(COMPLETED)
+  createdAt       DateTime      @default(now())
+
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([paymentMethodId])
+  @@index([status])
+  @@map("payments")
+}
+
+model Receipt {
+  id            String    @id @default(uuid())
+  orderId       String    @unique
+  receiptNumber String    @unique
+  headerText    String?
+  footerText    String?
+  printedAt     DateTime?
+  reprintCount  Int       @default(0)
+  qrCodeData    String?
+  createdAt     DateTime  @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([receiptNumber])
+  @@map("receipts")
+}
+
+// ------------------------------------------------------------------------------
+// 10. EXPENSES & AUDIT LOGS
+// ------------------------------------------------------------------------------
+
+model Expense {
+  id              String   @id @default(uuid())
+  businessId      String
+  storeId         String
+  recordedById    String
+  paymentMethodId String?
+  category        String
+  amountUSD       Decimal  @default(0.00) @db.Decimal(12, 2)
+  amountKHR       Decimal  @default(0.00) @db.Decimal(12, 2)
+  description     String
+  createdAt       DateTime @default(now())
+
+  business      Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  store         Store          @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  recordedBy    User           @relation(fields: [recordedById], references: [id], onDelete: Restrict)
+  paymentMethod PaymentMethod? @relation(fields: [paymentMethodId], references: [id], onDelete: SetNull)
+
+  @@index([businessId])
+  @@index([storeId])
+  @@index([createdAt])
+  @@map("expenses")
 }
 
 model AuditLog {
-  id         String    @id @default(uuid())
+  id         String   @id @default(uuid())
   businessId String?
   storeId    String?
   userId     String?
-  action     String
-  entityType String
+  action     String   // e.g. "ORDER_CREATED", "STOCK_ADJUSTED", "SESSION_OPENED"
+  entityType String   // e.g. "Order", "Product", "RegisterSession"
   entityId   String?
   details    Json?
   ipAddress  String?
-  createdAt  DateTime  @default(now())
+  createdAt  DateTime @default(now())
 
-  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  store      Store?    @relation(fields: [storeId], references: [id], onDelete: SetNull)
-  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  business Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  store    Store?    @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  user     User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([businessId])
   @@index([action])
+  @@index([entityType, entityId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+// ------------------------------------------------------------------------------
+// 11. DEVICES & OFFLINE SYNC QUEUE
+// ------------------------------------------------------------------------------
+
+model Device {
+  id               String     @id @default(uuid())
+  storeId          String
+  name             String
+  deviceIdentifier String     @unique
+  deviceType       DeviceType @default(TERMINAL)
+  lastSyncAt       DateTime?
+  isActive         Boolean    @default(true)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  store      Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  syncQueues SyncQueue[]
+
+  @@index([storeId])
+  @@map("devices")
+}
+
+model SyncQueue {
+  id           String     @id @default(uuid())
+  clientSyncId String     @unique
+  storeId      String
+  deviceId     String
+  payload      Json
+  status       SyncStatus @default(PENDING)
+  errorMessage String?
+  receivedAt   DateTime   @default(now())
+  processedAt  DateTime?
+
+  store  Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([storeId])
+  @@index([deviceId])
+  @@index([status])
+  @@map("sync_queues")
 }
