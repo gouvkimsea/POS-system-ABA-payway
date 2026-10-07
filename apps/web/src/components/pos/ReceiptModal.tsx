@@ -1,8 +1,19 @@
 'use client';
 
-import React from 'react';
-import { CheckoutResult } from '@pos/types';
-import { X, Printer, CheckCircle, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckoutResult, PaperSize } from '@pos/types';
+import {
+  X,
+  Printer,
+  CheckCircle,
+  ArrowRight,
+  Copy,
+  Coins,
+  Check,
+} from 'lucide-react';
+import { printerService } from '../../lib/hardware/PrinterService';
+import { cashDrawerService } from '../../lib/hardware/CashDrawerService';
+import { hardwareManager } from '../../lib/hardware/HardwareManager';
 
 interface ReceiptModalProps {
   isOpen: boolean;
@@ -21,10 +32,51 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
   storeAddress = '#128, Preah Monivong Blvd, Phnom Penh',
   storePhone = '+855 23 888 991',
 }) => {
+  const [printStatus, setPrintStatus] = useState<string>('');
+  const [isPrinting, setIsPrinting] = useState<boolean>(false);
+  const [isReprint, setIsReprint] = useState<boolean>(false);
+  const [previewPaperSize, setPreviewPaperSize] = useState<PaperSize>(
+    hardwareManager.getProfile().printer.paperSize || '80mm',
+  );
+
   if (!isOpen || !receiptData) return null;
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async (reprint: boolean = false) => {
+    setIsPrinting(true);
+    setIsReprint(reprint);
+    setPrintStatus(reprint ? 'Reprinting duplicate slip...' : 'Sending to thermal printer...');
+
+    try {
+      const res = await printerService.printReceipt(receiptData, {
+        reprint,
+        paperSizeOverride: previewPaperSize,
+      });
+
+      if (res.success) {
+        setPrintStatus(
+          res.driverUsed === 'BROWSER_FALLBACK' || res.fallbackUsed
+            ? '✓ Printed via Browser Fallback'
+            : `✓ Printed on ${res.target || 'Thermal Printer'} (${previewPaperSize})`,
+        );
+      } else {
+        setPrintStatus(`Print notice: ${res.message || 'Used browser fallback'}`);
+      }
+    } catch (e: any) {
+      setPrintStatus(`Print fallback: ${e.message}`);
+    } finally {
+      setIsPrinting(false);
+      setTimeout(() => setPrintStatus(''), 4000);
+    }
+  };
+
+  const handleKickDrawer = async () => {
+    try {
+      const res = await cashDrawerService.openDrawer('Manual drawer open from receipt');
+      setPrintStatus(res.message || 'Cash drawer kick signal sent.');
+      setTimeout(() => setPrintStatus(''), 3000);
+    } catch {
+      setPrintStatus('Drawer kick failed.');
+    }
   };
 
   return (
@@ -36,7 +88,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
             <CheckCircle className="w-5 h-5 text-emerald-200" />
             <div>
               <h3 className="font-bold text-sm leading-none">Payment Complete</h3>
-              <p className="text-[11px] text-emerald-100 mt-0.5">Sale recorded successfully</p>
+              <p className="text-[11px] text-emerald-100 mt-0.5">Sale recorded in PostgreSQL</p>
             </div>
           </div>
           <button
@@ -47,12 +99,69 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
           </button>
         </div>
 
+        {/* Paper Size Selector & Status */}
+        <div className="bg-slate-100 px-4 py-2 border-b border-slate-200 flex items-center justify-between text-xs shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold text-slate-500 uppercase">Format:</span>
+            <div className="inline-flex rounded-lg bg-white border border-slate-300 p-0.5">
+              <button
+                type="button"
+                onClick={() => setPreviewPaperSize('58mm')}
+                className={`px-2 py-0.5 rounded text-[11px] font-bold transition-colors ${
+                  previewPaperSize === '58mm'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                58mm
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewPaperSize('80mm')}
+                className={`px-2 py-0.5 rounded text-[11px] font-bold transition-colors ${
+                  previewPaperSize === '80mm'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                80mm
+              </button>
+            </div>
+          </div>
+
+          <button
+            onClick={handleKickDrawer}
+            className="flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-100 hover:bg-amber-200 px-2 py-1 rounded-lg transition-colors"
+            title="Pop cash drawer open"
+          >
+            <Coins className="w-3.5 h-3.5" />
+            Open Drawer
+          </button>
+        </div>
+
+        {/* Feedback Alert Bar */}
+        {printStatus && (
+          <div className="bg-indigo-900 text-indigo-100 text-xs px-4 py-1.5 text-center font-mono font-medium animate-in fade-in flex items-center justify-center gap-1.5 shrink-0">
+            <Check className="w-3.5 h-3.5 text-emerald-400" />
+            {printStatus}
+          </div>
+        )}
+
         {/* Thermal Receipt Preview Paper */}
-        <div className="p-5 flex-1 overflow-y-auto bg-slate-50">
+        <div className="p-4 flex-1 overflow-y-auto bg-slate-50">
           <div
             id="pos-thermal-receipt"
-            className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs font-mono text-xs text-slate-800 space-y-3"
+            className={`bg-white p-4 rounded-xl border border-slate-200 shadow-xs font-mono text-xs text-slate-800 space-y-3 mx-auto transition-all ${
+              previewPaperSize === '58mm' ? 'max-w-[280px]' : 'max-w-[360px]'
+            }`}
           >
+            {/* Reprint Banner */}
+            {isReprint && (
+              <div className="text-center font-bold text-rose-600 border-2 border-dashed border-rose-300 py-1 rounded">
+                *** DUPLICATE / REPRINT ***
+              </div>
+            )}
+
             {/* Store Header */}
             <div className="text-center space-y-0.5 border-b border-dashed border-slate-300 pb-3">
               <h4 className="font-bold text-sm uppercase tracking-wider">{storeName}</h4>
@@ -98,45 +207,66 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                 <div key={idx} className="flex justify-between items-start">
                   <div className="truncate max-w-[150px]">
                     <span className="font-semibold">{item.productName}</span>
+                    {item.discountUSD > 0 && (
+                      <span className="text-[10px] text-rose-600 block">
+                        (Disc -${item.discountUSD.toFixed(2)})
+                      </span>
+                    )}
                   </div>
-                  <div className="text-slate-500 shrink-0">
+                  <span className="text-slate-500">
                     {item.quantity} x ${item.unitPriceUSD.toFixed(2)}
-                  </div>
-                  <div className="font-bold shrink-0">${item.totalUSD.toFixed(2)}</div>
+                  </span>
+                  <span className="font-bold text-slate-800">${item.totalUSD.toFixed(2)}</span>
                 </div>
               ))}
             </div>
 
-            {/* Financial Summary */}
-            <div className="space-y-1 text-[11px] border-b border-dashed border-slate-300 pb-2">
+            {/* Financial Calculations Breakdown */}
+            <div className="space-y-1 border-b border-dashed border-slate-300 pb-2 text-[11px]">
               <div className="flex justify-between">
                 <span className="text-slate-500">Subtotal:</span>
                 <span>${receiptData.subtotalUSD.toFixed(2)}</span>
               </div>
               {receiptData.discountUSD > 0 && (
-                <div className="flex justify-between text-rose-600">
+                <div className="flex justify-between text-rose-600 font-medium">
                   <span>Discount:</span>
                   <span>-${receiptData.discountUSD.toFixed(2)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-slate-500">
-                <span>Tax (10% VAT inc.):</span>
-                <span>${receiptData.taxUSD.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between font-extrabold text-sm pt-1 border-t border-slate-200">
-                <span>TOTAL (USD):</span>
+              {receiptData.taxUSD > 0 && (
+                <div className="flex justify-between text-slate-500">
+                  <span>VAT / Tax (10%):</span>
+                  <span>${receiptData.taxUSD.toFixed(2)}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Grand Totals */}
+            <div className="space-y-1 border-b border-dashed border-slate-300 pb-2">
+              <div className="flex justify-between text-sm font-bold text-slate-900">
+                <span>TOTAL USD:</span>
                 <span>${receiptData.totalUSD.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between font-bold text-xs text-indigo-700">
-                <span>TOTAL (KHR):</span>
+              <div className="flex justify-between text-xs font-semibold text-amber-700">
+                <span>TOTAL KHR:</span>
                 <span>{receiptData.totalKHR.toLocaleString()} ៛</span>
+              </div>
+              <div className="flex justify-between text-[10px] text-slate-400">
+                <span>Exchange Rate:</span>
+                <span>1 USD = {(receiptData.exchangeRateKHR || 4100).toLocaleString()} KHR</span>
               </div>
             </div>
 
             {/* Payment & Change */}
-            <div className="space-y-1 text-[11px] border-b border-dashed border-slate-300 pb-2">
-              <div className="flex justify-between">
-                <span className="text-slate-500">Tendered:</span>
+            <div className="space-y-1 border-b border-dashed border-slate-300 pb-2 text-[11px]">
+              <div className="flex justify-between text-slate-600">
+                <span>Payment Method:</span>
+                <span className="font-semibold uppercase">
+                  {receiptData.payments.map((p) => p.paymentMethodName || p.paymentMethodCode).join(', ') || 'CASH'}
+                </span>
+              </div>
+              <div className="flex justify-between text-slate-600">
+                <span>Tendered:</span>
                 <span className="font-semibold">
                   ${(receiptData.paidUSD + receiptData.changeUSD).toFixed(2)}
                 </span>
@@ -162,19 +292,31 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="p-4 bg-white border-t border-slate-200 flex items-center justify-between gap-3 shrink-0">
+        <div className="p-3.5 bg-white border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
           <button
-            onClick={handlePrint}
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors"
+            onClick={() => handlePrint(false)}
+            disabled={isPrinting}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors disabled:opacity-50"
+            title="Print receipt on thermal printer"
           >
-            <Printer className="w-4 h-4 text-slate-600" />
-            <span>Print Receipt</span>
+            <Printer className="w-4 h-4 text-slate-700" />
+            <span>Print ({previewPaperSize})</span>
+          </button>
+
+          <button
+            onClick={() => handlePrint(true)}
+            disabled={isPrinting}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors disabled:opacity-50"
+            title="Reprint receipt with duplicate notice"
+          >
+            <Copy className="w-3.5 h-3.5 text-slate-500" />
+            <span>Reprint</span>
           </button>
 
           <button
             autoFocus
             onClick={onClose}
-            className="flex-1 flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors"
           >
             <span>Next Customer</span>
             <ArrowRight className="w-4 h-4" />

@@ -292,3 +292,128 @@ export const stockTransferSchema = z.object({
 
 export type StockTransferInputType = z.infer<typeof stockTransferSchema>;
 
+// ------------------------------------------------------------------------------
+// HARDWARE INTEGRATION VALIDATION SCHEMAS
+// ------------------------------------------------------------------------------
+
+export const printerConfigSchema = z.object({
+  driver: z.enum([
+    'LOCAL_BRIDGE',
+    'NETWORK_TCP',
+    'WEB_SERIAL',
+    'WEB_USB',
+    'BROWSER_FALLBACK',
+  ]),
+  name: z.string().min(1, 'Printer name is required').trim(),
+  paperSize: z.enum(['58mm', '80mm']),
+  networkIp: z.string().optional(),
+  networkPort: z.number().int().min(1).max(65535).optional().default(9100),
+  autoCut: z.boolean().default(true),
+  autoOpenDrawer: z.boolean().default(true),
+  copies: z.number().int().min(1).max(5).default(1),
+  headerText: z.string().optional(),
+  footerText: z.string().optional(),
+});
+
+export const printJobItemSchema = z.object({
+  name: z.string().min(1),
+  quantity: z.number().positive(),
+  unitPriceUSD: z.number().min(0),
+  totalUSD: z.number().min(0),
+  discountUSD: z.number().min(0).optional(),
+});
+
+export const printJobDataSchema = z.object({
+  storeName: z.string().min(1),
+  storeAddress: z.string().optional(),
+  storePhone: z.string().optional(),
+  receiptNumber: z.string().min(1),
+  orderNumber: z.string().min(1),
+  cashierName: z.string().optional(),
+  customerName: z.string().optional(),
+  createdAt: z.string(),
+  items: z.array(printJobItemSchema),
+  subtotalUSD: z.number().min(0),
+  discountUSD: z.number().min(0).optional(),
+  taxUSD: z.number().min(0).optional(),
+  totalUSD: z.number().min(0),
+  totalKHR: z.number().min(0),
+  exchangeRateKHR: z.number().positive(),
+  payments: z.array(
+    z.object({
+      method: z.string(),
+      amountUSD: z.number().min(0),
+      amountKHR: z.number().min(0),
+      tenderUSD: z.number().min(0).optional(),
+      tenderKHR: z.number().min(0).optional(),
+    }),
+  ),
+  changeUSD: z.number().min(0).optional(),
+  changeKHR: z.number().min(0).optional(),
+  qrPayload: z.string().optional(),
+  reprintNotice: z.boolean().optional(),
+  headerText: z.string().optional(),
+  footerText: z.string().optional(),
+});
+
+export const printJobSchema = z.object({
+  jobId: z.string().min(1),
+  type: z.enum(['TEST', 'RECEIPT', 'REPRINT']),
+  printer: printerConfigSchema,
+  data: printJobDataSchema.optional(),
+  rawEscPos: z.string().optional(),
+  timestamp: z.string(),
+});
+
+export const scannerConfigSchema = z.object({
+  mode: z.enum(['KEYBOARD_WEDGE', 'CAMERA', 'LOCAL_BRIDGE', 'WEB_SERIAL']),
+  interKeyTimeoutMs: z.number().int().min(10).max(250).default(50),
+  minBarcodeLength: z.number().int().min(1).max(20).default(4),
+  soundBeepOnScan: z.boolean().default(true),
+  vibrateOnScan: z.boolean().default(true),
+  prefix: z.string().optional(),
+  suffix: z.string().optional().default('\n'),
+});
+
+export const cashDrawerConfigSchema = z.object({
+  driver: z.enum(['PRINTER_KICK', 'LOCAL_BRIDGE_DIRECT', 'MANUAL_FALLBACK']),
+  kickPin: z.union([z.literal(2), z.literal(5)]).default(2),
+  pulseOnMs: z.number().int().min(10).max(500).default(50),
+  autoOpenOnCashPayment: z.boolean().default(true),
+  soundChirp: z.boolean().default(true),
+});
+
+export const customerDisplayConfigSchema = z.object({
+  driver: z.enum(['SECONDARY_WINDOW', 'LOCAL_BRIDGE_VFD', 'DISABLED']),
+  idleLine1: z.string().default('Welcome to Angkor Fresh Mart!'),
+  idleLine2: z.string().default('Scan items to begin checkout'),
+  polePort: z.string().optional(),
+  poleBaudRate: z.number().int().default(9600),
+});
+
+export const bridgeConfigSchema = z.object({
+  enabled: z.boolean().default(true),
+  bridgeUrl: z.string().url().default('http://127.0.0.1:9123'),
+  wsUrl: z.string().optional(),
+  pollIntervalMs: z.number().int().min(1000).max(60000).default(5000),
+});
+
+export const hardwareSettingsProfileSchema = z.object({
+  terminalId: z.string().min(1),
+  storeId: z.string().min(1),
+  bridge: bridgeConfigSchema,
+  printer: printerConfigSchema,
+  scanner: scannerConfigSchema,
+  cashDrawer: cashDrawerConfigSchema,
+  customerDisplay: customerDisplayConfigSchema,
+  lastSavedAt: z.string(),
+});
+
+export const registerDeviceInputSchema = z.object({
+  storeId: z.string().min(1, 'Store ID is required'),
+  name: z.string().min(1, 'Device name is required').trim(),
+  deviceIdentifier: z.string().min(1, 'Device identifier is required').trim(),
+  deviceType: z.enum(['TERMINAL', 'TABLET', 'MOBILE', 'DESKTOP']).optional().default('TERMINAL'),
+  hardwareConfig: z.record(z.any()).optional(),
+});
+

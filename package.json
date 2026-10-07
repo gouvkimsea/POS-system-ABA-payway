@@ -7,8 +7,10 @@
     "dev:api": "pnpm --filter @pos/api dev",
     "dev:web": "pnpm --filter @pos/web dev",
     "dev": "pnpm --parallel --filter @pos/api --filter @pos/web dev",
+    "dev:bridge": "pnpm --filter @pos/bridge dev",
+    "bridge:start": "pnpm --filter @pos/bridge start",
     "build:packages": "pnpm --filter @pos/types build && pnpm --filter @pos/config build && pnpm --filter @pos/validation build && pnpm --filter @pos/ui build",
-    "build": "pnpm run build:packages && pnpm --filter @pos/api build && pnpm --filter @pos/web build",
+    "build": "pnpm run build:packages && pnpm --filter @pos/bridge build && pnpm --filter @pos/api build && pnpm --filter @pos/web build",
     "typecheck": "pnpm --recursive run typecheck",
     "lint": "eslint . --ext .ts,.tsx,.js",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
@@ -24,7 +26,8 @@
     "test:auth": "tsx scripts/test-auth-integration.ts",
     "test:pos": "tsx scripts/test-pos-integration.ts",
     "test:inventory": "tsx scripts/test-inventory-integration.ts",
-    "test:transactions": "tsx scripts/test-transaction-engine.ts"
+    "test:transactions": "tsx scripts/test-transaction-engine.ts",
+    "test:hardware": "tsx scripts/test-hardware-integration.ts"
   },
   "devDependencies": {
     "@prisma/client": "^5.22.0",

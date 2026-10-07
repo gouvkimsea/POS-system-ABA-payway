@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Search, Barcode, LayoutGrid, List, X } from 'lucide-react';
+import { Search, Barcode, LayoutGrid, List, X, Camera } from 'lucide-react';
 
 interface ProductSearchBarcodeProps {
   searchQuery: string;
@@ -13,6 +13,7 @@ interface ProductSearchBarcodeProps {
   onToggleViewMode: (mode: 'grid' | 'list') => void;
   searchInputRef: React.RefObject<HTMLInputElement>;
   barcodeInputRef: React.RefObject<HTMLInputElement>;
+  onOpenCameraScanner?: () => void;
 }
 
 export const ProductSearchBarcode: React.FC<ProductSearchBarcodeProps> = ({
@@ -25,6 +26,7 @@ export const ProductSearchBarcode: React.FC<ProductSearchBarcodeProps> = ({
   onToggleViewMode,
   searchInputRef,
   barcodeInputRef,
+  onOpenCameraScanner,
 }) => {
   const handleBarcodeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -61,25 +63,38 @@ export const ProductSearchBarcode: React.FC<ProductSearchBarcodeProps> = ({
         )}
       </div>
 
-      {/* Barcode Scanner Input (F2) */}
-      <div className="relative flex-1 sm:max-w-[280px]">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-indigo-500">
-          <Barcode className="w-4 h-4" />
+      {/* Barcode Scanner Input (F2) & Camera Trigger */}
+      <div className="flex items-center gap-1.5 flex-1 sm:max-w-[320px]">
+        <div className="relative flex-1">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-indigo-500">
+            <Barcode className="w-4 h-4" />
+          </div>
+          <input
+            ref={barcodeInputRef}
+            type="text"
+            value={barcodeQuery}
+            onChange={(e) => onBarcodeChange(e.target.value)}
+            onKeyDown={handleBarcodeKeyDown}
+            placeholder="Scan barcode... (F2)"
+            className="w-full pl-9 pr-14 py-2 bg-indigo-50/50 border border-indigo-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-600 transition-all font-mono font-medium"
+          />
+          <div className="absolute inset-y-0 right-1 flex items-center">
+            <span className="text-[10px] font-mono bg-indigo-100 text-indigo-700 font-bold px-1.5 py-0.5 rounded mr-1">
+              ↵ Enter
+            </span>
+          </div>
         </div>
-        <input
-          ref={barcodeInputRef}
-          type="text"
-          value={barcodeQuery}
-          onChange={(e) => onBarcodeChange(e.target.value)}
-          onKeyDown={handleBarcodeKeyDown}
-          placeholder="Scan barcode... (F2)"
-          className="w-full pl-9 pr-14 py-2 bg-indigo-50/50 border border-indigo-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-600 transition-all font-mono font-medium"
-        />
-        <div className="absolute inset-y-0 right-1 flex items-center">
-          <span className="text-[10px] font-mono bg-indigo-100 text-indigo-700 font-bold px-1.5 py-0.5 rounded mr-1">
-            ↵ Enter
-          </span>
-        </div>
+
+        {onOpenCameraScanner && (
+          <button
+            type="button"
+            onClick={onOpenCameraScanner}
+            className="p-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200 rounded-xl transition-colors shrink-0"
+            title="Open Camera Barcode Scanner"
+          >
+            <Camera className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* View Toggle (Grid vs List) */}

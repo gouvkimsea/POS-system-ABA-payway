@@ -7,6 +7,7 @@ import { authRouter } from './routes/auth.js';
 import { posRouter } from './routes/pos.js';
 import { catalogRouter } from './routes/catalog.js';
 import { inventoryRouter } from './routes/inventory.js';
+import { devicesRouter } from './routes/devices.js';
 import { initRedis } from './redis/index.js';
 
 const config = getEnvConfig();
@@ -51,6 +52,7 @@ export function createApp(): Express {
   app.use('/api/pos', posRouter);
   app.use('/api/catalog', catalogRouter);
   app.use('/api/inventory', inventoryRouter);
+  app.use('/api/devices', devicesRouter);
 
   app.get('/api', (_req: Request, res: Response) => {
     res.json({

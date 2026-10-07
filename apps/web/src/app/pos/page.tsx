@@ -22,7 +22,11 @@ import { HeldOrdersModal } from '../../components/pos/HeldOrdersModal';
 import { PaymentModal } from '../../components/pos/PaymentModal';
 import { ReceiptModal } from '../../components/pos/ReceiptModal';
 import { ShortcutsModal } from '../../components/pos/ShortcutsModal';
+import { CameraScannerModal } from '../../components/pos/CameraScannerModal';
 import { posSounds } from '../../components/pos/SoundEffects';
+import { scannerService } from '../../lib/hardware/ScannerService';
+import { customerDisplayService } from '../../lib/hardware/CustomerDisplayService';
+import { cashDrawerService } from '../../lib/hardware/CashDrawerService';
 import { useRouter } from 'next/navigation';
 
 export default function PosPage() {
@@ -66,6 +70,7 @@ function PosTerminalContent() {
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState<boolean>(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState<boolean>(false);
   const [isMobileCartOpen, setIsMobileCartOpen] = useState<boolean>(false);
+  const [isCameraScannerOpen, setIsCameraScannerOpen] = useState<boolean>(false);
 
   // Transaction State
   const [isProcessingPayment, setIsProcessingPayment] = useState<boolean>(false);
@@ -217,26 +222,56 @@ function PosTerminalContent() {
   );
 
   // 3. Barcode Scanner Handler
-  const handleBarcodeSubmit = (barcode: string) => {
-    if (!initData) return;
-    const cleanBarcode = barcode.trim();
-    if (!cleanBarcode) return;
+  const handleBarcodeSubmit = useCallback(
+    (barcode: string) => {
+      if (!initData) return;
+      const cleanBarcode = barcode.trim();
+      if (!cleanBarcode) return;
 
-    // Search product in catalog
-    const matched = initData.products.find(
-      (p) => p.barcode === cleanBarcode || p.sku.toLowerCase() === cleanBarcode.toLowerCase(),
-    );
+      // Search product in catalog
+      const matched = initData.products.find(
+        (p) => p.barcode === cleanBarcode || p.sku.toLowerCase() === cleanBarcode.toLowerCase(),
+      );
 
-    if (matched) {
-      handleAddToCart(matched, 1);
-      setBarcodeQuery('');
-      showNotification(`Added: ${matched.name}`, 'success');
-    } else {
-      posSounds.playWarningBuzz();
-      showNotification(`Barcode not found: ${cleanBarcode}`, 'warn');
-      setBarcodeQuery('');
-    }
-  };
+      if (matched) {
+        handleAddToCart(matched, 1);
+        setBarcodeQuery('');
+        showNotification(`Added: ${matched.name}`, 'success');
+      } else {
+        posSounds.playWarningBuzz();
+        showNotification(`Barcode not found: ${cleanBarcode}`, 'warn');
+        setBarcodeQuery('');
+      }
+    },
+    [initData, handleAddToCart, showNotification],
+  );
+
+  // Subscribe to hardware barcode scanner (USB, Bluetooth, Camera)
+  useEffect(() => {
+    const unsub = scannerService.onBarcode(handleBarcodeSubmit);
+    return () => unsub();
+  }, [handleBarcodeSubmit]);
+
+  // Synchronize live cart state with Customer Facing Display
+  useEffect(() => {
+    const itemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const subtotal = cart.reduce((sum, item) => sum + item.subtotalUSD, 0);
+    const tax = Number((subtotal * 0.1).toFixed(2));
+    const totalUSD = Math.max(0, Number((subtotal + tax - discountUSD).toFixed(2)));
+    const totalKHR = Math.round(totalUSD * 4100);
+
+    const lastItem =
+      cart.length > 0
+        ? {
+            name: cart[0].product.name,
+            quantity: cart[0].quantity,
+            priceUSD: cart[0].unitPriceUSD,
+            totalUSD: cart[0].totalUSD,
+          }
+        : undefined;
+
+    customerDisplayService.updateCart(itemsCount, subtotal, tax, totalUSD, totalKHR, lastItem);
+  }, [cart, discountUSD]);
 
   // 4. Quantity Stepper
   const handleUpdateQuantity = (productId: string, quantity: number) => {
@@ -472,6 +507,18 @@ function PosTerminalContent() {
       setSelectedCustomer(null);
       setSelectedItemId(null);
 
+      // Hardware: Sync Customer Facing Display with completed transaction
+      customerDisplayService.showThankYou(
+        checkoutResult.receiptNumber,
+        checkoutResult.changeUSD,
+        checkoutResult.changeKHR,
+      );
+
+      // Hardware: Auto-open cash drawer if Cash was tendered
+      if (payments.some((p) => p.paymentMethodCode === 'CASH')) {
+        cashDrawerService.openDrawer('Sale complete cash settlement');
+      }
+
       // Decrement local inventory cache
       if (initData) {
         const updatedProducts = initData.products.map((p) => {
@@ -621,6 +668,7 @@ function PosTerminalContent() {
             onToggleViewMode={setViewMode}
             searchInputRef={searchInputRef}
             barcodeInputRef={barcodeInputRef}
+            onOpenCameraScanner={() => setIsCameraScannerOpen(true)}
           />
 
           {/* Category Navigation Pills */}
@@ -716,7 +764,10 @@ function PosTerminalContent() {
       {/* 4. Thermal Receipt Modal */}
       <ReceiptModal
         isOpen={isReceiptModalOpen}
-        onClose={() => setIsReceiptModalOpen(false)}
+        onClose={() => {
+          setIsReceiptModalOpen(false);
+          customerDisplayService.resetToIdle();
+        }}
         receiptData={lastReceipt}
         storeName={initData?.store.name}
         storeAddress={initData?.store.address || undefined}
@@ -727,6 +778,13 @@ function PosTerminalContent() {
       <ShortcutsModal
         isOpen={isShortcutsModalOpen}
         onClose={() => setIsShortcutsModalOpen(false)}
+      />
+
+      {/* 6. Camera Barcode Scanner Viewfinder Modal */}
+      <CameraScannerModal
+        isOpen={isCameraScannerOpen}
+        onClose={() => setIsCameraScannerOpen(false)}
+        onBarcodeDetected={handleBarcodeSubmit}
       />
     </div>
   );

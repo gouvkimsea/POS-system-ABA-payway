@@ -896,6 +896,7 @@ model Device {
   name             String
   deviceIdentifier String     @unique
   deviceType       DeviceType @default(TERMINAL)
+  hardwareConfig   Json?
   lastSyncAt       DateTime?
   isActive         Boolean    @default(true)
   createdAt        DateTime   @default(now())

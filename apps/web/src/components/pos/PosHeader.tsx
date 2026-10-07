@@ -16,6 +16,7 @@ import {
   ShoppingBag,
   Package,
 } from 'lucide-react';
+import { HardwareStatusBadge } from './HardwareStatusBadge';
 
 interface PosHeaderProps {
   user: AuthUser | null;
@@ -117,6 +118,9 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
 
       {/* Right: Cashier, Held Orders, Shortcuts, Fullscreen, Lock */}
       <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Hardware Status Badge & Quick Diagnostics */}
+        <HardwareStatusBadge />
+
         {/* Held Orders Button */}
         <button
           onClick={onOpenHeldModal}

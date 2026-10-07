@@ -298,6 +298,7 @@ export interface CheckoutResult {
   taxRate: number;
   totalUSD: number;
   totalKHR: number;
+  exchangeRateKHR?: number;
   paidUSD: number;
   paidKHR: number;
   remainingUSD: number;
@@ -641,5 +642,238 @@ export interface CreateVariantInput {
   isActive?: boolean;
   initialStock?: number;
   initialLocationId?: string;
+}
+
+// ------------------------------------------------------------------------------
+// HARDWARE INTEGRATION & DEVICE BRIDGE TYPES
+// ------------------------------------------------------------------------------
+
+export type HardwareDeviceType =
+  | 'PRINTER'
+  | 'SCANNER'
+  | 'CASH_DRAWER'
+  | 'CUSTOMER_DISPLAY'
+  | 'BRIDGE';
+
+export type HardwareConnectionStatus =
+  | 'CONNECTED'
+  | 'DISCONNECTED'
+  | 'CONNECTING'
+  | 'ERROR'
+  | 'STANDALONE_FALLBACK';
+
+export type PrinterDriverType =
+  | 'LOCAL_BRIDGE'
+  | 'NETWORK_TCP'
+  | 'WEB_SERIAL'
+  | 'WEB_USB'
+  | 'BROWSER_FALLBACK';
+
+export type PaperSize = '58mm' | '80mm';
+
+export interface PrinterConfig {
+  driver: PrinterDriverType;
+  name: string;
+  paperSize: PaperSize;
+  networkIp?: string;
+  networkPort?: number;
+  autoCut: boolean;
+  autoOpenDrawer: boolean;
+  copies: number;
+  headerText?: string;
+  footerText?: string;
+}
+
+export type PrintJobType = 'TEST' | 'RECEIPT' | 'REPRINT';
+
+export interface PrintJobItem {
+  name: string;
+  quantity: number;
+  unitPriceUSD: number;
+  totalUSD: number;
+  discountUSD?: number;
+}
+
+export interface PrintJobData {
+  storeName: string;
+  storeAddress?: string;
+  storePhone?: string;
+  receiptNumber: string;
+  orderNumber: string;
+  cashierName?: string;
+  customerName?: string;
+  createdAt: string;
+  items: PrintJobItem[];
+  subtotalUSD: number;
+  discountUSD?: number;
+  taxUSD?: number;
+  totalUSD: number;
+  totalKHR: number;
+  exchangeRateKHR: number;
+  payments: Array<{
+    method: string;
+    amountUSD: number;
+    amountKHR: number;
+    tenderUSD?: number;
+    tenderKHR?: number;
+  }>;
+  changeUSD?: number;
+  changeKHR?: number;
+  qrPayload?: string;
+  reprintNotice?: boolean;
+  headerText?: string;
+  footerText?: string;
+}
+
+export interface PrintJob {
+  jobId: string;
+  type: PrintJobType;
+  printer: PrinterConfig;
+  data?: PrintJobData;
+  rawEscPos?: string;
+  timestamp: string;
+}
+
+export interface PrintResult {
+  success: boolean;
+  jobId: string;
+  driverUsed: PrinterDriverType;
+  target: string;
+  message?: string;
+  fallbackUsed?: boolean;
+}
+
+export type ScannerInputMode =
+  | 'KEYBOARD_WEDGE'
+  | 'CAMERA'
+  | 'LOCAL_BRIDGE'
+  | 'WEB_SERIAL';
+
+export interface ScannerConfig {
+  mode: ScannerInputMode;
+  interKeyTimeoutMs: number;
+  minBarcodeLength: number;
+  soundBeepOnScan: boolean;
+  vibrateOnScan: boolean;
+  prefix?: string;
+  suffix?: string;
+}
+
+export type CashDrawerDriverType =
+  | 'PRINTER_KICK'
+  | 'LOCAL_BRIDGE_DIRECT'
+  | 'MANUAL_FALLBACK';
+
+export interface CashDrawerConfig {
+  driver: CashDrawerDriverType;
+  kickPin: 2 | 5;
+  pulseOnMs: number;
+  autoOpenOnCashPayment: boolean;
+  soundChirp: boolean;
+}
+
+export interface CashDrawerTriggerResult {
+  success: boolean;
+  method: CashDrawerDriverType;
+  timestamp: string;
+  message?: string;
+}
+
+export type CustomerDisplayDriverType =
+  | 'SECONDARY_WINDOW'
+  | 'LOCAL_BRIDGE_VFD'
+  | 'DISABLED';
+
+export interface CustomerDisplayConfig {
+  driver: CustomerDisplayDriverType;
+  idleLine1: string;
+  idleLine2: string;
+  polePort?: string;
+  poleBaudRate?: number;
+}
+
+export interface CustomerDisplayState {
+  status: 'IDLE' | 'SCANNING' | 'PAYMENT' | 'COMPLETED';
+  cartSummary?: {
+    itemsCount: number;
+    subtotalUSD: number;
+    taxUSD: number;
+    totalUSD: number;
+    totalKHR: number;
+  };
+  currentItem?: {
+    name: string;
+    quantity: number;
+    priceUSD: number;
+    totalUSD: number;
+  };
+  paymentPrompt?: {
+    method: string;
+    amountUSD: number;
+    amountKHR: number;
+    qrPayload?: string;
+  };
+  thankYouNotice?: {
+    changeUSD: number;
+    changeKHR: number;
+    receiptNumber: string;
+  };
+  timestamp: string;
+}
+
+export interface BridgeConfig {
+  enabled: boolean;
+  bridgeUrl: string;
+  wsUrl?: string;
+  pollIntervalMs: number;
+}
+
+export interface BridgeStatus {
+  connected: boolean;
+  version?: string;
+  platform?: string;
+  hostname?: string;
+  uptimeSeconds?: number;
+  discoveredPrinters: Array<{
+    name: string;
+    type: string;
+    isDefault?: boolean;
+    description?: string;
+  }>;
+  discoveredPorts: string[];
+  latencyMs?: number;
+  lastCheckedAt: string;
+  error?: string;
+}
+
+export interface HardwareSettingsProfile {
+  terminalId: string;
+  storeId: string;
+  bridge: BridgeConfig;
+  printer: PrinterConfig;
+  scanner: ScannerConfig;
+  cashDrawer: CashDrawerConfig;
+  customerDisplay: CustomerDisplayConfig;
+  lastSavedAt: string;
+}
+
+export interface DeviceSummary {
+  id: string;
+  storeId: string;
+  name: string;
+  deviceIdentifier: string;
+  deviceType: 'TERMINAL' | 'TABLET' | 'MOBILE' | 'DESKTOP';
+  hardwareConfig?: Partial<HardwareSettingsProfile> | null;
+  lastSyncAt?: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface RegisterDeviceInput {
+  storeId: string;
+  name: string;
+  deviceIdentifier: string;
+  deviceType?: 'TERMINAL' | 'TABLET' | 'MOBILE' | 'DESKTOP';
+  hardwareConfig?: Partial<HardwareSettingsProfile>;
 }
 
