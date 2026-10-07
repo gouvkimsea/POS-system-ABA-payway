@@ -205,10 +205,17 @@ function DashboardContent() {
 
         <div className="flex items-center gap-3 self-end md:self-auto">
           <a
-            href="/pos"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-xs transition-colors"
+            href="/inventory"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold shadow-xs transition-colors"
           >
-            <span>Open POS Register &rarr;</span>
+            <span>📦 Inventory &amp; Catalog</span>
+          </a>
+
+          <a
+            href="/pos"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-xs transition-colors"
+          >
+            <span>🛒 Open POS &rarr;</span>
           </a>
 
           <Button

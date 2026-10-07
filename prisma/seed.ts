@@ -294,6 +294,20 @@ async function main() {
       code: 'LOC-FLOOR-01',
       description: 'Primary merchandise floor display shelves',
       isDefault: true,
+      isActive: true,
+    },
+  });
+
+  const whLocation = await prisma.inventoryLocation.upsert({
+    where: { storeId_code: { storeId: store.id, code: 'LOC-WH-01' } },
+    update: {},
+    create: {
+      storeId: store.id,
+      name: 'Central Stockroom & Warehouse',
+      code: 'LOC-WH-01',
+      description: 'Reserve inventory storage and receiving warehouse',
+      isDefault: false,
+      isActive: true,
     },
   });
 
@@ -393,14 +407,26 @@ async function main() {
     ),
   );
 
-  // 10. Brands & Supplier
+  // 10. Brands & Suppliers
   const brandAngkor = await prisma.brand.upsert({
     where: { businessId_name: { businessId: business.id, name: 'Angkor Brands' } },
     update: {},
-    create: { businessId: business.id, name: 'Angkor Brands' },
+    create: { businessId: business.id, name: 'Angkor Brands', description: 'Cambodian Local Premium Brands' },
   });
 
-  const supplier = await prisma.supplier.upsert({
+  const brandNestle = await prisma.brand.upsert({
+    where: { businessId_name: { businessId: business.id, name: 'Nestle Cambodia' } },
+    update: {},
+    create: { businessId: business.id, name: 'Nestle Cambodia', description: 'Global Food & Beverage Manufacturer' },
+  });
+
+  const brandUnilever = await prisma.brand.upsert({
+    where: { businessId_name: { businessId: business.id, name: 'Unilever Cambodia' } },
+    update: {},
+    create: { businessId: business.id, name: 'Unilever Cambodia', description: 'Consumer Goods & Personal Care' },
+  });
+
+  const supplierFMCG = await prisma.supplier.upsert({
     where: { id: 'supp-fmcg-01' },
     update: {},
     create: {
@@ -414,134 +440,198 @@ async function main() {
     },
   });
 
+  const supplierBev = await prisma.supplier.upsert({
+    where: { id: 'supp-bev-02' },
+    update: {},
+    create: {
+      id: 'supp-bev-02',
+      businessId: business.id,
+      name: 'Cambodia Beverage Distribution Co',
+      contactPerson: 'Ms. Rachana Keo',
+      phone: '+855 23 999 111',
+      email: 'supply@cambodiabev.com',
+      address: 'Chamkar Mon, Phnom Penh',
+    },
+  });
+
   // 11. Products & Stock Inventory
   const productsData = [
     {
       name: 'Cambodia Premium Lager Beer 330ml Can',
+      nameKhmer: 'ស្រាបៀរកម្ពុជា កំប៉ុង ៣៣០មីលីលីត្រ',
       sku: 'BEV-CAM-330',
       barcode: '8840001001',
       cost: 0.65,
       sellUSD: 1.0,
       sellKHR: 4100,
       catId: categories[0].id,
-      stock: 150,
+      brandId: brandAngkor.id,
+      supplierId: supplierBev.id,
+      floorStock: 150,
+      whStock: 100,
+      reorderLevel: 20,
       unit: 'can',
       imageUrl:
         'https://images.unsplash.com/photo-1608270191599-4c60f2526e9a?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Angkor Beer Can 330ml',
+      nameKhmer: 'ស្រាបៀរអង្គរ កំប៉ុង ៣៣០មីលីលីត្រ',
       sku: 'BEV-ANG-330',
       barcode: '8840001002',
       cost: 0.65,
       sellUSD: 1.0,
       sellKHR: 4100,
       catId: categories[0].id,
-      stock: 120,
+      brandId: brandAngkor.id,
+      supplierId: supplierBev.id,
+      floorStock: 120,
+      whStock: 80,
+      reorderLevel: 15,
       unit: 'can',
       imageUrl:
         'https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Coca-Cola Classic 330ml Can',
+      nameKhmer: 'កូកាកូឡា កំប៉ុង ៣៣០មីលីលីត្រ',
       sku: 'BEV-COKE-330',
       barcode: '8840001003',
       cost: 0.4,
       sellUSD: 0.75,
       sellKHR: 3100,
       catId: categories[0].id,
-      stock: 200,
+      brandId: brandNestle.id,
+      supplierId: supplierBev.id,
+      floorStock: 200,
+      whStock: 150,
+      reorderLevel: 30,
       unit: 'can',
       imageUrl:
         'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Kulen Natural Mineral Water 500ml',
+      nameKhmer: 'ទឹកបរិសុទ្ធធម្មជាតិគូលែន ៥០០មីលីលីត្រ',
       sku: 'BEV-WAT-500',
       barcode: '8840001004',
       cost: 0.25,
       sellUSD: 0.5,
       sellKHR: 2050,
       catId: categories[0].id,
-      stock: 300,
+      brandId: brandAngkor.id,
+      supplierId: supplierBev.id,
+      floorStock: 300,
+      whStock: 250,
+      reorderLevel: 40,
       unit: 'bottle',
       imageUrl:
         'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Pringles Sour Cream & Onion 107g',
+      nameKhmer: 'ដំឡូងបារាំងព្រីងហ្គល រសជាតិខ្ទឹមបារាំង ១០៧ក្រាម',
       sku: 'SNK-PRING-107',
       barcode: '8840002001',
       cost: 1.4,
       sellUSD: 2.2,
       sellKHR: 9000,
       catId: categories[1].id,
-      stock: 65,
+      brandId: brandNestle.id,
+      supplierId: supplierFMCG.id,
+      floorStock: 65,
+      whStock: 45,
+      reorderLevel: 10,
       unit: 'can',
       imageUrl:
         'https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: "Lay's Classic Salted Potato Chips 50g",
+      nameKhmer: 'ដំឡូងបារាំងឡេស ប្រៃ ៥០ក្រាម',
       sku: 'SNK-LAYS-50',
       barcode: '8840002002',
       cost: 0.7,
       sellUSD: 1.2,
       sellKHR: 4900,
       catId: categories[1].id,
-      stock: 80,
+      brandId: brandNestle.id,
+      supplierId: supplierFMCG.id,
+      floorStock: 80,
+      whStock: 50,
+      reorderLevel: 12,
       unit: 'pack',
       imageUrl:
         'https://images.unsplash.com/photo-1527842891421-42eec6e703ea?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Anchor Salted Pure Butter 227g',
+      nameKhmer: 'ប័រប្រៃអានខ័រ ២២៧ក្រាម',
       sku: 'DRY-ANCH-227',
       barcode: '8840003001',
       cost: 2.6,
       sellUSD: 3.8,
       sellKHR: 15600,
       catId: categories[2].id,
-      stock: 40,
+      brandId: brandAngkor.id,
+      supplierId: supplierFMCG.id,
+      floorStock: 40,
+      whStock: 30,
+      reorderLevel: 8,
       unit: 'block',
       imageUrl:
         'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Meiji Fresh Milk 946ml',
+      nameKhmer: 'ទឹកដោះគោស្រស់មេជី ៩៤៦មីលីលីត្រ',
       sku: 'DRY-MEIJ-946',
       barcode: '8840003002',
       cost: 2.1,
       sellUSD: 3.1,
       sellKHR: 12700,
       catId: categories[2].id,
-      stock: 35,
+      brandId: brandNestle.id,
+      supplierId: supplierFMCG.id,
+      floorStock: 35,
+      whStock: 25,
+      reorderLevel: 10,
       unit: 'bottle',
       imageUrl:
         'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Colgate Total 12 Clean Mint Toothpaste 150g',
+      nameKhmer: 'ថ្នាំដុសធ្មេញកុលហ្គេត ខូលក្លីន មិន ១៥០ក្រាម',
       sku: 'HOU-COLG-150',
       barcode: '8840004001',
       cost: 1.8,
       sellUSD: 2.8,
       sellKHR: 11500,
       catId: categories[3].id,
-      stock: 50,
+      brandId: brandUnilever.id,
+      supplierId: supplierFMCG.id,
+      floorStock: 50,
+      whStock: 40,
+      reorderLevel: 10,
       unit: 'tube',
       imageUrl:
         'https://images.unsplash.com/photo-1559591937-e62fb330bc1f?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Dettol Original Antibacterial Soap 100g',
+      nameKhmer: 'សាប៊ូដេតថល កម្ចាត់មេរោគ ១០០ក្រាម',
       sku: 'HOU-DETT-100',
       barcode: '8840004002',
       cost: 0.8,
       sellUSD: 1.4,
       sellKHR: 5700,
       catId: categories[3].id,
-      stock: 90,
+      brandId: brandUnilever.id,
+      supplierId: supplierFMCG.id,
+      floorStock: 90,
+      whStock: 60,
+      reorderLevel: 15,
       unit: 'bar',
       imageUrl:
         'https://images.unsplash.com/photo-1607006314592-d610df1fc08c?auto=format&fit=crop&w=400&q=80',
@@ -552,17 +642,22 @@ async function main() {
     const product = await prisma.product.upsert({
       where: { businessId_sku: { businessId: business.id, sku: item.sku } },
       update: {
+        nameKhmer: item.nameKhmer,
+        reorderLevel: item.reorderLevel,
         imageUrl: item.imageUrl,
         costPriceUSD: item.cost,
         sellingPriceUSD: item.sellUSD,
         sellingPriceKHR: item.sellKHR,
+        brandId: item.brandId,
+        supplierId: item.supplierId,
       },
       create: {
         businessId: business.id,
         categoryId: item.catId,
-        brandId: brandAngkor.id,
-        supplierId: supplier.id,
+        brandId: item.brandId,
+        supplierId: item.supplierId,
         name: item.name,
+        nameKhmer: item.nameKhmer,
         sku: item.sku,
         barcode: item.barcode,
         costPriceUSD: item.cost,
@@ -571,14 +666,16 @@ async function main() {
         taxRate: 0.1,
         isTaxInclusive: true,
         trackInventory: true,
+        alertLowStock: item.reorderLevel,
+        reorderLevel: item.reorderLevel,
         unit: item.unit,
         imageUrl: item.imageUrl,
         isActive: true,
       },
     });
 
-    // Populate inventory quantity
-    const existingInv = await prisma.inventory.findFirst({
+    // Populate inventory quantity for floor location
+    const existingFloorInv = await prisma.inventory.findFirst({
       where: {
         storeId: store.id,
         locationId: location.id,
@@ -587,10 +684,10 @@ async function main() {
       },
     });
 
-    if (existingInv) {
+    if (existingFloorInv) {
       await prisma.inventory.update({
-        where: { id: existingInv.id },
-        data: { quantity: item.stock },
+        where: { id: existingFloorInv.id },
+        data: { quantity: item.floorStock, minStockLevel: item.reorderLevel },
       });
     } else {
       await prisma.inventory.create({
@@ -599,13 +696,287 @@ async function main() {
           locationId: location.id,
           productId: product.id,
           variantId: null,
-          quantity: item.stock,
-          minStockLevel: 10,
+          quantity: item.floorStock,
+          minStockLevel: item.reorderLevel,
+        },
+      });
+
+      // Audit movement record
+      await prisma.stockMovement.create({
+        data: {
+          storeId: store.id,
+          locationId: location.id,
+          productId: product.id,
+          type: 'PURCHASE',
+          quantityChange: item.floorStock,
+          quantityBefore: 0,
+          quantityAfter: item.floorStock,
+          unitCost: item.cost,
+          referenceType: 'PURCHASE_ORDER',
+          referenceId: 'PO-INIT-001',
+          notes: 'Initial purchase shipment received on sales floor',
+          createdById: adminUser.id,
+        },
+      });
+    }
+
+    // Populate inventory for warehouse location
+    const existingWhInv = await prisma.inventory.findFirst({
+      where: {
+        storeId: store.id,
+        locationId: whLocation.id,
+        productId: product.id,
+        variantId: null,
+      },
+    });
+
+    if (existingWhInv) {
+      await prisma.inventory.update({
+        where: { id: existingWhInv.id },
+        data: { quantity: item.whStock, minStockLevel: item.reorderLevel },
+      });
+    } else {
+      await prisma.inventory.create({
+        data: {
+          storeId: store.id,
+          locationId: whLocation.id,
+          productId: product.id,
+          variantId: null,
+          quantity: item.whStock,
+          minStockLevel: item.reorderLevel,
+        },
+      });
+
+      await prisma.stockMovement.create({
+        data: {
+          storeId: store.id,
+          locationId: whLocation.id,
+          productId: product.id,
+          type: 'PURCHASE',
+          quantityChange: item.whStock,
+          quantityBefore: 0,
+          quantityAfter: item.whStock,
+          unitCost: item.cost,
+          referenceType: 'PURCHASE_ORDER',
+          referenceId: 'PO-INIT-001',
+          notes: 'Initial warehouse reserve shipment received',
+          createdById: adminUser.id,
         },
       });
     }
   }
-  console.log(`[Seed] Products seeded with active inventory: ${productsData.length} items`);
+
+  // 11b. Product with Variants (Apparel / Uniform Polo Shirt)
+  const apparelProduct = await prisma.product.upsert({
+    where: { businessId_sku: { businessId: business.id, sku: 'APP-POLO-CLASSIC' } },
+    update: {
+      nameKhmer: 'អាវប៉ូឡូប្រណិត ដៃខ្លី',
+      reorderLevel: 5,
+    },
+    create: {
+      businessId: business.id,
+      categoryId: categories[3].id,
+      brandId: brandAngkor.id,
+      supplierId: supplierFMCG.id,
+      name: 'Angkor Classic 100% Cotton Polo Shirt',
+      nameKhmer: 'អាវប៉ូឡូប្រណិត ដៃខ្លី',
+      sku: 'APP-POLO-CLASSIC',
+      barcode: '8840009000',
+      description: 'Premium combed cotton embroidered staff and retail polo shirt',
+      costPriceUSD: 5.5,
+      sellingPriceUSD: 12.0,
+      sellingPriceKHR: 49200,
+      taxRate: 0.1,
+      isTaxInclusive: true,
+      trackInventory: true,
+      alertLowStock: 5,
+      reorderLevel: 5,
+      unit: 'pcs',
+      imageUrl: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=400&q=80',
+      isActive: true,
+    },
+  });
+
+  const variantsData = [
+    {
+      name: 'Size M / Navy Blue',
+      sku: 'POLO-BLU-M',
+      barcode: '8840009001',
+      size: 'M',
+      color: 'Navy Blue',
+      model: 'Classic-2026',
+      weight: '0.25kg',
+      cost: 5.5,
+      sellUSD: 12.0,
+      sellKHR: 49200,
+      floorStock: 25,
+      whStock: 15,
+    },
+    {
+      name: 'Size L / Navy Blue',
+      sku: 'POLO-BLU-L',
+      barcode: '8840009002',
+      size: 'L',
+      color: 'Navy Blue',
+      model: 'Classic-2026',
+      weight: '0.28kg',
+      cost: 5.5,
+      sellUSD: 12.0,
+      sellKHR: 49200,
+      floorStock: 20,
+      whStock: 20,
+    },
+    {
+      name: 'Size M / Pure White',
+      sku: 'POLO-WHT-M',
+      barcode: '8840009003',
+      size: 'M',
+      color: 'Pure White',
+      model: 'Classic-2026',
+      weight: '0.25kg',
+      cost: 5.5,
+      sellUSD: 12.0,
+      sellKHR: 49200,
+      floorStock: 18,
+      whStock: 12,
+    },
+    {
+      name: 'Size XL / Charcoal Grey',
+      sku: 'POLO-GRY-XL',
+      barcode: '8840009004',
+      size: 'XL',
+      color: 'Charcoal Grey',
+      model: 'Classic-2026',
+      weight: '0.30kg',
+      cost: 5.5,
+      sellUSD: 12.0,
+      sellKHR: 49200,
+      floorStock: 15,
+      whStock: 10,
+    },
+  ];
+
+  for (const v of variantsData) {
+    const variant = await prisma.productVariant.upsert({
+      where: { productId_sku: { productId: apparelProduct.id, sku: v.sku } },
+      update: {
+        barcode: v.barcode,
+        size: v.size,
+        color: v.color,
+        model: v.model,
+        weight: v.weight,
+        costPriceUSD: v.cost,
+        sellingPriceUSD: v.sellUSD,
+        sellingPriceKHR: v.sellKHR,
+      },
+      create: {
+        productId: apparelProduct.id,
+        name: v.name,
+        sku: v.sku,
+        barcode: v.barcode,
+        size: v.size,
+        color: v.color,
+        model: v.model,
+        weight: v.weight,
+        costPriceUSD: v.cost,
+        sellingPriceUSD: v.sellUSD,
+        sellingPriceKHR: v.sellKHR,
+        isActive: true,
+      },
+    });
+
+    const existingFloorVarInv = await prisma.inventory.findFirst({
+      where: {
+        storeId: store.id,
+        locationId: location.id,
+        productId: apparelProduct.id,
+        variantId: variant.id,
+      },
+    });
+
+    if (existingFloorVarInv) {
+      await prisma.inventory.update({
+        where: { id: existingFloorVarInv.id },
+        data: { quantity: v.floorStock },
+      });
+    } else {
+      await prisma.inventory.create({
+        data: {
+          storeId: store.id,
+          locationId: location.id,
+          productId: apparelProduct.id,
+          variantId: variant.id,
+          quantity: v.floorStock,
+          minStockLevel: 5,
+        },
+      });
+
+      await prisma.stockMovement.create({
+        data: {
+          storeId: store.id,
+          locationId: location.id,
+          productId: apparelProduct.id,
+          variantId: variant.id,
+          type: 'PURCHASE',
+          quantityChange: v.floorStock,
+          quantityBefore: 0,
+          quantityAfter: v.floorStock,
+          unitCost: v.cost,
+          referenceType: 'PURCHASE_ORDER',
+          referenceId: 'PO-APPAREL-001',
+          notes: 'Initial polo apparel batch receipt on sales floor',
+          createdById: adminUser.id,
+        },
+      });
+    }
+
+    const existingWhVarInv = await prisma.inventory.findFirst({
+      where: {
+        storeId: store.id,
+        locationId: whLocation.id,
+        productId: apparelProduct.id,
+        variantId: variant.id,
+      },
+    });
+
+    if (existingWhVarInv) {
+      await prisma.inventory.update({
+        where: { id: existingWhVarInv.id },
+        data: { quantity: v.whStock },
+      });
+    } else {
+      await prisma.inventory.create({
+        data: {
+          storeId: store.id,
+          locationId: whLocation.id,
+          productId: apparelProduct.id,
+          variantId: variant.id,
+          quantity: v.whStock,
+          minStockLevel: 5,
+        },
+      });
+
+      await prisma.stockMovement.create({
+        data: {
+          storeId: store.id,
+          locationId: whLocation.id,
+          productId: apparelProduct.id,
+          variantId: variant.id,
+          type: 'PURCHASE',
+          quantityChange: v.whStock,
+          quantityBefore: 0,
+          quantityAfter: v.whStock,
+          unitCost: v.cost,
+          referenceType: 'PURCHASE_ORDER',
+          referenceId: 'PO-APPAREL-001',
+          notes: 'Initial polo apparel batch receipt in warehouse',
+          createdById: adminUser.id,
+        },
+      });
+    }
+  }
+
+  console.log(`[Seed] Products & Variants seeded with multi-location stock & audit movements`);
 
   // 12. Customers
   const customersData = [

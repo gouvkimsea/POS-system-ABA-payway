@@ -39,12 +39,14 @@ enum CashMovementType {
 enum StockMovementType {
   SALE
   REFUND
+  RETURN
   PURCHASE
   ADJUSTMENT_IN
   ADJUSTMENT_OUT
   TRANSFER_IN
   TRANSFER_OUT
   DAMAGE
+  EXPIRED
 }
 
 enum OrderStatus {
@@ -372,6 +374,7 @@ model Product {
   brandId         String?
   supplierId      String?
   name            String
+  nameKhmer       String?
   sku             String
   barcode         String?
   description     String?
@@ -382,6 +385,7 @@ model Product {
   isTaxInclusive  Boolean   @default(true)
   trackInventory  Boolean   @default(true)
   alertLowStock   Int       @default(5)
+  reorderLevel    Int       @default(5)
   unit            String    @default("pcs")
   imageUrl        String?
   isActive        Boolean   @default(true)
@@ -417,6 +421,11 @@ model ProductVariant {
   costPriceUSD    Decimal   @default(0.00) @db.Decimal(12, 2)
   sellingPriceUSD Decimal   @default(0.00) @db.Decimal(12, 2)
   sellingPriceKHR Decimal   @default(0.00) @db.Decimal(12, 2)
+  size            String?
+  color           String?
+  weight          String?
+  model           String?
+  attributes      Json?
   isActive        Boolean   @default(true)
   deletedAt       DateTime?
   createdAt       DateTime  @default(now())
@@ -446,6 +455,7 @@ model InventoryLocation {
   code        String
   description String?
   isDefault   Boolean  @default(false)
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

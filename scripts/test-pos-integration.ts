@@ -241,12 +241,13 @@ async function runTests() {
     assert(!!dbOrder?.receipt, 'Receipt record stored in PostgreSQL');
 
     // 11. Verify Inventory Decrement
-    const updatedInv = await prisma.inventory.findFirst({
+    const updatedInvs = await prisma.inventory.findMany({
       where: { productId: prod1.id },
     });
+    const currentTotalStock = updatedInvs.reduce((acc, i) => acc + Number(i.quantity), 0);
     assert(
-      Number(updatedInv?.quantity) === initialStock - 2,
-      `Inventory quantity decremented in DB from ${initialStock} to ${Number(updatedInv?.quantity)}`,
+      currentTotalStock === initialStock - 2,
+      `Total store inventory quantity decremented in DB from ${initialStock} to ${currentTotalStock}`,
     );
 
     // 12. Verify Stock Movement Audit

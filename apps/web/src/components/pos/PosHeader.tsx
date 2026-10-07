@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { AuthUser } from '@pos/types';
 import {
   Clock,
@@ -13,6 +14,7 @@ import {
   LogOut,
   Store as StoreIcon,
   ShoppingBag,
+  Package,
 } from 'lucide-react';
 
 interface PosHeaderProps {
@@ -133,6 +135,16 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
             </span>
           )}
         </button>
+
+        {/* Inventory Management */}
+        <Link
+          href="/inventory"
+          className="p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/50 transition-colors flex items-center gap-1.5"
+          title="Open Product & Inventory Management"
+        >
+          <Package className="w-4 h-4" />
+          <span className="hidden md:inline">Inventory</span>
+        </Link>
 
         {/* Shortcuts Helper */}
         <button

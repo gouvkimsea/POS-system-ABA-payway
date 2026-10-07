@@ -297,3 +297,237 @@ export interface HeldOrderSummary {
   notes?: string | null;
   items: PosCartItem[];
 }
+
+// ------------------------------------------------------------------------------
+// CATALOG & INVENTORY MANAGEMENT CONTRACTS
+// ------------------------------------------------------------------------------
+
+export type StockMovementTypeEnum =
+  | 'SALE'
+  | 'REFUND'
+  | 'RETURN'
+  | 'PURCHASE'
+  | 'ADJUSTMENT_IN'
+  | 'ADJUSTMENT_OUT'
+  | 'TRANSFER_IN'
+  | 'TRANSFER_OUT'
+  | 'DAMAGE'
+  | 'EXPIRED';
+
+export interface ProductVariantRecord {
+  id: string;
+  productId: string;
+  name: string;
+  sku: string;
+  barcode: string | null;
+  costPriceUSD: number;
+  sellingPriceUSD: number;
+  sellingPriceKHR: number;
+  size: string | null;
+  color: string | null;
+  weight: string | null;
+  model: string | null;
+  attributes?: Record<string, any> | null;
+  isActive: boolean;
+  stockQuantity: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductRecord {
+  id: string;
+  businessId: string;
+  name: string;
+  nameKhmer: string | null;
+  sku: string;
+  barcode: string | null;
+  description: string | null;
+  categoryId: string | null;
+  categoryName?: string | null;
+  brandId: string | null;
+  brandName?: string | null;
+  supplierId: string | null;
+  supplierName?: string | null;
+  costPriceUSD: number;
+  sellingPriceUSD: number;
+  sellingPriceKHR: number;
+  taxRate: number;
+  isTaxInclusive: boolean;
+  trackInventory: boolean;
+  alertLowStock: number;
+  reorderLevel: number;
+  unit: string;
+  imageUrl: string | null;
+  isActive: boolean;
+  stockQuantity: number;
+  isLowStock: boolean;
+  variants: ProductVariantRecord[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CategoryRecord {
+  id: string;
+  businessId: string;
+  name: string;
+  code: string | null;
+  parentId: string | null;
+  color: string | null;
+  icon: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  productCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BrandRecord {
+  id: string;
+  businessId: string;
+  name: string;
+  description: string | null;
+  isActive: boolean;
+  productCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SupplierRecord {
+  id: string;
+  businessId: string;
+  name: string;
+  contactPerson: string | null;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  taxId: string | null;
+  isActive: boolean;
+  productCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InventoryLocationRecord {
+  id: string;
+  storeId: string;
+  name: string;
+  code: string;
+  description: string | null;
+  isDefault: boolean;
+  isActive: boolean;
+  totalItems?: number;
+  totalQuantity?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StockLevelRecord {
+  id: string;
+  storeId: string;
+  storeName?: string;
+  locationId: string;
+  locationName: string;
+  productId: string;
+  productName: string;
+  productNameKhmer?: string | null;
+  productSku: string;
+  productBarcode: string | null;
+  variantId: string | null;
+  variantName: string | null;
+  variantSku?: string | null;
+  quantity: number;
+  reservedQuantity: number;
+  availableQuantity: number;
+  minStockLevel: number;
+  reorderLevel: number;
+  maxStockLevel: number | null;
+  isLowStock: boolean;
+  updatedAt: string;
+}
+
+export interface StockMovementRecord {
+  id: string;
+  storeId: string;
+  locationId: string;
+  locationName: string;
+  productId: string;
+  productName: string;
+  productSku: string;
+  variantId: string | null;
+  variantName: string | null;
+  type: StockMovementTypeEnum;
+  quantityChange: number;
+  quantityBefore: number;
+  quantityAfter: number;
+  unitCost: number;
+  referenceType: string;
+  referenceId: string | null;
+  notes: string;
+  createdById: string;
+  createdByName?: string;
+  createdAt: string;
+}
+
+export interface StockAdjustmentInput {
+  storeId?: string;
+  locationId: string;
+  productId: string;
+  variantId?: string | null;
+  type: 'PURCHASE' | 'RETURN' | 'ADJUSTMENT_IN' | 'ADJUSTMENT_OUT' | 'DAMAGE' | 'EXPIRED';
+  quantityChange: number;
+  unitCost?: number;
+  reason: string; // Mandatory reason
+  referenceType?: string;
+  referenceId?: string;
+}
+
+export interface StockTransferInput {
+  storeId?: string;
+  fromLocationId: string;
+  toLocationId: string;
+  productId: string;
+  variantId?: string | null;
+  quantity: number;
+  reason: string; // Mandatory reason
+}
+
+export interface CreateProductInput {
+  name: string;
+  nameKhmer?: string;
+  sku: string;
+  barcode?: string;
+  categoryId?: string | null;
+  brandId?: string | null;
+  supplierId?: string | null;
+  description?: string;
+  costPriceUSD: number;
+  sellingPriceUSD: number;
+  sellingPriceKHR?: number;
+  taxRate?: number;
+  isTaxInclusive?: boolean;
+  trackInventory?: boolean;
+  alertLowStock?: number;
+  reorderLevel?: number;
+  unit?: string;
+  imageUrl?: string;
+  isActive?: boolean;
+  initialStock?: number;
+  initialLocationId?: string;
+}
+
+export interface CreateVariantInput {
+  name: string;
+  sku: string;
+  barcode?: string;
+  size?: string;
+  color?: string;
+  weight?: string;
+  model?: string;
+  costPriceUSD: number;
+  sellingPriceUSD: number;
+  sellingPriceKHR?: number;
+  isActive?: boolean;
+  initialStock?: number;
+  initialLocationId?: string;
+}
+
