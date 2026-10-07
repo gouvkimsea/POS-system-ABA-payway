@@ -423,10 +423,13 @@ function PosTerminalContent() {
       amountKHR: number;
       tenderAmountUSD: number;
       tenderAmountKHR: number;
+      transactionRef?: string;
     }[],
   ) => {
+    if (isProcessingPayment) return;
     setIsProcessingPayment(true);
     try {
+      const idempotencyKey = `pos-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
       const payload = {
         storeId: initData?.store.id,
         registerId: initData?.register.id,
@@ -439,13 +442,15 @@ function PosTerminalContent() {
         })),
         discountUSD,
         payments,
-        notes: 'Checkout completed',
+        idempotencyKey,
+        notes: 'Checkout completed via POS register',
       };
 
       const res = await fetch(`${apiUrl}/pos/checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKey,
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),

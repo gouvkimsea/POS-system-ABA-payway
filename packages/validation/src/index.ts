@@ -65,8 +65,9 @@ export type ResetPasswordInput = z.infer<typeof resetPasswordInputSchema>;
 
 export const checkoutItemSchema = z.object({
   productId: z.string().min(1, 'Product ID is required'),
+  variantId: z.string().nullable().optional(),
   quantity: z.number().positive('Quantity must be greater than zero'),
-  unitPriceUSD: z.number().min(0, 'Unit price must be non-negative'),
+  unitPriceUSD: z.number().min(0, 'Unit price must be non-negative').optional(),
   discountUSD: z.number().min(0).optional().default(0),
   notes: z.string().optional(),
 });
@@ -74,9 +75,11 @@ export const checkoutItemSchema = z.object({
 export const checkoutPaymentSchema = z.object({
   paymentMethodCode: z.string().min(1, 'Payment method code is required'),
   amountUSD: z.number().min(0),
-  amountKHR: z.number().min(0),
+  amountKHR: z.number().min(0).optional().default(0),
   tenderAmountUSD: z.number().min(0).optional().default(0),
   tenderAmountKHR: z.number().min(0).optional().default(0),
+  transactionRef: z.string().trim().optional(),
+  metadata: z.record(z.any()).optional(),
 });
 
 export const checkoutInputSchema = z.object({
@@ -88,9 +91,54 @@ export const checkoutInputSchema = z.object({
   discountUSD: z.number().min(0).optional().default(0),
   payments: z.array(checkoutPaymentSchema).min(1, 'At least one payment method is required'),
   notes: z.string().optional(),
+  idempotencyKey: z.string().min(1).optional(),
+  allowPartialPayment: z.boolean().optional().default(false),
 });
 
 export type CheckoutInputSchemaType = z.infer<typeof checkoutInputSchema>;
+
+export const orderCalculationItemSchema = z.object({
+  productId: z.string().min(1, 'Product ID is required'),
+  variantId: z.string().nullable().optional(),
+  quantity: z.number().positive('Quantity must be greater than zero'),
+  discountUSD: z.number().min(0).optional().default(0),
+});
+
+export const orderCalculationSchema = z.object({
+  storeId: z.string().optional(),
+  items: z.array(orderCalculationItemSchema).min(1, 'At least one item is required'),
+  discountCode: z.string().optional(),
+  discountUSD: z.number().min(0).optional().default(0),
+});
+
+export type OrderCalculationSchemaType = z.infer<typeof orderCalculationSchema>;
+
+export const addPaymentSchema = z.object({
+  payment: checkoutPaymentSchema,
+  idempotencyKey: z.string().min(1).optional(),
+});
+
+export type AddPaymentSchemaType = z.infer<typeof addPaymentSchema>;
+
+export const voidOrderSchema = z.object({
+  reason: z.string().min(3, 'Void reason must be at least 3 characters').trim(),
+});
+
+export type VoidOrderSchemaType = z.infer<typeof voidOrderSchema>;
+
+export const refundOrderSchema = z.object({
+  amountUSD: z.number().positive('Refund amount must be positive'),
+  reason: z.string().min(3, 'Refund reason must be at least 3 characters').trim(),
+  returnToInventory: z.boolean().optional().default(true),
+});
+
+export type RefundOrderSchemaType = z.infer<typeof refundOrderSchema>;
+
+export const cancelOrderSchema = z.object({
+  reason: z.string().min(3, 'Cancellation reason must be at least 3 characters').trim(),
+});
+
+export type CancelOrderSchemaType = z.infer<typeof cancelOrderSchema>;
 
 export const createCustomerInputSchema = z.object({
   name: z.string().min(1, 'Customer name is required').trim(),

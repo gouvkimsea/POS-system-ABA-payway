@@ -23,7 +23,8 @@
     "test:connections": "tsx scripts/test-connections.ts",
     "test:auth": "tsx scripts/test-auth-integration.ts",
     "test:pos": "tsx scripts/test-pos-integration.ts",
-    "test:inventory": "tsx scripts/test-inventory-integration.ts"
+    "test:inventory": "tsx scripts/test-inventory-integration.ts",
+    "test:transactions": "tsx scripts/test-transaction-engine.ts"
   },
   "devDependencies": {
     "@prisma/client": "^5.22.0",

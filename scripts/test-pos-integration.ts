@@ -235,7 +235,7 @@ async function runTests() {
       where: { id: orderData.orderId },
       include: { items: true, payments: true, receipt: true },
     });
-    assert(dbOrder?.status === 'COMPLETED', 'Order status is COMPLETED in PostgreSQL');
+    assert(dbOrder?.status === 'PAID' || dbOrder?.status === 'COMPLETED', 'Order status is PAID in PostgreSQL');
     assert(dbOrder?.items?.length === 1, 'OrderItem stored in PostgreSQL');
     assert(dbOrder?.payments?.length === 1, 'Payment record stored in PostgreSQL');
     assert(!!dbOrder?.receipt, 'Receipt record stored in PostgreSQL');

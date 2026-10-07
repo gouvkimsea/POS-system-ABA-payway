@@ -2,7 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { PosCustomer, PosPaymentMethod } from '@pos/types';
-import { X, CreditCard, Banknote, QrCode, Check, AlertCircle, Sparkles } from 'lucide-react';
+import {
+  X,
+  CreditCard,
+  Banknote,
+  QrCode,
+  Check,
+  AlertCircle,
+  Sparkles,
+  Landmark,
+  Gift,
+} from 'lucide-react';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -18,6 +28,7 @@ interface PaymentModalProps {
       amountKHR: number;
       tenderAmountUSD: number;
       tenderAmountKHR: number;
+      transactionRef?: string;
     }[],
   ) => Promise<void>;
   isProcessing: boolean;
@@ -35,16 +46,19 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 }) => {
   const [selectedMethodCode, setSelectedMethodCode] = useState<string>('CASH');
   const [tenderUSD, setTenderUSD] = useState<string>('');
+  const [transactionRef, setTransactionRef] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Set default tender amount when opened
   useEffect(() => {
     if (isOpen) {
       setSelectedMethodCode('CASH');
-      // Suggest nearest bill (e.g. $7.60 -> $10.00)
       const roundedUp = Math.ceil(totalUSD / 5) * 5 || totalUSD;
       setTenderUSD(roundedUp.toFixed(2));
+      setTransactionRef('');
       setError(null);
+      setIsSubmitting(false);
     }
   }, [isOpen, totalUSD]);
 
@@ -63,49 +77,95 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     { label: '$100', value: 100 },
   ];
 
-  const handleCashSubmit = async (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (isProcessing || isSubmitting) return; // Prevent double-click race condition
+
     setError(null);
+    setIsSubmitting(true);
 
-    if (selectedMethodCode === 'CASH') {
-      if (!isTenderSufficient) {
-        setError(
-          `Tendered amount ($${tenderNum.toFixed(2)}) is less than total due ($${totalUSD.toFixed(2)})`,
-        );
-        return;
+    try {
+      if (selectedMethodCode === 'CASH') {
+        if (!isTenderSufficient) {
+          setError(
+            `Tendered amount ($${tenderNum.toFixed(2)}) is less than total due ($${totalUSD.toFixed(2)})`,
+          );
+          setIsSubmitting(false);
+          return;
+        }
+
+        await onCompleteCheckout([
+          {
+            paymentMethodCode: 'CASH',
+            amountUSD: totalUSD,
+            amountKHR: 0,
+            tenderAmountUSD: tenderNum,
+            tenderAmountKHR: 0,
+          },
+        ]);
+      } else if (selectedMethodCode === 'KHQR_ABA') {
+        await onCompleteCheckout([
+          {
+            paymentMethodCode: 'KHQR_ABA',
+            amountUSD: totalUSD,
+            amountKHR: totalKHR,
+            tenderAmountUSD: totalUSD,
+            tenderAmountKHR: totalKHR,
+            transactionRef: transactionRef.trim() || undefined,
+          },
+        ]);
+      } else if (selectedMethodCode === 'BANK_TRANSFER') {
+        await onCompleteCheckout([
+          {
+            paymentMethodCode: 'BANK_TRANSFER',
+            amountUSD: totalUSD,
+            amountKHR: totalKHR,
+            tenderAmountUSD: totalUSD,
+            tenderAmountKHR: totalKHR,
+            transactionRef: transactionRef.trim() || undefined,
+          },
+        ]);
+      } else if (selectedMethodCode === 'OTHER') {
+        await onCompleteCheckout([
+          {
+            paymentMethodCode: 'OTHER',
+            amountUSD: totalUSD,
+            amountKHR: 0,
+            tenderAmountUSD: totalUSD,
+            tenderAmountKHR: 0,
+            transactionRef: transactionRef.trim() || undefined,
+          },
+        ]);
+      } else {
+        // CARD
+        await onCompleteCheckout([
+          {
+            paymentMethodCode: 'CARD',
+            amountUSD: totalUSD,
+            amountKHR: 0,
+            tenderAmountUSD: totalUSD,
+            tenderAmountKHR: 0,
+            transactionRef: transactionRef.trim() || undefined,
+          },
+        ]);
       }
-
-      await onCompleteCheckout([
-        {
-          paymentMethodCode: 'CASH',
-          amountUSD: totalUSD,
-          amountKHR: 0,
-          tenderAmountUSD: tenderNum,
-          tenderAmountKHR: 0,
-        },
-      ]);
-    } else if (selectedMethodCode === 'KHQR_ABA') {
-      await onCompleteCheckout([
-        {
-          paymentMethodCode: 'KHQR_ABA',
-          amountUSD: totalUSD,
-          amountKHR: totalKHR,
-          tenderAmountUSD: totalUSD,
-          tenderAmountKHR: totalKHR,
-        },
-      ]);
-    } else {
-      await onCompleteCheckout([
-        {
-          paymentMethodCode: 'CARD',
-          amountUSD: totalUSD,
-          amountKHR: 0,
-          tenderAmountUSD: totalUSD,
-          tenderAmountKHR: 0,
-        },
-      ]);
+    } catch (err: any) {
+      setError(err.message || 'Payment processing failed');
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const methodsList =
+    paymentMethods.length > 0
+      ? paymentMethods
+      : [
+          { id: '1', code: 'CASH', name: 'Cash', type: 'CASH', isDefault: true },
+          { id: '2', code: 'KHQR_ABA', name: 'ABA KHQR', type: 'DIGITAL_QR', isDefault: false },
+          { id: '3', code: 'CARD', name: 'Card', type: 'CARD', isDefault: false },
+          { id: '4', code: 'BANK_TRANSFER', name: 'Bank Transfer', type: 'BANK_TRANSFER', isDefault: false },
+          { id: '5', code: 'OTHER', name: 'Voucher / Other', type: 'OTHER', isDefault: false },
+        ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4">
@@ -137,41 +197,34 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors"
+            disabled={isProcessing || isSubmitting}
+            className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors disabled:opacity-50"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Payment Methods Bar */}
-        <div className="p-3 bg-slate-100 border-b border-slate-200 flex gap-2 shrink-0">
-          {(paymentMethods.length > 0
-            ? paymentMethods
-            : [
-                { id: '1', code: 'CASH', name: 'Cash', type: 'CASH', isDefault: true },
-                {
-                  id: '2',
-                  code: 'KHQR_ABA',
-                  name: 'ABA KHQR',
-                  type: 'DIGITAL_QR',
-                  isDefault: false,
-                },
-                { id: '3', code: 'CARD', name: 'Card', type: 'CARD', isDefault: false },
-              ]
-          ).map((pm) => (
+        <div className="p-3 bg-slate-100 border-b border-slate-200 flex gap-1.5 shrink-0 overflow-x-auto">
+          {methodsList.map((pm) => (
             <button
               key={pm.code}
               type="button"
-              onClick={() => setSelectedMethodCode(pm.code)}
-              className={`flex-1 py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all ${
+              onClick={() => {
+                setSelectedMethodCode(pm.code);
+                setError(null);
+              }}
+              className={`flex-1 py-2.5 px-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
                 selectedMethodCode === pm.code
                   ? 'bg-white text-indigo-700 shadow-xs border border-indigo-200 ring-2 ring-indigo-500/10'
                   : 'text-slate-600 hover:bg-white/60'
               }`}
             >
-              {pm.code === 'CASH' && <Banknote className="w-4 h-4" />}
+              {pm.code === 'CASH' && <Banknote className="w-4 h-4 text-emerald-600" />}
               {pm.code === 'KHQR_ABA' && <QrCode className="w-4 h-4 text-cyan-600" />}
               {pm.code === 'CARD' && <CreditCard className="w-4 h-4 text-blue-600" />}
+              {pm.code === 'BANK_TRANSFER' && <Landmark className="w-4 h-4 text-purple-600" />}
+              {pm.code === 'OTHER' && <Gift className="w-4 h-4 text-amber-600" />}
               <span>{pm.name}</span>
             </button>
           ))}
@@ -189,7 +242,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           {/* CASH MODE */}
           {selectedMethodCode === 'CASH' && (
             <div className="space-y-4">
-              {/* Quick Cash Presets */}
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5">
                   Quick Tender Presets
@@ -208,7 +260,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 </div>
               </div>
 
-              {/* Tendered Input */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Tendered Cash Amount (USD)
@@ -228,7 +279,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 </div>
               </div>
 
-              {/* Real-time Change Output Card */}
               <div
                 className={`p-4 rounded-xl border transition-all ${
                   isTenderSufficient
@@ -275,7 +325,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 </p>
               </div>
 
-              {/* Dynamic QR Box */}
               <div className="p-3 bg-white border-2 border-dashed border-cyan-400 rounded-2xl shadow-sm">
                 <div className="w-44 h-44 bg-slate-900 rounded-xl p-3 flex flex-col items-center justify-center text-white text-center">
                   <QrCode className="w-28 h-28 text-white" />
@@ -287,7 +336,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
               <div className="text-xs text-slate-600 font-mono">
                 Merchant: <span className="font-bold">ANGKOR FRESH MART</span> &bull; $
-                {totalUSD.toFixed(2)}
+                {totalUSD.toFixed(2)} ({totalKHR.toLocaleString()} ៛)
               </div>
             </div>
           )}
@@ -308,25 +357,80 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </div>
             </div>
           )}
+
+          {/* BANK TRANSFER MODE */}
+          {selectedMethodCode === 'BANK_TRANSFER' && (
+            <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+              <div className="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mx-auto">
+                <Landmark className="w-6 h-6" />
+              </div>
+              <div className="text-center">
+                <h4 className="font-bold text-sm text-slate-800">Direct Bank Transfer / Wire</h4>
+                <p className="text-xs text-slate-500">
+                  Verify customer bank transfer confirmation slip.
+                </p>
+              </div>
+              <div className="text-left">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Bank Transfer Reference / Slip #
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. TXN-99881234"
+                  value={transactionRef}
+                  onChange={(e) => setTransactionRef(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono focus:border-indigo-600 focus:outline-none"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* VOUCHER / OTHER MODE */}
+          {selectedMethodCode === 'OTHER' && (
+            <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+              <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto">
+                <Gift className="w-6 h-6" />
+              </div>
+              <div className="text-center">
+                <h4 className="font-bold text-sm text-slate-800">Voucher / Gift Card / Other Tender</h4>
+                <p className="text-xs text-slate-500">
+                  Apply external voucher, promo coupon, or store gift card.
+                </p>
+              </div>
+              <div className="text-left">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Voucher / Coupon Code
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. VOUCH-GIFT-50"
+                  value={transactionRef}
+                  onChange={(e) => setTransactionRef(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono focus:border-indigo-600 focus:outline-none"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Footer Submit Button */}
+        {/* Footer Submit Button with Double-Click Protection */}
         <div className="p-4 bg-white border-t border-slate-200 flex items-center justify-between gap-3 shrink-0">
           <button
             type="button"
+            disabled={isProcessing || isSubmitting}
             onClick={onClose}
-            className="px-4 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold"
+            className="px-4 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold disabled:opacity-50"
           >
             Cancel (ESC)
           </button>
 
           <button
             type="button"
-            disabled={isProcessing || (selectedMethodCode === 'CASH' && !isTenderSufficient)}
-            onClick={() => handleCashSubmit()}
+            disabled={isProcessing || isSubmitting || (selectedMethodCode === 'CASH' && !isTenderSufficient)}
+            onClick={() => handleSubmit()}
             className="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
           >
-            {isProcessing ? (
+            {isProcessing || isSubmitting ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>Processing Transaction...</span>

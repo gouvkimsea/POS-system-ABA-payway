@@ -229,10 +229,37 @@ export interface PosCartItem {
   notes?: string;
 }
 
+export type OrderStatus =
+  | 'PENDING'
+  | 'PAID'
+  | 'PARTIALLY_PAID'
+  | 'COMPLETED'
+  | 'PARTIALLY_REFUNDED'
+  | 'REFUNDED'
+  | 'VOIDED'
+  | 'CANCELLED';
+
+export type PaymentStatus =
+  | 'PENDING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'REFUNDED'
+  | 'VOIDED'
+  | 'CANCELLED';
+
+export type PaymentMethodType =
+  | 'CASH'
+  | 'DIGITAL_QR'
+  | 'CARD'
+  | 'BANK_TRANSFER'
+  | 'CUSTOMER_CREDIT'
+  | 'OTHER';
+
 export interface CheckoutItemInput {
   productId: string;
+  variantId?: string | null;
   quantity: number;
-  unitPriceUSD: number;
+  unitPriceUSD?: number; // Optional on input; validated/enforced by server from catalog
   discountUSD?: number;
   notes?: string;
 }
@@ -240,9 +267,11 @@ export interface CheckoutItemInput {
 export interface CheckoutPaymentInput {
   paymentMethodCode: string;
   amountUSD: number;
-  amountKHR: number;
-  tenderAmountUSD: number;
-  tenderAmountKHR: number;
+  amountKHR?: number;
+  tenderAmountUSD?: number;
+  tenderAmountKHR?: number;
+  transactionRef?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface CheckoutInput {
@@ -254,35 +283,118 @@ export interface CheckoutInput {
   discountUSD?: number;
   payments: CheckoutPaymentInput[];
   notes?: string;
+  idempotencyKey?: string;
+  allowPartialPayment?: boolean;
 }
 
 export interface CheckoutResult {
   orderId: string;
   orderNumber: string;
   receiptNumber: string;
+  status: OrderStatus;
   subtotalUSD: number;
   discountUSD: number;
   taxUSD: number;
+  taxRate: number;
   totalUSD: number;
   totalKHR: number;
   paidUSD: number;
   paidKHR: number;
+  remainingUSD: number;
+  remainingKHR: number;
   changeUSD: number;
   changeKHR: number;
   createdAt: string;
+  idempotencyKey?: string | null;
   customer?: PosCustomer | null;
   items: {
+    productId: string;
+    variantId?: string | null;
+    productName: string;
+    sku: string;
+    barcode?: string | null;
+    quantity: number;
+    unitPriceUSD: number;
+    discountUSD: number;
+    subtotalUSD: number;
+    totalUSD: number;
+    totalKHR: number;
+  }[];
+  payments: {
+    id: string;
+    paymentMethodCode: string;
+    paymentMethodName: string;
+    amountUSD: number;
+    amountKHR: number;
+    tenderAmountUSD: number;
+    tenderAmountKHR: number;
+    changeUSD: number;
+    changeKHR: number;
+    transactionRef?: string | null;
+    status: PaymentStatus;
+  }[];
+  receipt: {
+    id: string;
+    receiptNumber: string;
+    headerText: string | null;
+    footerText: string | null;
+    qrCodeData?: string | null;
+  };
+}
+
+export interface OrderCalculationItemInput {
+  productId: string;
+  variantId?: string | null;
+  quantity: number;
+  discountUSD?: number;
+}
+
+export interface OrderCalculationInput {
+  storeId?: string;
+  items: OrderCalculationItemInput[];
+  discountCode?: string;
+  discountUSD?: number;
+}
+
+export interface OrderCalculationQuote {
+  subtotalUSD: number;
+  orderDiscountUSD: number;
+  taxableAmountUSD: number;
+  taxRate: number;
+  taxUSD: number;
+  totalUSD: number;
+  totalKHR: number;
+  exchangeRateKHR: number;
+  items: {
+    productId: string;
+    variantId?: string | null;
     productName: string;
     sku: string;
     quantity: number;
     unitPriceUSD: number;
-    totalUSD: number;
-    totalKHR: number;
+    lineDiscountUSD: number;
+    lineTotalUSD: number;
+    lineTotalKHR: number;
   }[];
-  receipt: {
-    headerText: string | null;
-    footerText: string | null;
-  };
+}
+
+export interface AddPaymentInput {
+  payment: CheckoutPaymentInput;
+  idempotencyKey?: string;
+}
+
+export interface VoidOrderInput {
+  reason: string;
+}
+
+export interface RefundOrderInput {
+  amountUSD: number;
+  reason: string;
+  returnToInventory?: boolean;
+}
+
+export interface CancelOrderInput {
+  reason: string;
 }
 
 export interface HeldOrderSummary {

@@ -51,6 +51,8 @@ enum StockMovementType {
 
 enum OrderStatus {
   PENDING
+  PAID
+  PARTIALLY_PAID
   COMPLETED
   PARTIALLY_REFUNDED
   REFUNDED
@@ -70,6 +72,7 @@ enum PaymentMethodType {
   CARD
   BANK_TRANSFER
   CUSTOMER_CREDIT
+  OTHER
 }
 
 enum PaymentStatus {
@@ -77,6 +80,8 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+  VOIDED
+  CANCELLED
 }
 
 enum SyncStatus {
@@ -730,6 +735,7 @@ model Order {
   changeKHR         Decimal      @default(0.00) @db.Decimal(12, 2)
 
   notes             String?
+  idempotencyKey    String?      @unique
   offlineSyncId     String?      @unique
   isOfflineCreated  Boolean      @default(false)
   syncedAt          DateTime?
@@ -751,6 +757,7 @@ model Order {
   @@index([businessId])
   @@index([storeId])
   @@index([orderNumber])
+  @@index([idempotencyKey])
   @@index([customerId])
   @@index([sessionId])
   @@index([storeId, createdAt])
@@ -798,6 +805,8 @@ model Payment {
   changeUSD       Decimal       @default(0.00) @db.Decimal(12, 2)
   changeKHR       Decimal       @default(0.00) @db.Decimal(12, 2)
   transactionRef  String?
+  gatewayResponse Json?
+  notes           String?
   status          PaymentStatus @default(COMPLETED)
   createdAt       DateTime      @default(now())
 

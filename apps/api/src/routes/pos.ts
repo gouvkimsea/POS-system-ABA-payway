@@ -2,9 +2,20 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { prisma } from '../db/index.js';
 import { requireAuth, requirePermission } from '../middleware/auth.js';
 import { PERMISSIONS, PosInitData, PosProduct, PosCartItem, HeldOrderSummary } from '@pos/types';
-import { checkoutInputSchema, createCustomerInputSchema } from '@pos/validation';
+import {
+  checkoutInputSchema,
+  createCustomerInputSchema,
+  orderCalculationSchema,
+  addPaymentSchema,
+  voidOrderSchema,
+  refundOrderSchema,
+  cancelOrderSchema,
+} from '@pos/validation';
 import { OrderStatus, StockMovementType, PaymentStatus, Prisma } from '@prisma/client';
 import crypto from 'crypto';
+import { TransactionEngine, TransactionEngineError } from '../services/transaction/TransactionEngine.js';
+import { FinancialCalculator } from '../services/transaction/FinancialCalculator.js';
+import { paymentRegistry } from '../services/payment/PaymentRegistry.js';
 
 export const posRouter: Router = Router();
 
@@ -407,7 +418,7 @@ posRouter.post(
 
 /**
  * POST /api/pos/checkout
- * Process and complete sales transaction
+ * Process and complete sales transaction using TransactionEngine
  */
 posRouter.post(
   '/checkout',
@@ -416,330 +427,399 @@ posRouter.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = req.user!;
-      const parsed = checkoutInputSchema.safeParse(req.body);
+      const headerIdempotencyKey = req.header('idempotency-key');
+      const payload = { ...req.body };
+      if (!payload.idempotencyKey && typeof headerIdempotencyKey === 'string') {
+        payload.idempotencyKey = headerIdempotencyKey;
+      }
+
+      const parsed = checkoutInputSchema.safeParse(payload);
       if (!parsed.success) {
         res.status(400).json({
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
             message: parsed.error.issues[0]?.message || 'Invalid checkout payload',
+            issues: parsed.error.issues,
           },
           timestamp: new Date().toISOString(),
         });
         return;
       }
 
-      const { customerId, items, discountUSD = 0, payments, notes } = parsed.data;
-
-      // 1. Resolve store & business
-      const storeId =
-        parsed.data.storeId ||
-        user.storeId ||
-        (await prisma.store.findFirst({ where: { businessId: user.businessId, isActive: true } }))
-          ?.id;
-
-      if (!storeId) {
-        res.status(400).json({
-          success: false,
-          error: { code: 'STORE_REQUIRED', message: 'Valid store could not be resolved' },
-          timestamp: new Date().toISOString(),
-        });
-        return;
-      }
-
-      const store = await prisma.store.findUnique({ where: { id: storeId } });
-      const business = await prisma.business.findUnique({ where: { id: user.businessId } });
-      const exchangeRateKHR = Number(business?.baseExchangeRate || 4100.0);
-
-      // Default inventory location for store
-      let location = await prisma.inventoryLocation.findFirst({
-        where: { storeId, isDefault: true },
+      const result = await TransactionEngine.checkout(parsed.data, {
+        userId: user.userId,
+        businessId: user.businessId,
+        storeId: parsed.data.storeId || user.storeId,
       });
-      if (!location) {
-        location = await prisma.inventoryLocation.findFirst({
-          where: { storeId },
-        });
-      }
-
-      // 2. Fetch all products in cart
-      const productIds = items.map((i) => i.productId);
-      const dbProducts = await prisma.product.findMany({
-        where: { id: { in: productIds } },
-      });
-      const productMap = new Map(dbProducts.map((p) => [p.id, p]));
-
-      // 3. Compute Subtotal, Tax, and Totals
-      let subtotalUSD = 0;
-      const orderItemsData: any[] = [];
-
-      for (const item of items) {
-        const product = productMap.get(item.productId);
-        if (!product) {
-          res.status(400).json({
-            success: false,
-            error: {
-              code: 'PRODUCT_NOT_FOUND',
-              message: `Product ${item.productId} was not found`,
-            },
-            timestamp: new Date().toISOString(),
-          });
-          return;
-        }
-
-        const unitPriceUSD = item.unitPriceUSD;
-        const lineSubtotalUSD = Number((unitPriceUSD * item.quantity).toFixed(2));
-        const lineDiscountUSD = Number((item.discountUSD || 0).toFixed(2));
-        const lineTotalUSD = Math.max(0, Number((lineSubtotalUSD - lineDiscountUSD).toFixed(2)));
-        const lineTotalKHR = Math.round(lineTotalUSD * exchangeRateKHR);
-
-        subtotalUSD += lineTotalUSD;
-
-        orderItemsData.push({
-          productId: product.id,
-          productName: product.name,
-          sku: product.sku,
-          barcode: product.barcode,
-          quantity: new Prisma.Decimal(item.quantity),
-          unitCostUSD: product.costPriceUSD,
-          unitPriceUSD: new Prisma.Decimal(unitPriceUSD),
-          unitPriceKHR: new Prisma.Decimal(Math.round(unitPriceUSD * exchangeRateKHR)),
-          discountAmountUSD: new Prisma.Decimal(lineDiscountUSD),
-          taxAmountUSD: new Prisma.Decimal(0),
-          subtotalUSD: new Prisma.Decimal(lineSubtotalUSD),
-          totalUSD: new Prisma.Decimal(lineTotalUSD),
-          totalKHR: new Prisma.Decimal(lineTotalKHR),
-          notes: item.notes || null,
-        });
-      }
-
-      // Apply overall discount
-      const effectiveDiscountUSD = Math.min(subtotalUSD, discountUSD);
-      const totalUSD = Number((subtotalUSD - effectiveDiscountUSD).toFixed(2));
-      const totalKHR = Math.round(totalUSD * exchangeRateKHR);
-      const taxAmountUSD = Number((totalUSD * 0.1).toFixed(2)); // 10% VAT informational
-
-      // 4. Compute payments & change
-      let totalPaidUSD = 0;
-      let totalPaidKHR = 0;
-      let totalTenderUSD = 0;
-      let totalTenderKHR = 0;
-
-      for (const p of payments) {
-        totalPaidUSD += p.amountUSD;
-        totalPaidKHR += p.amountKHR;
-        totalTenderUSD += p.tenderAmountUSD || p.amountUSD;
-        totalTenderKHR += p.tenderAmountKHR || p.amountKHR;
-      }
-
-      // Convert combined tender to USD equivalent
-      const effectiveTenderInUSD = totalTenderUSD + totalTenderKHR / exchangeRateKHR;
-      const changeUSD = Math.max(0, Number((effectiveTenderInUSD - totalUSD).toFixed(2)));
-      const changeKHR = Math.round(changeUSD * exchangeRateKHR);
-
-      // 5. Execute transaction in PostgreSQL
-      const orderNumber = generateOrderNumber();
-      const receiptNumber = generateReceiptNumber();
-
-      const result = await prisma.$transaction(async (tx) => {
-        // Create Order
-        const order = await tx.order.create({
-          data: {
-            orderNumber,
-            businessId: user.businessId,
-            storeId,
-            cashierId: user.userId,
-            customerId: customerId || null,
-            status: OrderStatus.COMPLETED,
-            currency: 'USD',
-            exchangeRateKHR: new Prisma.Decimal(exchangeRateKHR),
-            subtotalUSD: new Prisma.Decimal(subtotalUSD),
-            discountAmountUSD: new Prisma.Decimal(effectiveDiscountUSD),
-            taxAmountUSD: new Prisma.Decimal(taxAmountUSD),
-            totalUSD: new Prisma.Decimal(totalUSD),
-            totalKHR: new Prisma.Decimal(totalKHR),
-            paidUSD: new Prisma.Decimal(totalPaidUSD),
-            paidKHR: new Prisma.Decimal(totalPaidKHR),
-            totalPaidUSD: new Prisma.Decimal(effectiveTenderInUSD),
-            changeUSD: new Prisma.Decimal(changeUSD),
-            changeKHR: new Prisma.Decimal(changeKHR),
-            notes: notes || null,
-            items: {
-              create: orderItemsData,
-            },
-          },
-        });
-
-        // Deduct inventory and record stock movements
-        for (const item of items) {
-          const product = productMap.get(item.productId)!;
-          if (product.trackInventory && location) {
-            // Find or create inventory row
-            let inv = await tx.inventory.findFirst({
-              where: {
-                storeId,
-                locationId: location.id,
-                productId: item.productId,
-                variantId: null,
-              },
-            });
-
-            const currentQty = inv ? Number(inv.quantity) : 0;
-            const newQty = currentQty - item.quantity;
-
-            if (inv) {
-              await tx.inventory.update({
-                where: { id: inv.id },
-                data: { quantity: new Prisma.Decimal(newQty) },
-              });
-            } else {
-              inv = await tx.inventory.create({
-                data: {
-                  storeId,
-                  locationId: location.id,
-                  productId: item.productId,
-                  quantity: new Prisma.Decimal(newQty),
-                },
-              });
-            }
-
-            // Create stock movement record
-            await tx.stockMovement.create({
-              data: {
-                storeId,
-                locationId: location.id,
-                productId: item.productId,
-                type: StockMovementType.SALE,
-                quantityChange: new Prisma.Decimal(-item.quantity),
-                quantityBefore: new Prisma.Decimal(currentQty),
-                quantityAfter: new Prisma.Decimal(newQty),
-                unitCost: product.costPriceUSD,
-                referenceType: 'ORDER',
-                referenceId: order.id,
-                createdById: user.userId,
-                notes: `POS sale checkout order #${orderNumber}`,
-              },
-            });
-          }
-        }
-
-        // Record Payments
-        for (const p of payments) {
-          let paymentMethod = await tx.paymentMethod.findFirst({
-            where: { businessId: user.businessId, code: p.paymentMethodCode },
-          });
-
-          if (!paymentMethod) {
-            paymentMethod = await tx.paymentMethod.findFirst({
-              where: { businessId: user.businessId },
-            });
-          }
-
-          if (paymentMethod) {
-            await tx.payment.create({
-              data: {
-                orderId: order.id,
-                paymentMethodId: paymentMethod.id,
-                amountUSD: new Prisma.Decimal(p.amountUSD),
-                amountKHR: new Prisma.Decimal(p.amountKHR),
-                tenderAmountUSD: new Prisma.Decimal(p.tenderAmountUSD || p.amountUSD),
-                tenderAmountKHR: new Prisma.Decimal(p.tenderAmountKHR || p.amountKHR),
-                changeUSD: new Prisma.Decimal(changeUSD),
-                changeKHR: new Prisma.Decimal(changeKHR),
-                status: PaymentStatus.COMPLETED,
-              },
-            });
-          }
-        }
-
-        // Create Receipt
-        const receipt = await tx.receipt.create({
-          data: {
-            orderId: order.id,
-            receiptNumber,
-            headerText: store?.receiptHeader || `${store?.name}\nTel: ${store?.phone || ''}`,
-            footerText:
-              store?.receiptFooter || 'Thank you for shopping with us! Please come again.',
-            printedAt: new Date(),
-          },
-        });
-
-        // Award Customer Loyalty points if customer exists (1 point per whole $1 spent)
-        if (customerId) {
-          const pointsEarned = Math.floor(totalUSD);
-          if (pointsEarned > 0) {
-            await tx.customer.update({
-              where: { id: customerId },
-              data: { loyaltyPoints: { increment: pointsEarned } },
-            });
-          }
-        }
-
-        // Record Audit Log
-        await tx.auditLog.create({
-          data: {
-            businessId: user.businessId,
-            storeId,
-            userId: user.userId,
-            action: 'ORDER_COMPLETED',
-            entityType: 'Order',
-            entityId: order.id,
-            details: {
-              orderNumber,
-              receiptNumber,
-              totalUSD,
-              totalKHR,
-              itemCount: items.length,
-            },
-          },
-        });
-
-        return { order, receipt };
-      });
-
-      // Customer info for receipt
-      const customer = customerId
-        ? await prisma.customer.findUnique({ where: { id: customerId } })
-        : null;
 
       res.status(200).json({
         success: true,
-        data: {
-          orderId: result.order.id,
-          orderNumber: result.order.orderNumber,
-          receiptNumber: result.receipt.receiptNumber,
-          subtotalUSD,
-          discountUSD: effectiveDiscountUSD,
-          taxUSD: taxAmountUSD,
-          totalUSD,
-          totalKHR,
-          paidUSD: totalPaidUSD,
-          paidKHR: totalPaidKHR,
-          changeUSD,
-          changeKHR,
-          createdAt: result.order.createdAt.toISOString(),
-          customer: customer
-            ? {
-                id: customer.id,
-                name: customer.name,
-                phone: customer.phone,
-                email: customer.email,
-                loyaltyPoints: customer.loyaltyPoints,
-                creditBalanceUSD: Number(customer.creditBalanceUSD),
-              }
-            : null,
-          items: orderItemsData.map((oi) => ({
-            productName: oi.productName,
-            sku: oi.sku,
-            quantity: Number(oi.quantity),
-            unitPriceUSD: Number(oi.unitPriceUSD),
-            totalUSD: Number(oi.totalUSD),
-            totalKHR: Number(oi.totalKHR),
-          })),
-          receipt: {
-            headerText: result.receipt.headerText,
-            footerText: result.receipt.footerText,
+        data: result,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error: any) {
+      if (error instanceof TransactionEngineError) {
+        res.status(error.statusCode).json({
+          success: false,
+          error: {
+            code: error.code,
+            message: error.message,
+            details: error.details,
           },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+      next(error);
+    }
+  },
+);
+
+/**
+ * POST /api/pos/calculate
+ * Calculate financial quote (subtotal, line discounts, order discount, tax, totals) server-side
+ */
+posRouter.post(
+  '/calculate',
+  requireAuth,
+  requirePermission(PERMISSIONS.SALES_CREATE),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user!;
+      const parsed = orderCalculationSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid calculation payload',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      const breakdown = await FinancialCalculator.calculate({
+        items: parsed.data.items,
+        businessId: user.businessId,
+        discountCode: parsed.data.discountCode,
+        discountUSD: parsed.data.discountUSD,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: FinancialCalculator.toQuote(breakdown),
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 'CALCULATION_ERROR',
+          message: error.message || 'Failed to calculate order quote',
         },
+        timestamp: new Date().toISOString(),
+      });
+    }
+  },
+);
+
+/**
+ * GET /api/pos/orders/:id
+ * Retrieve full order details by ID
+ */
+posRouter.get(
+  '/orders/:id',
+  requireAuth,
+  requirePermission(PERMISSIONS.SALES_CREATE),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const orderId = req.params.id as string;
+      const order = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          items: true,
+          payments: { include: { paymentMethod: true } },
+          receipt: true,
+          customer: true,
+          cashier: { select: { id: true, fullName: true, username: true } },
+        },
+      });
+
+      if (!order) {
+        res.status(404).json({
+          success: false,
+          error: { code: 'ORDER_NOT_FOUND', message: 'Order not found' },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: order,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+/**
+ * POST /api/pos/orders/:id/payments
+ * Add payment to a partially paid order
+ */
+posRouter.post(
+  '/orders/:id/payments',
+  requireAuth,
+  requirePermission(PERMISSIONS.SALES_CREATE),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user!;
+      const parsed = addPaymentSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid payment payload',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      const orderId = req.params.id as string;
+      const result = await TransactionEngine.addPayment(orderId, parsed.data, {
+        userId: user.userId,
+        businessId: user.businessId,
+        storeId: user.storeId,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: result,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error: any) {
+      if (error instanceof TransactionEngineError) {
+        res.status(error.statusCode).json({
+          success: false,
+          error: {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+      next(error);
+    }
+  },
+);
+
+/**
+ * POST /api/pos/orders/:id/void
+ * Void order and reverse stock with mandatory reason
+ */
+posRouter.post(
+  '/orders/:id/void',
+  requireAuth,
+  requirePermission(PERMISSIONS.SALES_VOID),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user!;
+      const parsed = voidOrderSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Void reason is required',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      const orderId = req.params.id as string;
+      const result = await TransactionEngine.voidOrder(orderId, parsed.data, {
+        userId: user.userId,
+        businessId: user.businessId,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: result,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error: any) {
+      if (error instanceof TransactionEngineError) {
+        res.status(error.statusCode).json({
+          success: false,
+          error: {
+            code: error.code,
+            message: error.message,
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+      next(error);
+    }
+  },
+);
+
+/**
+ * POST /api/pos/orders/:id/refund
+ * Refund an order (partial or full) with inventory restock option
+ */
+posRouter.post(
+  '/orders/:id/refund',
+  requireAuth,
+  requirePermission(PERMISSIONS.SALES_REFUND),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user!;
+      const parsed = refundOrderSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid refund request',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      const orderId = req.params.id as string;
+      const result = await TransactionEngine.refundOrder(orderId, parsed.data, {
+        userId: user.userId,
+        businessId: user.businessId,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: result,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error: any) {
+      if (error instanceof TransactionEngineError) {
+        res.status(error.statusCode).json({
+          success: false,
+          error: {
+            code: error.code,
+            message: error.message,
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+      next(error);
+    }
+  },
+);
+
+/**
+ * POST /api/pos/orders/:id/cancel
+ * Cancel a pending order
+ */
+posRouter.post(
+  '/orders/:id/cancel',
+  requireAuth,
+  requirePermission(PERMISSIONS.SALES_VOID),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user!;
+      const parsed = cancelOrderSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Cancel reason is required',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      const orderId = req.params.id as string;
+      const result = await TransactionEngine.cancelOrder(orderId, parsed.data, {
+        userId: user.userId,
+        businessId: user.businessId,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: result,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error: any) {
+      if (error instanceof TransactionEngineError) {
+        res.status(error.statusCode).json({
+          success: false,
+          error: {
+            code: error.code,
+            message: error.message,
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+      next(error);
+    }
+  },
+);
+
+/**
+ * GET /api/pos/payment-methods
+ * Get all available configured payment methods with provider capability details
+ */
+posRouter.get(
+  '/payment-methods',
+  requireAuth,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user!;
+      const dbMethods = await prisma.paymentMethod.findMany({
+        where: { businessId: user.businessId, isActive: true },
+        orderBy: [{ isDefault: 'desc' }, { name: 'asc' }],
+      });
+
+      const enriched = dbMethods.map((pm) => {
+        let providerInfo = null;
+        try {
+          const provider = paymentRegistry.get(pm.code);
+          providerInfo = {
+            providerName: provider.name,
+            providerType: provider.type,
+            supportsRefund: !!provider.refundPayment,
+            supportsVerification: !!provider.verifyPayment,
+          };
+        } catch {
+          providerInfo = null;
+        }
+
+        return {
+          id: pm.id,
+          name: pm.name,
+          code: pm.code,
+          type: pm.type,
+          isDefault: pm.isDefault,
+          config: pm.config,
+          provider: providerInfo,
+        };
+      });
+
+      res.status(200).json({
+        success: true,
+        data: enriched,
         timestamp: new Date().toISOString(),
       });
     } catch (error) {

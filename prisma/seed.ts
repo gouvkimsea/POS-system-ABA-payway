@@ -337,6 +337,12 @@ async function main() {
       type: PaymentMethodType.BANK_TRANSFER,
       isDefault: false,
     },
+    {
+      code: 'OTHER',
+      name: 'Voucher / Other Tender',
+      type: PaymentMethodType.OTHER,
+      isDefault: false,
+    },
   ];
 
   for (const pm of paymentMethodsData) {
