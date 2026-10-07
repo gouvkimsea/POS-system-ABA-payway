@@ -126,3 +126,174 @@ export interface TokenPayload {
   roles: RoleCode[];
   permissions: PermissionCode[];
 }
+
+// ------------------------------------------------------------------------------
+// POS INTERFACE & CHECKOUT CONTRACTS
+// ------------------------------------------------------------------------------
+
+export interface PosCategory {
+  id: string;
+  name: string;
+  code: string | null;
+  color: string | null;
+  icon: string | null;
+  sortOrder: number;
+  productCount: number;
+}
+
+export interface PosProduct {
+  id: string;
+  name: string;
+  sku: string;
+  barcode: string | null;
+  description: string | null;
+  costPriceUSD: number;
+  sellingPriceUSD: number;
+  sellingPriceKHR: number;
+  taxRate: number;
+  isTaxInclusive: boolean;
+  trackInventory: boolean;
+  alertLowStock: number;
+  unit: string;
+  imageUrl: string | null;
+  stockQuantity: number;
+  categoryId: string | null;
+  categoryName?: string;
+  categoryColor?: string;
+}
+
+export interface PosCustomer {
+  id: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  loyaltyPoints: number;
+  creditBalanceUSD: number;
+}
+
+export interface PosPaymentMethod {
+  id: string;
+  name: string;
+  code: string;
+  type: string;
+  isDefault: boolean;
+}
+
+export interface PosDiscount {
+  id: string;
+  name: string;
+  code: string | null;
+  type: string;
+  value: number;
+}
+
+export interface PosInitData {
+  business: {
+    id: string;
+    name: string;
+    code: string;
+    defaultCurrency: string;
+  };
+  store: {
+    id: string;
+    name: string;
+    code: string;
+    address: string | null;
+    phone: string | null;
+    receiptHeader: string | null;
+    receiptFooter: string | null;
+  };
+  register: {
+    id: string;
+    name: string;
+    code: string;
+  };
+  categories: PosCategory[];
+  products: PosProduct[];
+  customers: PosCustomer[];
+  paymentMethods: PosPaymentMethod[];
+  discounts: PosDiscount[];
+  exchangeRateKHR: number;
+  taxRate: number;
+}
+
+export interface PosCartItem {
+  product: PosProduct;
+  quantity: number;
+  unitPriceUSD: number;
+  unitPriceKHR: number;
+  discountUSD: number; // line discount
+  subtotalUSD: number;
+  totalUSD: number;
+  totalKHR: number;
+  notes?: string;
+}
+
+export interface CheckoutItemInput {
+  productId: string;
+  quantity: number;
+  unitPriceUSD: number;
+  discountUSD?: number;
+  notes?: string;
+}
+
+export interface CheckoutPaymentInput {
+  paymentMethodCode: string;
+  amountUSD: number;
+  amountKHR: number;
+  tenderAmountUSD: number;
+  tenderAmountKHR: number;
+}
+
+export interface CheckoutInput {
+  storeId?: string;
+  registerId?: string;
+  customerId?: string | null;
+  items: CheckoutItemInput[];
+  discountCode?: string;
+  discountUSD?: number;
+  payments: CheckoutPaymentInput[];
+  notes?: string;
+}
+
+export interface CheckoutResult {
+  orderId: string;
+  orderNumber: string;
+  receiptNumber: string;
+  subtotalUSD: number;
+  discountUSD: number;
+  taxUSD: number;
+  totalUSD: number;
+  totalKHR: number;
+  paidUSD: number;
+  paidKHR: number;
+  changeUSD: number;
+  changeKHR: number;
+  createdAt: string;
+  customer?: PosCustomer | null;
+  items: {
+    productName: string;
+    sku: string;
+    quantity: number;
+    unitPriceUSD: number;
+    totalUSD: number;
+    totalKHR: number;
+  }[];
+  receipt: {
+    headerText: string | null;
+    footerText: string | null;
+  };
+}
+
+export interface HeldOrderSummary {
+  id: string;
+  orderNumber: string;
+  customerId?: string | null;
+  customerName?: string | null;
+  itemCount: number;
+  totalUSD: number;
+  totalKHR: number;
+  createdAt: string;
+  notes?: string | null;
+  items: PosCartItem[];
+}

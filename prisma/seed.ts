@@ -426,6 +426,8 @@ async function main() {
       catId: categories[0].id,
       stock: 150,
       unit: 'can',
+      imageUrl:
+        'https://images.unsplash.com/photo-1608270191599-4c60f2526e9a?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Angkor Beer Can 330ml',
@@ -437,6 +439,8 @@ async function main() {
       catId: categories[0].id,
       stock: 120,
       unit: 'can',
+      imageUrl:
+        'https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Coca-Cola Classic 330ml Can',
@@ -448,6 +452,8 @@ async function main() {
       catId: categories[0].id,
       stock: 200,
       unit: 'can',
+      imageUrl:
+        'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Kulen Natural Mineral Water 500ml',
@@ -459,6 +465,8 @@ async function main() {
       catId: categories[0].id,
       stock: 300,
       unit: 'bottle',
+      imageUrl:
+        'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Pringles Sour Cream & Onion 107g',
@@ -470,6 +478,8 @@ async function main() {
       catId: categories[1].id,
       stock: 65,
       unit: 'can',
+      imageUrl:
+        'https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: "Lay's Classic Salted Potato Chips 50g",
@@ -481,6 +491,8 @@ async function main() {
       catId: categories[1].id,
       stock: 80,
       unit: 'pack',
+      imageUrl:
+        'https://images.unsplash.com/photo-1527842891421-42eec6e703ea?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Anchor Salted Pure Butter 227g',
@@ -492,6 +504,8 @@ async function main() {
       catId: categories[2].id,
       stock: 40,
       unit: 'block',
+      imageUrl:
+        'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Meiji Fresh Milk 946ml',
@@ -503,6 +517,8 @@ async function main() {
       catId: categories[2].id,
       stock: 35,
       unit: 'bottle',
+      imageUrl:
+        'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Colgate Total 12 Clean Mint Toothpaste 150g',
@@ -514,6 +530,8 @@ async function main() {
       catId: categories[3].id,
       stock: 50,
       unit: 'tube',
+      imageUrl:
+        'https://images.unsplash.com/photo-1559591937-e62fb330bc1f?auto=format&fit=crop&w=400&q=80',
     },
     {
       name: 'Dettol Original Antibacterial Soap 100g',
@@ -525,13 +543,20 @@ async function main() {
       catId: categories[3].id,
       stock: 90,
       unit: 'bar',
+      imageUrl:
+        'https://images.unsplash.com/photo-1607006314592-d610df1fc08c?auto=format&fit=crop&w=400&q=80',
     },
   ];
 
   for (const item of productsData) {
     const product = await prisma.product.upsert({
       where: { businessId_sku: { businessId: business.id, sku: item.sku } },
-      update: {},
+      update: {
+        imageUrl: item.imageUrl,
+        costPriceUSD: item.cost,
+        sellingPriceUSD: item.sellUSD,
+        sellingPriceKHR: item.sellKHR,
+      },
       create: {
         businessId: business.id,
         categoryId: item.catId,
@@ -547,6 +572,7 @@ async function main() {
         isTaxInclusive: true,
         trackInventory: true,
         unit: item.unit,
+        imageUrl: item.imageUrl,
         isActive: true,
       },
     });

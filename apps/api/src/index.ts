@@ -4,6 +4,7 @@ import { getEnvConfig } from '@pos/config';
 import { logger } from './logger/index.js';
 import { healthRouter } from './routes/health.js';
 import { authRouter } from './routes/auth.js';
+import { posRouter } from './routes/pos.js';
 import { initRedis } from './redis/index.js';
 
 const config = getEnvConfig();
@@ -45,6 +46,7 @@ export function createApp(): Express {
   // Base Routes
   app.use('/api/health', healthRouter);
   app.use('/api/auth', authRouter);
+  app.use('/api/pos', posRouter);
 
   app.get('/api', (_req: Request, res: Response) => {
     res.json({
