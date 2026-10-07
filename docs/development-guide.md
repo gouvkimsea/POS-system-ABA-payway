@@ -32,11 +32,18 @@
    pnpm dev
    ```
 
-## Development Commands
-
 - `pnpm dev`: Runs both API and Web servers in parallel.
 - `pnpm build`: Builds all workspace packages and applications.
 - `pnpm lint`: Lints all workspaces with ESLint.
 - `pnpm typecheck`: Validates TypeScript types across the monorepo.
 - `pnpm format`: Formats code with Prettier.
 - `pnpm test:connections`: Validates PostgreSQL and Redis connectivity.
+- `pnpm test:auth`: Runs the complete authentication and RBAC integration test suite.
+
+## Seed User Accounts
+
+For local development and testing, run `pnpm db:seed` to populate the following accounts:
+
+- **Admin**: `admin` / `admin123` (PIN: `1111`) - Full administrative permissions.
+- **Manager**: `manager` / `manager123` (PIN: `2222`) - Product, inventory, reporting, and cash management.
+- **Cashier**: `cashier` / `cashier123` (PIN: `1234`) - Register checkout and basic catalog view.

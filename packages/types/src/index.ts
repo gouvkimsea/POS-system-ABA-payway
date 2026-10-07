@@ -68,3 +68,61 @@ export interface SystemSettings {
   supportedCurrencies: CurrencyCode[];
   supportedLocales: LocaleCode[];
 }
+
+// ------------------------------------------------------------------------------
+// AUTHENTICATION & AUTHORIZATION (RBAC) CONTRACTS
+// ------------------------------------------------------------------------------
+
+export const PERMISSIONS = {
+  PRODUCTS_VIEW: 'products.view',
+  PRODUCTS_CREATE: 'products.create',
+  PRODUCTS_UPDATE: 'products.update',
+  PRODUCTS_DELETE: 'products.delete',
+  INVENTORY_VIEW: 'inventory.view',
+  INVENTORY_ADJUST: 'inventory.adjust',
+  SALES_CREATE: 'sales.create',
+  SALES_REFUND: 'sales.refund',
+  SALES_VOID: 'sales.void',
+  REPORTS_VIEW: 'reports.view',
+  USERS_MANAGE: 'users.manage',
+  SETTINGS_MANAGE: 'settings.manage',
+  REGISTER_OPEN: 'register.open',
+  REGISTER_CLOSE: 'register.close',
+  CASH_MANAGE: 'cash.manage',
+} as const;
+
+export type PermissionCode = (typeof PERMISSIONS)[keyof typeof PERMISSIONS] | string;
+
+export type RoleCode = 'ADMIN' | 'MANAGER' | 'CASHIER' | string;
+
+export interface AuthUser {
+  id: string;
+  username: string;
+  email: string | null;
+  fullName: string;
+  phone: string | null;
+  businessId: string;
+  storeId?: string | null;
+  roles: RoleCode[];
+  permissions: PermissionCode[];
+}
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+  expiresInSeconds: number;
+}
+
+export interface LoginResult {
+  user: AuthUser;
+  tokens: AuthTokens;
+}
+
+export interface TokenPayload {
+  userId: string;
+  username: string;
+  businessId: string;
+  storeId?: string | null;
+  roles: RoleCode[];
+  permissions: PermissionCode[];
+}

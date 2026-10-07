@@ -20,12 +20,15 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "test:connections": "tsx scripts/test-connections.ts"
+    "test:connections": "tsx scripts/test-connections.ts",
+    "test:auth": "tsx scripts/test-auth-integration.ts"
   },
   "devDependencies": {
     "@prisma/client": "^5.22.0",
+    "@types/bcryptjs": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^16.4.7",
     "embedded-postgres": "^18.4.0-beta.17",
     "eslint": "^8.57.0",

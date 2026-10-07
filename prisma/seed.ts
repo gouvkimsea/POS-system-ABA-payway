@@ -1,11 +1,10 @@
 import { PrismaClient, PaymentMethodType, DiscountType } from '@prisma/client';
-import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-// Fast password hash generator (SHA-256 for deterministic seed demo)
 function hashSecret(secret: string): string {
-  return crypto.createHash('sha256').update(secret).digest('hex');
+  return bcrypt.hashSync(secret, 10);
 }
 
 async function main() {
@@ -53,27 +52,35 @@ async function main() {
   });
   console.log(`[Seed] Store created: ${store.name} (${store.code})`);
 
-  // 3. Permissions
+  // 3. Granular Permissions (All 15 permissions)
   const permissionsData = [
-    { code: 'orders:create', name: 'Create Orders', category: 'Sales' },
-    { code: 'orders:view', name: 'View Orders', category: 'Sales' },
-    { code: 'orders:refund', name: 'Process Refunds', category: 'Sales' },
-    { code: 'inventory:view', name: 'View Inventory', category: 'Inventory' },
-    { code: 'inventory:adjust', name: 'Adjust Stock', category: 'Inventory' },
-    { code: 'reports:view', name: 'View Financial Reports', category: 'Reports' },
-    { code: 'registers:manage', name: 'Manage Cash Registers', category: 'Registers' },
-    { code: 'admin:manage', name: 'Full Administrative Control', category: 'Admin' },
+    { code: 'products.view', name: 'View Products Catalog', category: 'Products' },
+    { code: 'products.create', name: 'Create Products', category: 'Products' },
+    { code: 'products.update', name: 'Update Products', category: 'Products' },
+    { code: 'products.delete', name: 'Delete Products', category: 'Products' },
+    { code: 'inventory.view', name: 'View Stock & Locations', category: 'Inventory' },
+    { code: 'inventory.adjust', name: 'Adjust Inventory Quantities', category: 'Inventory' },
+    { code: 'sales.create', name: 'Create Sales & Orders', category: 'Sales' },
+    { code: 'sales.refund', name: 'Process Order Refunds', category: 'Sales' },
+    { code: 'sales.void', name: 'Void Completed Transactions', category: 'Sales' },
+    { code: 'reports.view', name: 'View Sales & Financial Reports', category: 'Reports' },
+    { code: 'users.manage', name: 'Manage User Accounts & Roles', category: 'Users' },
+    { code: 'settings.manage', name: 'Configure System Settings', category: 'Settings' },
+    { code: 'register.open', name: 'Open Register Shifts', category: 'Register' },
+    { code: 'register.close', name: 'Close Register Shifts', category: 'Register' },
+    { code: 'cash.manage', name: 'Manage Drawer Cash Movements', category: 'Cash' },
   ];
 
   const permissions = await Promise.all(
     permissionsData.map((p) =>
       prisma.permission.upsert({
         where: { code: p.code },
-        update: {},
+        update: { name: p.name, category: p.category },
         create: p,
       }),
     ),
   );
+  const permissionMap = new Map(permissions.map((p) => [p.code, p.id]));
 
   // 4. Roles
   const adminRole = await prisma.role.upsert({
@@ -110,20 +117,70 @@ async function main() {
   });
 
   // Assign permissions to roles
+  // ADMIN has all permissions
   for (const perm of permissions) {
     await prisma.rolePermission.upsert({
-      where: {
-        roleId_permissionId: { roleId: adminRole.id, permissionId: perm.id },
-      },
+      where: { roleId_permissionId: { roleId: adminRole.id, permissionId: perm.id } },
       update: {},
       create: { roleId: adminRole.id, permissionId: perm.id },
     });
   }
 
+  // MANAGER permissions
+  const managerPermCodes = [
+    'products.view',
+    'products.create',
+    'products.update',
+    'inventory.view',
+    'inventory.adjust',
+    'sales.create',
+    'sales.refund',
+    'sales.void',
+    'reports.view',
+    'register.open',
+    'register.close',
+    'cash.manage',
+  ];
+  for (const code of managerPermCodes) {
+    const permId = permissionMap.get(code);
+    if (permId) {
+      await prisma.rolePermission.upsert({
+        where: { roleId_permissionId: { roleId: managerRole.id, permissionId: permId } },
+        update: {},
+        create: { roleId: managerRole.id, permissionId: permId },
+      });
+    }
+  }
+
+  // CASHIER permissions
+  const cashierPermCodes = [
+    'products.view',
+    'inventory.view',
+    'sales.create',
+    'register.open',
+    'register.close',
+  ];
+  for (const code of cashierPermCodes) {
+    const permId = permissionMap.get(code);
+    if (permId) {
+      await prisma.rolePermission.upsert({
+        where: { roleId_permissionId: { roleId: cashierRole.id, permissionId: permId } },
+        update: {},
+        create: { roleId: cashierRole.id, permissionId: permId },
+      });
+    }
+  }
+
   // 5. Users (Admin, Manager, Cashier)
   const adminUser = await prisma.user.upsert({
     where: { username: 'admin' },
-    update: {},
+    update: {
+      passwordHash: hashSecret('admin123'),
+      pinCodeHash: hashSecret('1111'),
+      isActive: true,
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+    },
     create: {
       businessId: business.id,
       username: 'admin',
@@ -138,7 +195,13 @@ async function main() {
 
   const managerUser = await prisma.user.upsert({
     where: { username: 'manager' },
-    update: {},
+    update: {
+      passwordHash: hashSecret('manager123'),
+      pinCodeHash: hashSecret('2222'),
+      isActive: true,
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+    },
     create: {
       businessId: business.id,
       username: 'manager',
@@ -153,7 +216,13 @@ async function main() {
 
   const cashierUser = await prisma.user.upsert({
     where: { username: 'cashier' },
-    update: {},
+    update: {
+      passwordHash: hashSecret('cashier123'),
+      pinCodeHash: hashSecret('1234'),
+      isActive: true,
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+    },
     create: {
       businessId: business.id,
       username: 'cashier',

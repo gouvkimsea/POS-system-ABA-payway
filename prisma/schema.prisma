@@ -170,24 +170,64 @@ model User {
   pinCodeHash  String?   // 4-6 digit fast touch PIN
   fullName     String
   phone        String?
-  isActive     Boolean   @default(true)
-  deletedAt    DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  lastLoginAt         DateTime?
+  isActive            Boolean   @default(true)
+  deletedAt           DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
-  business       Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  userRoles      UserRole[]
-  sessions       RegisterSession[]
-  cashMovements  CashMovement[]
-  stockMovements StockMovement[]
-  orders         Order[]
-  expenses       Expense[]
-  auditLogs      AuditLog[]
+  business            Business             @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  userRoles           UserRole[]
+  userSessions        UserSession[]
+  passwordResetTokens PasswordResetToken[]
+  sessions            RegisterSession[]
+  cashMovements       CashMovement[]
+  stockMovements      StockMovement[]
+  orders              Order[]
+  expenses            Expense[]
+  auditLogs           AuditLog[]
 
   @@index([businessId])
   @@index([username])
   @@index([deletedAt])
   @@map("users")
+}
+
+model UserSession {
+  id               String   @id @default(uuid())
+  userId           String
+  refreshTokenHash String   @unique
+  ipAddress        String?
+  userAgent        String?
+  isValid          Boolean  @default(true)
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([refreshTokenHash])
+  @@index([expiresAt])
+  @@map("user_sessions")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String   @unique
+  isUsed    Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
 }
 
 model Role {
