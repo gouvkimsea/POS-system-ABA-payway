@@ -1,0 +1,115 @@
+// Enterprise Point of Sale (POS) Foundation Schema
+// Supports multi-store scalability, audit logs, and localization
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  CASHIER
+}
+
+model Business {
+  id              String         @id @default(uuid())
+  name            String
+  code            String         @unique
+  taxNumber       String?
+  phone           String?
+  email           String?
+  address         String?
+  defaultCurrency String         @default("USD")
+  baseExchangeRate Decimal       @default(4100.00) @db.Decimal(12, 4)
+  timezone        String         @default("Asia/Phnom_Penh")
+  isActive        Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  stores          Store[]
+  users           User[]
+  auditLogs       AuditLog[]
+
+  @@map("businesses")
+}
+
+model Store {
+  id          String     @id @default(uuid())
+  businessId  String
+  name        String
+  code        String
+  phone       String?
+  address     String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  business    Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  users       User[]
+  auditLogs   AuditLog[]
+
+  @@unique([businessId, code])
+  @@index([businessId])
+  @@map("stores")
+}
+
+model User {
+  id           String     @id @default(uuid())
+  businessId   String
+  storeId      String?
+  username     String     @unique
+  email        String?    @unique
+  passwordHash String
+  pinCodeHash  String?
+  fullName     String
+  role         Role       @default(CASHIER)
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  business     Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  store        Store?     @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  auditLogs    AuditLog[]
+
+  @@index([businessId])
+  @@index([storeId])
+  @@map("users")
+}
+
+model SystemSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+model AuditLog {
+  id         String    @id @default(uuid())
+  businessId String?
+  storeId    String?
+  userId     String?
+  action     String
+  entityType String
+  entityId   String?
+  details    Json?
+  ipAddress  String?
+  createdAt  DateTime  @default(now())
+
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  store      Store?    @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([businessId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

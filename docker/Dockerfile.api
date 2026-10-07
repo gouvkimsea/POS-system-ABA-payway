@@ -1,0 +1,32 @@
+# Production Multi-Stage Dockerfile for POS API Service
+FROM node:20-alpine AS base
+RUN corepack enable && corepack prepare pnpm@latest --activate
+WORKDIR /app
+
+FROM base AS dependencies
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/ ./packages/
+COPY apps/api/package.json ./apps/api/
+COPY prisma/ ./prisma/
+RUN pnpm install --frozen-lockfile
+
+FROM dependencies AS builder
+COPY . .
+RUN pnpm --filter @pos/types build && \
+    pnpm --filter @pos/config build && \
+    pnpm --filter @pos/validation build && \
+    pnpm --filter @pos/api build && \
+    pnpm --filter @pos/api exec prisma generate
+
+FROM base AS runner
+ENV NODE_ENV=production
+ENV PORT=4000
+EXPOSE 4000
+
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=builder /app/apps/api/dist ./apps/api/dist
+COPY --from=builder /app/packages ./packages
+COPY --from=builder /app/prisma ./prisma
+COPY package.json pnpm-workspace.yaml ./
+
+CMD ["node", "apps/api/dist/server.js"]

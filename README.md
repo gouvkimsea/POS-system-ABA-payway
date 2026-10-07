@@ -1,162 +1,150 @@
-# Enterprise POS System with ABA Payway & KHQR Integration
+# Enterprise Point of Sale (POS) Platform - Foundation
 
-A modern, commercial-grade **Point of Sale (POS)** application designed for retail and hospitality, built with a **Next.js 14** touch-first interface and a high-performance **Node.js / Express / Prisma** backend with **PostgreSQL**.
+A modern, production-ready Point of Sale (POS) architecture engineered as a high-performance TypeScript monorepo with **pnpm**, **Next.js 14**, **Node.js / Express**, **Prisma ORM**, **PostgreSQL**, and **Redis**.
 
-Supports dual-currency transactions (**USD & Khmer Riel KHR**), instant digital payments via **KHQR & ABA Pay**, offline-first resilience with **IndexedDB**, real-time WebSocket updates, hardware peripherals, and comprehensive register session cash control.
-
----
-
-## 🚀 Key Features
-
-### 🛒 Point of Sale & Checkout Experience
-- **Touch-First Commercial UI**: Fast, responsive layout optimized for POS touchscreen terminals, tablets, and desktops.
-- **Dual-Currency Engine**: Real-time conversions between **USD** and **Cambodian Riel (KHR)** with customizable exchange rates (default `1 USD = 4,100 KHR`).
-- **Flexible Payments**:
-  - **Cash** (with automated change calculation in both USD and KHR).
-  - **KHQR / ABA Pay** (Dynamic QR code generation supporting ABA Mobile, Bakong, Wing, ACLEDA, and all KHQR banking apps).
-  - **Card & Split Payments**.
-- **Accurate Financial Calculations**: Server-side validation of tax (inclusive/exclusive), discounts (percentage or fixed amount), and rounding rules.
-
-### 📶 Offline-First & Data Sync
-- **Local IndexedDB Storage (Dexie.js)**: Cache product catalogs, customer data, and register states locally.
-- **Offline Transaction Queue**: Continue ringing up sales without internet access; orders are safely queued with idempotent client UUIDs and synchronized automatically once connectivity is restored.
-- **Conflict Resolution**: Backend deduplication and idempotency safeguards.
-
-### 📦 Catalog, Inventory & Multi-Store Management
-- **Catalog Hierarchy**: Multi-category, brands, suppliers, product variants, and SKU/barcode mapping.
-- **Real-Time Stock Movements**: Automatic stock adjustments upon sale or refund with atomic database transactions.
-- **Low-Stock Alerts**: Visual badges and warnings when products fall below safe thresholds.
-- **Multi-Store & Register Support**: Multi-tenant architecture supporting multiple businesses, branch stores, and physical cash registers.
-
-### 💵 Cash Register & Shift Sessions
-- **Shift Opening & Closing**: Log opening float (USD & KHR), track cash in/out, and reconcile expected vs. counted cash at shift closing.
-- **Cash Drawer & Cash Movements**: Record cash drops, pay-outs, and float adjustments with audit trails.
-- **Quick Lock Screen**: PIN-based fast cashier switching and terminal lock.
-
-### 🖨️ Hardware Peripheral Integrations
-- **Barcode Scanners**: Seamless support for handheld USB/Bluetooth hardware scanners and on-device camera scanning (`html5-qrcode`).
-- **Thermal Receipt Printing**: Clean printable receipt templates with store headers/footers, tax breakdown, and QR code verification.
-- **Cash Drawer Triggers**: Browser print / ESC-POS trigger integration.
-
-### 🔐 Security & Auditability
-- **Role-Based Access Control (RBAC)**: Fine-grained permissions for Cashier, Manager, Admin, and Super Admin.
-- **JWT & PIN Authentication**: Secure access tokens with refresh rotation and fast 4–6 digit PIN terminal unlock.
-- **Audit Logs**: Traceable event logs for sales, refunds, voids, inventory adjustments, and register drawer openings.
+This foundation is designed to scale across diverse form factors (mobile, tablets, desktop, commercial touchscreen terminals) and integrate with retail hardware (USB/Bluetooth barcode scanners, ESC/POS thermal printers, cash drawers, customer-facing displays).
 
 ---
 
-## 🛠️ Tech Stack
+## 🏗️ Architecture Overview
 
-### Frontend
-- **Framework**: [Next.js 14](https://nextjs.org/) (App Router, React 18)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Offline Storage**: [Dexie.js](https://dexie.org/) (IndexedDB wrapper)
-- **Barcode Scanner**: [html5-qrcode](https://github.com/mebjas/html5-qrcode)
-
-### Backend
-- **Runtime**: [Node.js](https://nodejs.org/) & [TypeScript](https://www.typescriptlang.org/)
-- **Web Framework**: [Express.js](https://expressjs.com/)
-- **Database & ORM**: [PostgreSQL](https://www.postgresql.org/) with [Prisma ORM](https://www.prisma.io/)
-- **Validation**: [Zod](https://zod.dev/)
-- **Realtime**: [WebSockets (ws)](https://github.com/websockets/ws)
-- **Authentication**: JWT (`jsonwebtoken`) & `bcryptjs`
-- **Logger**: [Pino](https://github.com/pinojs/pino)
-
-### Infrastructure & Tooling
-- **Package Manager**: [pnpm](https://pnpm.io/) workspaces
-- **Containers**: [Docker](https://www.docker.com/) & Docker Compose
-- **Embedded Database**: Embedded PostgreSQL runner for zero-config local development
-
----
-
-## 📁 Project Structure
+The codebase is organized as a clean, modular monorepo:
 
 ```
-pos/
-├── backend/                  # Express + Prisma REST API server
-│   ├── prisma/               # Database schema & seed scripts
-│   │   ├── schema.prisma     # Enterprise POS PostgreSQL schema
-│   │   └── seed.ts           # Demo seed data (stores, users, products)
-│   ├── scripts/              # Embedded database utility scripts
-│   └── src/
-│       ├── config/           # Environment and database configs
-│       ├── middleware/       # Auth, RBAC, error handling, validation
-│       ├── modules/
-│       │   ├── auth/         # Login, PIN auth, JWT token management
-│       │   ├── products/     # Catalog and inventory endpoints
-│       │   ├── registers/    # Register shifts and cash movements
-│       │   ├── reports/      # Sales & inventory summary analytics
-│       │   ├── sales/        # Checkout transactions, orders, refunds
-│       │   └── sync/         # Offline queue synchronization
-│       ├── utils/            # Calculation engine (USD/KHR, taxes, change)
-│       └── websocket/        # Real-time WebSocket server
-├── frontend/                 # Next.js 14 Touch-First Web Application
-│   └── src/
-│       ├── app/              # Next.js App Router (layout, styling, root page)
-│       ├── components/       # POS components (Cart, Checkout, Catalog, Modals)
-│       └── lib/              # API clients, Dexie DB, hardware listeners, sync
-├── docker-compose.yml        # Multi-container Docker deployment
-├── package.json              # Monorepo root workspace configuration
-└── pnpm-workspace.yaml       # pnpm monorepo workspace definition
+/
+├── apps/
+│   ├── web/                     # Next.js 14 touch-first web application (App Router)
+│   └── api/                     # Node.js + Express REST API server with Pino logger
+├── packages/
+│   ├── types/                   # Shared TypeScript models, contracts, DTOs
+│   ├── config/                  # Environment variable schema (Zod) & system defaults
+│   ├── validation/              # Shared Zod validation schemas
+│   └── ui/                      # Reusable accessible UI primitives (StatusBadge, Card, Button)
+├── prisma/                      # PostgreSQL schema & migration history
+│   └── migrations/              # Verifiable database migrations
+├── docs/                        # Architecture documentation & developer guides
+├── scripts/                     # Automation, database runner, connection diagnostics
+├── docker/                      # Production multi-stage Dockerfiles (Dockerfile.api, Dockerfile.web)
+├── .env.example                 # Development environment variable template
+├── .env.production.example      # Production environment variable template
+├── docker-compose.yml           # Local multi-service orchestration (Postgres, Redis, API, Web)
+├── package.json                 # Monorepo root workspace configuration
+└── pnpm-workspace.yaml          # pnpm workspace definition
 ```
 
 ---
 
-## 🏁 Quick Start
+## 📋 Requirements
 
-### Prerequisites
-- **Node.js**: `v20.x` or higher
+- **Node.js**: `v20.x` or higher (Active LTS)
 - **pnpm**: `v9.x` or higher (`npm install -g pnpm`)
-- *(Optional)* **Docker & Docker Compose** for containerized setup
+- **Database**: PostgreSQL `16.x` (or built-in local Embedded Postgres runner)
+- **Cache**: Redis `7.x` (optional for local dev; includes an automatic in-memory cache fallback)
+
+---
+
+## 🚀 Installation & Setup
 
 ### 1. Clone & Install Dependencies
+
 ```bash
 git clone https://github.com/gouvkimsea/POS-system-ABA-payway.git
 cd POS-system-ABA-payway
 
-# Install all workspace dependencies
+# Install all workspace dependencies and link internal packages
 pnpm install
 ```
 
-### 2. Configure Environment Variables
-Copy `.env.example` to `.env` in the root:
+### 2. Environment Configuration
+
+Copy the development environment template:
+
 ```bash
 cp .env.example .env
 ```
 
-Ensure your PostgreSQL database connection URL is properly configured in `.env`:
-```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/pos_db?schema=public
-NEXT_PUBLIC_API_URL=http://localhost:4000/api
-```
+Review and adjust variables in `.env` as required:
 
-### 3. Setup Database & Seed Data
-Initialize the database schema and seed initial sample data (Admin cashier, categories, sample products):
-```bash
-# Generate Prisma Client & push schema to database
-pnpm --filter backend prisma:generate
-pnpm --filter backend prisma:push
-
-# Seed demo data
-pnpm --filter backend db:seed
-```
-
-### 4. Run Development Servers
-Start both backend API and frontend dev servers concurrently:
-```bash
-pnpm dev
-```
-
-- **Frontend POS Interface**: [http://localhost:3000](http://localhost:3000)
-- **Backend API Server**: [http://localhost:4000](http://localhost:4000)
-- **Health Check**: [http://localhost:4000/api/health](http://localhost:4000/api/health)
+| Variable                    | Default Value                                                        | Description                                               |
+| :-------------------------- | :------------------------------------------------------------------- | :-------------------------------------------------------- |
+| `NODE_ENV`                  | `development`                                                        | Runtime environment (`development`, `production`, `test`) |
+| `API_PORT`                  | `4000`                                                               | Port for the backend Express API server                   |
+| `WEB_PORT`                  | `3000`                                                               | Port for the Next.js web application                      |
+| `DATABASE_URL`              | `postgresql://postgres:postgres@localhost:5432/pos_db?schema=public` | PostgreSQL connection string                              |
+| `REDIS_URL`                 | `redis://localhost:6379`                                             | Redis connection URL                                      |
+| `DEFAULT_TIMEZONE`          | `Asia/Phnom_Penh`                                                    | Default system timezone                                   |
+| `DEFAULT_CURRENCY`          | `USD`                                                                | Base store currency                                       |
+| `DEFAULT_EXCHANGE_RATE_KHR` | `4100`                                                               | Exchange rate (1 USD = 4,100 KHR)                         |
+| `NEXT_PUBLIC_API_URL`       | `http://localhost:4000/api`                                          | API URL consumed by the web client                        |
 
 ---
 
-## 🐳 Running with Docker Compose
+## 🗄️ Database Setup & Migrations
 
-To run the complete POS stack with PostgreSQL and Redis in Docker:
+### Start Local PostgreSQL
+
+If running without external PostgreSQL or Docker, start the embedded PostgreSQL engine:
+
+```bash
+pnpm db:start
+```
+
+### Apply Migrations & Generate Client
+
+```bash
+# Generate Prisma Client
+pnpm db:generate
+
+# Apply migrations
+pnpm db:migrate
+```
+
+### Database Management Tools
+
+```bash
+# Launch Prisma Studio web GUI
+pnpm db:studio
+```
+
+---
+
+## 💻 Development Commands
+
+| Command               | Description                                                                             |
+| :-------------------- | :-------------------------------------------------------------------------------------- |
+| `pnpm dev`            | Start both Backend API and Web Frontend concurrently in development mode                |
+| `pnpm dev:api`        | Start only the Backend API server with live reload (`http://localhost:4000`)            |
+| `pnpm dev:web`        | Start only the Web Frontend (`http://localhost:3000`)                                   |
+| `pnpm build:packages` | Compile all shared packages (`@pos/types`, `@pos/config`, `@pos/validation`, `@pos/ui`) |
+| `pnpm build`          | Full production build of all packages and applications                                  |
+| `pnpm typecheck`      | Run TypeScript type checks across all workspaces                                        |
+| `pnpm lint`           | Run ESLint across all TypeScript and JavaScript files                                   |
+| `pnpm format`         | Format the entire codebase with Prettier                                                |
+| `pnpm format:check`   | Verify formatting consistency with Prettier                                             |
+
+---
+
+## 🧪 Testing & Verification Commands
+
+### Infrastructure Connectivity Diagnostics
+
+Run the automated diagnostic suite to verify connections to PostgreSQL and Redis:
+
+```bash
+pnpm test:connections
+```
+
+### Verify Endpoints
+
+- **API Health Check**: `GET http://localhost:4000/api/health`
+- **API Metadata**: `GET http://localhost:4000/api`
+- **Frontend Foundation Dashboard**: `http://localhost:3000`
+
+---
+
+## 🐳 Docker Deployment
+
+To launch the full stack (PostgreSQL, Redis, API, and Web) using Docker Compose:
 
 ```bash
 docker-compose up -d --build
@@ -164,18 +152,17 @@ docker-compose up -d --build
 
 ---
 
-## 💳 Payment & KHQR / ABA Payway Flow
+## 📜 Stage 1 Foundation Checklist
 
-1. Cashier adds items to cart from catalog or via barcode scanning.
-2. Select **"Pay"** / **"Checkout"**.
-3. Choose **"KHQR / ABA Pay"**.
-4. The system calculates the exact total in USD and KHR based on the active store exchange rate.
-5. A dynamic KHQR code is rendered on screen.
-6. The customer scans the QR code with ABA Mobile, Bakong, or any KHQR-compliant bank application.
-7. Cashier confirms completion; receipt is generated and printer / cash drawer is triggered.
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
+- [x] Monorepo workspace configuration with `pnpm`
+- [x] Clean directory layout (`apps/web`, `apps/api`, `packages/types`, `packages/config`, `packages/validation`, `packages/ui`)
+- [x] Strict TypeScript configuration with project references
+- [x] ESLint and Prettier rules configured and passing with zero errors
+- [x] PostgreSQL database connection layer with Prisma ORM
+- [x] Initial migration created (`20261007000000_init_foundation`)
+- [x] Redis connection layer with graceful in-memory fallback
+- [x] Backend structured logging using Pino
+- [x] Backend `/api/health` diagnostic endpoint
+- [x] Initial Next.js foundation page verifying full-stack connectivity
+- [x] Development (`.env.example`) and Production (`.env.production.example`) templates
+- [x] Production multi-stage Dockerfiles and `docker-compose.yml`
