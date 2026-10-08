@@ -1383,11 +1383,10 @@ function SettingsContent() {
               <div>
                 <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
                   <Globe className="w-5 h-5 text-cyan-400" />
-                  Localization & Formatting Engine
+                  Localization
                 </h2>
                 <p className="text-xs text-slate-400 mt-1">
-                  Dynamic currency and date formatting rules applied across registers without
-                  hardcoding.
+                  Currency and date format settings for POS registers.
                 </p>
               </div>
 
@@ -1395,7 +1394,7 @@ function SettingsContent() {
               <div className="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                   <div className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">
-                    Dynamic Preview
+                    Preview
                   </div>
                   <div className="text-xl font-bold text-white mt-1">
                     {formatCurrency(1250.5)}{' '}
@@ -1543,7 +1542,7 @@ function SettingsContent() {
                   className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-sm shadow-lg shadow-cyan-600/30 transition-all disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
-                  {isSaving ? 'Saving...' : 'Save Localization Settings'}
+                  {isSaving ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>
@@ -1557,7 +1556,7 @@ function SettingsContent() {
           <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full p-6">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
               <Users className="w-5 h-5 text-purple-400" />
-              Add Operator / Cashier
+              Add User
             </h3>
 
             <form onSubmit={handleCreateUser} className="space-y-4 mt-4">
@@ -1598,7 +1597,7 @@ function SettingsContent() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-300 mb-1">
-                    Fast PIN (4-6 digits)
+                    PIN (4-6 digits)
                   </label>
                   <input
                     type="text"
@@ -1612,7 +1611,7 @@ function SettingsContent() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">Assigned Role</label>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Role</label>
                 <select
                   value={newUserForm.roleId}
                   onChange={(e) => setNewUserForm({ ...newUserForm, roleId: e.target.value })}
@@ -1638,7 +1637,7 @@ function SettingsContent() {
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-500"
                 >
-                  Create User
+                  Add User
                 </button>
               </div>
             </form>
@@ -1724,7 +1723,7 @@ function SettingsContent() {
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-500 shadow-md shadow-rose-600/30"
                 >
-                  Save Method
+                  Add Payment Method
                 </button>
               </div>
             </form>

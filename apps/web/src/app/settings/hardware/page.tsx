@@ -174,7 +174,7 @@ export default function HardwareSettingsPage() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-50"
+            className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
           >
             <Save className="w-3.5 h-3.5" />
             <span>{isSaving ? 'Saving...' : 'Save Settings'}</span>
@@ -324,7 +324,7 @@ export default function HardwareSettingsPage() {
                     <button
                       onClick={handleTestPrint}
                       disabled={isTesting}
-                      className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-600/30 transition-all disabled:opacity-50"
+                      className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
                     >
                       <Printer className="w-3.5 h-3.5" />
                       {isTesting ? 'Testing...' : 'Test Print'}
@@ -718,7 +718,7 @@ export default function HardwareSettingsPage() {
                   <button
                     onClick={handleKickDrawer}
                     disabled={isTesting}
-                    className="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-amber-600/30 transition-all disabled:opacity-50"
+                    className="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
                   >
                     <Coins className="w-3.5 h-3.5" />
                     {isTesting ? 'Kicking...' : 'Test Kick Drawer'}
@@ -831,7 +831,7 @@ export default function HardwareSettingsPage() {
 
                   <button
                     onClick={handleLaunchCustomerDisplay}
-                    className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-600/30 transition-all"
+                    className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     Launch Customer Screen

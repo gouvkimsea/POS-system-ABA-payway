@@ -471,12 +471,40 @@ function RegisterReportsContent() {
           )}
 
           {!isLoading && filteredSessions.length === 0 ? (
-            <div className="py-16 text-center text-slate-500 space-y-2">
-              <Clock className="w-8 h-8 mx-auto text-slate-600" />
-              <p className="text-sm font-semibold text-slate-400">No shifts found</p>
-              <p className="text-xs text-slate-500">
-                Try changing the date filter or register status.
-              </p>
+            <div className="py-16 text-center">
+              <div className="max-w-sm mx-auto space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-200">No shifts found</p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {searchQuery || statusFilter !== 'ALL' || datePreset !== 'all'
+                      ? 'No register sessions match the selected search, status, or date filters.'
+                      : 'No register sessions have been recorded yet.'}
+                  </p>
+                </div>
+                {searchQuery || statusFilter !== 'ALL' || datePreset !== 'all' ? (
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setStatusFilter('ALL');
+                      setDatePreset('all');
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition-colors"
+                  >
+                    Reset Shift Filters
+                  </button>
+                ) : (
+                  <Link
+                    href="/pos"
+                    className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-colors inline-flex items-center gap-1.5"
+                  >
+                    <Coins className="w-3.5 h-3.5" />
+                    Open Register at POS
+                  </Link>
+                )}
+              </div>
             </div>
           ) : (
             <div className="overflow-x-auto">

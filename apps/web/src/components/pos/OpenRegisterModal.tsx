@@ -73,7 +73,7 @@ export const OpenRegisterModal: React.FC<OpenRegisterModalProps> = ({
             <div>
               <h2 className="text-base font-bold text-white leading-tight">Open Cash Register</h2>
               <p className="text-xs text-slate-400">
-                Initialize starting float &amp; start cashier shift
+                Enter starting float to begin shift.
               </p>
             </div>
           </div>
@@ -123,7 +123,7 @@ export const OpenRegisterModal: React.FC<OpenRegisterModalProps> = ({
           {/* Opening Float USD */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-              Opening Cash Float (USD $)
+              Starting Cash (USD)
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -159,7 +159,7 @@ export const OpenRegisterModal: React.FC<OpenRegisterModalProps> = ({
           {/* Opening Float KHR */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-              Opening Cash Float (KHR ៛)
+              Starting Cash (KHR)
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-bold text-xs">
@@ -199,13 +199,13 @@ export const OpenRegisterModal: React.FC<OpenRegisterModalProps> = ({
           {/* Shift Notes */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-              Shift Opening Notes (Optional)
+              Notes (optional)
             </label>
             <div className="relative">
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="e.g. Standard morning shift float verified by shift lead."
+                placeholder="e.g. Verified by manager"
                 rows={2}
                 className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500"
               />
@@ -228,7 +228,7 @@ export const OpenRegisterModal: React.FC<OpenRegisterModalProps> = ({
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors disabled:opacity-50"
             >
               <LockOpen className="w-4 h-4" />
-              <span>{isSubmitting ? 'Opening Register...' : 'Open Register & Start Shift'}</span>
+              <span>{isSubmitting ? 'Opening...' : 'Open Register'}</span>
             </button>
           </div>
         </form>

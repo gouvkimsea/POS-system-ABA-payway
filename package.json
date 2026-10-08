@@ -22,6 +22,7 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
+    "pos:doctor": "tsx scripts/pos-doctor.ts",
     "test:connections": "tsx scripts/test-connections.ts",
     "test:unit": "tsx scripts/test-unit-suite.ts",
     "test:db": "tsx scripts/test-database-suite.ts",

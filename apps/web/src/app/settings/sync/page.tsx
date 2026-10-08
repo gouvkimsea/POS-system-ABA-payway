@@ -523,12 +523,28 @@ function SyncMonitorContent() {
         {activeTab !== 'server_db' && (
           <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl overflow-hidden shadow-xs">
             {filteredItems.length === 0 ? (
-              <div className="p-12 text-center text-slate-400 space-y-2">
+              <div className="p-12 text-center text-slate-400 space-y-3">
                 <CheckCircle2 className="w-10 h-10 text-slate-600 mx-auto" />
-                <p className="text-sm font-semibold">No transactions queued</p>
-                <p className="text-xs text-slate-500">
-                  Offline sales will appear here until synced.
-                </p>
+                <div>
+                  <p className="text-sm font-semibold text-slate-200">
+                    {activeTab === 'all'
+                      ? 'Local sync queue is empty'
+                      : `No transactions in ${activeTab} state`}
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {activeTab === 'all'
+                      ? 'All offline sales have been successfully processed and synchronized.'
+                      : `No queue items match the "${activeTab}" filter.`}
+                  </p>
+                </div>
+                {activeTab !== 'all' && (
+                  <button
+                    onClick={() => setActiveTab('all')}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition-colors"
+                  >
+                    View All Queue Items
+                  </button>
+                )}
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -662,12 +678,22 @@ function SyncMonitorContent() {
         {activeTab === 'server_db' && (
           <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl overflow-hidden shadow-xs">
             {serverRecords.length === 0 ? (
-              <div className="p-12 text-center text-slate-400 space-y-2">
+              <div className="p-12 text-center text-slate-400 space-y-3">
                 <Server className="w-10 h-10 text-slate-600 mx-auto" />
-                <p className="text-sm font-semibold">No records in server queue</p>
-                <p className="text-xs text-slate-500">
-                  Synced transactions appear here.
-                </p>
+                <div>
+                  <p className="text-sm font-semibold text-slate-200">No records in server queue</p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Server-side transactions replicated from terminals will appear here.
+                  </p>
+                </div>
+                <button
+                  onClick={refreshAll}
+                  disabled={isLoadingData}
+                  className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition-colors inline-flex items-center gap-1.5"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isLoadingData ? 'animate-spin' : ''}`} />
+                  Refresh Server Queue
+                </button>
               </div>
             ) : (
               <div className="overflow-x-auto">

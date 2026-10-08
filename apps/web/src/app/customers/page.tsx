@@ -458,8 +458,39 @@ function CustomerManagementContent() {
                 Loading customers...
               </div>
             ) : customers.length === 0 ? (
-              <div className="p-12 text-center text-slate-400 text-xs">
-                No customers found.
+              <div className="p-12 text-center">
+                <div className="max-w-sm mx-auto space-y-3">
+                  <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
+                    <Users className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-200">No customers found</p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      {searchQuery || filterType !== 'all'
+                        ? 'No customers match the current search query or account type filter.'
+                        : 'No customer accounts exist in the directory yet.'}
+                    </p>
+                  </div>
+                  {searchQuery || filterType !== 'all' ? (
+                    <button
+                      onClick={() => {
+                        setSearchQuery('');
+                        setFilterType('all');
+                      }}
+                      className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition-colors"
+                    >
+                      Clear Customer Filters
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleOpenCreate}
+                      className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-colors inline-flex items-center gap-1.5"
+                    >
+                      <UserPlus className="w-3.5 h-3.5" />
+                      Add Customer Profile
+                    </button>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="overflow-x-auto">

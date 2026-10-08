@@ -515,7 +515,7 @@ function TransfersContent() {
               setActionError(null);
               setShowCreateModal(true);
             }}
-            className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white shadow-md shadow-sky-600/30 flex items-center gap-1.5 transition-all"
+            className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white shadow-sm flex items-center gap-1.5 transition-all"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Transfer</span>
@@ -665,9 +665,43 @@ function TransfersContent() {
                   </tr>
                 ) : filteredTransfers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-12 text-slate-400">
-                      <Truck className="w-8 h-8 mx-auto text-slate-600 mb-2" />
-                      No transfers found.
+                    <td colSpan={7} className="text-center py-12 px-4">
+                      <div className="max-w-sm mx-auto space-y-3">
+                        <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
+                          <Truck className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-200">No transfers found</p>
+                          <p className="text-xs text-slate-400 mt-1">
+                            {statusFilter !== 'ALL' || storeFilter !== 'ALL' || searchQuery
+                              ? 'No transfers match the selected status or branch filters.'
+                              : 'No inter-store inventory transfers have been created yet.'}
+                          </p>
+                        </div>
+                        {statusFilter !== 'ALL' || storeFilter !== 'ALL' || searchQuery ? (
+                          <button
+                            onClick={() => {
+                              setStatusFilter('ALL');
+                              setStoreFilter('ALL');
+                              setSearchQuery('');
+                            }}
+                            className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition-colors"
+                          >
+                            Reset Transfer Filters
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setActionError(null);
+                              setShowCreateModal(true);
+                            }}
+                            className="px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-sm transition-colors inline-flex items-center gap-1.5"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            Create First Transfer
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ) : (

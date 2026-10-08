@@ -142,6 +142,7 @@ pnpm db:seed
 | `pnpm build`          | Full production build of all packages, bridge, API, and web application                 |
 | `pnpm typecheck`      | Run TypeScript type checks across all workspaces with zero errors                       |
 | `pnpm lint`           | Run ESLint across all TypeScript and JavaScript files                                   |
+| `pnpm pos:doctor`     | Run comprehensive system doctor & environment diagnostics scorecard     |
 | `pnpm db:studio`      | Launch Prisma Studio visual database editor                                             |
 
 ---
@@ -151,6 +152,9 @@ pnpm db:seed
 The repository contains an enterprise testing harness covering all mission-critical workflows:
 
 ```bash
+# Run system doctor diagnostics
+pnpm pos:doctor
+
 # Run all automated test suites
 pnpm test:all
 

@@ -427,7 +427,20 @@ function StoresManagementContent() {
             {isLoading ? (
               <div className="text-center py-10 text-xs text-slate-500">Loading stores...</div>
             ) : filteredStores.length === 0 ? (
-              <div className="text-center py-10 text-xs text-slate-500">No stores found</div>
+              <div className="text-center py-10 px-3">
+                <p className="text-xs font-semibold text-slate-400">No branches found</p>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  {searchQuery ? 'Try clearing your search query.' : 'No branches configured yet.'}
+                </p>
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="mt-2 text-xs text-indigo-400 hover:underline"
+                  >
+                    Clear Search
+                  </button>
+                )}
+              </div>
             ) : (
               filteredStores.map((s) => {
                 const isSelected = selectedStore?.id === s.id;

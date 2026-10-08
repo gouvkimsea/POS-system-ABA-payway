@@ -27,7 +27,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 bg-slate-950/60">
           <div className="flex items-center gap-2 text-white">
             <Keyboard className="w-5 h-5 text-indigo-400" />
-            <h3 className="font-bold text-base">POS Keyboard Shortcuts</h3>
+            <h3 className="font-bold text-base">Keyboard Shortcuts</h3>
           </div>
           <button
             onClick={onClose}
@@ -39,7 +39,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
 
         <div className="p-5 space-y-2.5">
           <p className="text-xs text-slate-400 mb-3">
-            Designed for high-speed cashier throughput without touching the mouse.
+            Quick keys for common register actions.
           </p>
 
           <div className="divide-y divide-slate-800 border border-slate-800 rounded-lg overflow-hidden">
@@ -61,7 +61,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
               onClick={onClose}
               className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow-xs"
             >
-              Got it (ESC)
+              Close
             </button>
           </div>
         </div>
