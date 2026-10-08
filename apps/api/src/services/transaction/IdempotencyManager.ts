@@ -91,7 +91,11 @@ export class IdempotencyManager {
   /**
    * Cache the completed order response to return on idempotent replays
    */
-  public static async saveCompletedResult(key: string, data: any, ttlSeconds = 86400): Promise<void> {
+  public static async saveCompletedResult(
+    key: string,
+    data: any,
+    ttlSeconds = 86400,
+  ): Promise<void> {
     if (!key) return;
 
     const cacheKey = `idemp_result:${key}`;

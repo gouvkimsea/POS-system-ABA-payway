@@ -16,6 +16,7 @@ export class AuthService {
     roles: RoleCode[];
     permissions: PermissionCode[];
     storeId: string | null;
+    authorizedStoreIds: string[] | null;
   }> {
     const userRoles = await prisma.userRole.findMany({
       where: { userId },
@@ -34,20 +35,31 @@ export class AuthService {
 
     const rolesSet = new Set<string>();
     const permissionsSet = new Set<string>();
+    const storeIdsSet = new Set<string>();
+    let hasBusinessWideAccess = false;
     let storeId: string | null = null;
 
     for (const ur of userRoles) {
       rolesSet.add(ur.role.name);
-      if (ur.storeId) storeId = ur.storeId;
+      if (ur.role.name === 'ADMIN' || ur.storeId === null) {
+        hasBusinessWideAccess = true;
+      }
+      if (ur.storeId) {
+        storeIdsSet.add(ur.storeId);
+        if (!storeId) storeId = ur.storeId;
+      }
       for (const rp of ur.role.rolePermissions) {
         permissionsSet.add(rp.permission.code);
       }
     }
 
+    const authorizedStoreIds = hasBusinessWideAccess ? null : Array.from(storeIdsSet);
+
     return {
       roles: Array.from(rolesSet),
       permissions: Array.from(permissionsSet),
       storeId,
+      authorizedStoreIds,
     };
   }
 
@@ -174,7 +186,8 @@ export class AuthService {
       },
     });
 
-    const { roles, permissions, storeId } = await this.resolveUserRolesAndPermissions(user.id);
+    const { roles, permissions, storeId, authorizedStoreIds } =
+      await this.resolveUserRolesAndPermissions(user.id);
 
     const authUser: AuthUser = {
       id: user.id,
@@ -184,6 +197,7 @@ export class AuthService {
       phone: user.phone,
       businessId: user.businessId,
       storeId,
+      authorizedStoreIds,
       roles,
       permissions,
     };
@@ -193,6 +207,7 @@ export class AuthService {
       username: user.username,
       businessId: user.businessId,
       storeId,
+      authorizedStoreIds,
       roles,
       permissions,
     });
@@ -275,7 +290,8 @@ export class AuthService {
       data: { failedLoginAttempts: 0, lockedUntil: null, lastLoginAt: new Date() },
     });
 
-    const { roles, permissions, storeId } = await this.resolveUserRolesAndPermissions(user.id);
+    const { roles, permissions, storeId, authorizedStoreIds } =
+      await this.resolveUserRolesAndPermissions(user.id);
 
     const authUser: AuthUser = {
       id: user.id,
@@ -285,6 +301,7 @@ export class AuthService {
       phone: user.phone,
       businessId: user.businessId,
       storeId,
+      authorizedStoreIds,
       roles,
       permissions,
     };
@@ -294,6 +311,7 @@ export class AuthService {
       username: user.username,
       businessId: user.businessId,
       storeId,
+      authorizedStoreIds,
       roles,
       permissions,
     });
@@ -357,15 +375,15 @@ export class AuthService {
       };
     }
 
-    const { roles, permissions, storeId } = await this.resolveUserRolesAndPermissions(
-      session.userId,
-    );
+    const { roles, permissions, storeId, authorizedStoreIds } =
+      await this.resolveUserRolesAndPermissions(session.userId);
 
     const tokens = generateTokens({
       userId: session.user.id,
       username: session.user.username,
       businessId: session.user.businessId,
       storeId,
+      authorizedStoreIds,
       roles,
       permissions,
     });

@@ -33,7 +33,8 @@ export class CardPaymentProvider implements IPaymentProvider {
         changeUSD: 0,
         changeKHR: 0,
         errorCode: 'CARD_DECLINED',
-        errorMessage: 'Card payment was declined by issuing bank: insufficient funds or card blocked',
+        errorMessage:
+          'Card payment was declined by issuing bank: insufficient funds or card blocked',
         gatewayResponse: {
           processor: 'EMV_TERMINAL',
           responseCode: '51',
@@ -43,9 +44,7 @@ export class CardPaymentProvider implements IPaymentProvider {
     }
 
     // Generate or verify approval authorization code
-    const authCode =
-      metadata?.authCode ||
-      `AUTH${Math.floor(100000 + Math.random() * 900000)}`;
+    const authCode = metadata?.authCode || `AUTH${Math.floor(100000 + Math.random() * 900000)}`;
     const ref = transactionRef || `CARD-${Date.now().toString().slice(-6)}-${authCode}`;
 
     return {

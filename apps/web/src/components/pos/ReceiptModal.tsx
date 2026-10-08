@@ -2,18 +2,11 @@
 
 import React, { useState } from 'react';
 import { CheckoutResult, PaperSize } from '@pos/types';
-import {
-  X,
-  Printer,
-  CheckCircle,
-  ArrowRight,
-  Copy,
-  Coins,
-  Check,
-} from 'lucide-react';
+import { X, Printer, CheckCircle, ArrowRight, Copy, Coins, Check } from 'lucide-react';
 import { printerService } from '../../lib/hardware/PrinterService';
 import { cashDrawerService } from '../../lib/hardware/CashDrawerService';
 import { hardwareManager } from '../../lib/hardware/HardwareManager';
+import { useSettings } from '../../lib/settings-context';
 
 interface ReceiptModalProps {
   isOpen: boolean;
@@ -28,15 +21,19 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
   isOpen,
   onClose,
   receiptData,
-  storeName = 'Angkor Fresh Mart - Monivong Central',
-  storeAddress = '#128, Preah Monivong Blvd, Phnom Penh',
-  storePhone = '+855 23 888 991',
+  storeName,
+  storeAddress,
+  storePhone,
 }) => {
+  const { settings, formatCurrency, formatDateTime } = useSettings();
   const [printStatus, setPrintStatus] = useState<string>('');
   const [isPrinting, setIsPrinting] = useState<boolean>(false);
   const [isReprint, setIsReprint] = useState<boolean>(false);
   const [previewPaperSize, setPreviewPaperSize] = useState<PaperSize>(
-    hardwareManager.getProfile().printer.paperSize || '80mm',
+    (settings.store?.receipt?.paperSize as PaperSize) ||
+      (settings.pos?.receiptSize as PaperSize) ||
+      hardwareManager.getProfile().printer.paperSize ||
+      '80mm',
   );
 
   if (!isOpen || !receiptData) return null;
@@ -79,21 +76,33 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
     }
   };
 
+  const isOffline = receiptData.orderNumber?.startsWith('OFF-ORD-');
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4">
       <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
         {/* Success Header */}
-        <div className="bg-emerald-600 text-white p-4 flex items-center justify-between shrink-0">
+        <div
+          className={`p-4 flex items-center justify-between shrink-0 text-white ${
+            isOffline ? 'bg-gradient-to-r from-amber-600 to-amber-700' : 'bg-emerald-600'
+          }`}
+        >
           <div className="flex items-center gap-2">
-            <CheckCircle className="w-5 h-5 text-emerald-200" />
+            <CheckCircle className="w-5 h-5 text-white" />
             <div>
-              <h3 className="font-bold text-sm leading-none">Payment Complete</h3>
-              <p className="text-[11px] text-emerald-100 mt-0.5">Sale recorded in PostgreSQL</p>
+              <h3 className="font-bold text-sm leading-none">
+                {isOffline ? 'Offline Payment Saved' : 'Payment Complete'}
+              </h3>
+              <p className="text-[11px] text-white/90 mt-0.5">
+                {isOffline
+                  ? 'Queued in IndexedDB • Syncs automatically'
+                  : 'Sale recorded in PostgreSQL'}
+              </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-full bg-emerald-700/60 hover:bg-emerald-700 text-white flex items-center justify-center"
+            className="w-7 h-7 rounded-full bg-black/20 hover:bg-black/30 text-white flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -155,6 +164,16 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
               previewPaperSize === '58mm' ? 'max-w-[280px]' : 'max-w-[360px]'
             }`}
           >
+            {/* Offline Notice Banner */}
+            {isOffline && (
+              <div className="text-center font-bold text-amber-900 bg-amber-50 border-2 border-dashed border-amber-400 py-1 rounded px-2">
+                *** OFFLINE TRANSACTION ***
+                <div className="text-[10px] font-normal text-amber-700 mt-0.5">
+                  Temporary Receipt • Queued for Sync
+                </div>
+              </div>
+            )}
+
             {/* Reprint Banner */}
             {isReprint && (
               <div className="text-center font-bold text-rose-600 border-2 border-dashed border-rose-300 py-1 rounded">
@@ -164,9 +183,30 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
 
             {/* Store Header */}
             <div className="text-center space-y-0.5 border-b border-dashed border-slate-300 pb-3">
-              <h4 className="font-bold text-sm uppercase tracking-wider">{storeName}</h4>
-              <p className="text-[10px] text-slate-500">{storeAddress}</p>
-              <p className="text-[10px] text-slate-500">Tel: {storePhone}</p>
+              {settings.store.receipt.showLogo && (
+                <div className="flex justify-center mb-1">
+                  {settings.business.logoUrl ? (
+                    <img
+                      src={settings.business.logoUrl}
+                      alt={settings.business.name}
+                      className="w-10 h-10 object-contain mx-auto"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs mx-auto">
+                      {(settings.business.name || 'P')[0]}
+                    </div>
+                  )}
+                </div>
+              )}
+              <h4 className="font-bold text-sm uppercase tracking-wider">
+                {storeName || settings.store.storeName || settings.business.name}
+              </h4>
+              <p className="text-[10px] text-slate-500">
+                {storeAddress || settings.business.address}
+              </p>
+              <p className="text-[10px] text-slate-500">
+                Tel: {storePhone || settings.business.phone}
+              </p>
             </div>
 
             {/* Receipt & Order Metadata */}
@@ -181,12 +221,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Date & Time:</span>
-                <span>
-                  {new Date(receiptData.createdAt).toLocaleString([], {
-                    dateStyle: 'short',
-                    timeStyle: 'short',
-                  })}
-                </span>
+                <span>{formatDateTime(receiptData.createdAt)}</span>
               </div>
               {receiptData.customer && (
                 <div className="flex justify-between text-indigo-700 font-semibold">
@@ -209,14 +244,16 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                     <span className="font-semibold">{item.productName}</span>
                     {item.discountUSD > 0 && (
                       <span className="text-[10px] text-rose-600 block">
-                        (Disc -${item.discountUSD.toFixed(2)})
+                        (Disc -{formatCurrency(item.discountUSD, 'USD')})
                       </span>
                     )}
                   </div>
                   <span className="text-slate-500">
-                    {item.quantity} x ${item.unitPriceUSD.toFixed(2)}
+                    {item.quantity} x {formatCurrency(item.unitPriceUSD, 'USD')}
                   </span>
-                  <span className="font-bold text-slate-800">${item.totalUSD.toFixed(2)}</span>
+                  <span className="font-bold text-slate-800">
+                    {formatCurrency(item.totalUSD, 'USD')}
+                  </span>
                 </div>
               ))}
             </div>
@@ -225,18 +262,18 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
             <div className="space-y-1 border-b border-dashed border-slate-300 pb-2 text-[11px]">
               <div className="flex justify-between">
                 <span className="text-slate-500">Subtotal:</span>
-                <span>${receiptData.subtotalUSD.toFixed(2)}</span>
+                <span>{formatCurrency(receiptData.subtotalUSD, 'USD')}</span>
               </div>
               {receiptData.discountUSD > 0 && (
                 <div className="flex justify-between text-rose-600 font-medium">
                   <span>Discount:</span>
-                  <span>-${receiptData.discountUSD.toFixed(2)}</span>
+                  <span>-{formatCurrency(receiptData.discountUSD, 'USD')}</span>
                 </div>
               )}
-              {receiptData.taxUSD > 0 && (
+              {settings.store.receipt.showTaxBreakdown && receiptData.taxUSD > 0 && (
                 <div className="flex justify-between text-slate-500">
-                  <span>VAT / Tax (10%):</span>
-                  <span>${receiptData.taxUSD.toFixed(2)}</span>
+                  <span>VAT / Tax ({settings.store.tax.defaultTaxRate}%):</span>
+                  <span>{formatCurrency(receiptData.taxUSD, 'USD')}</span>
                 </div>
               )}
             </div>
@@ -245,11 +282,11 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
             <div className="space-y-1 border-b border-dashed border-slate-300 pb-2">
               <div className="flex justify-between text-sm font-bold text-slate-900">
                 <span>TOTAL USD:</span>
-                <span>${receiptData.totalUSD.toFixed(2)}</span>
+                <span>{formatCurrency(receiptData.totalUSD, 'USD')}</span>
               </div>
               <div className="flex justify-between text-xs font-semibold text-amber-700">
                 <span>TOTAL KHR:</span>
-                <span>{receiptData.totalKHR.toLocaleString()} ៛</span>
+                <span>{formatCurrency(receiptData.totalKHR, 'KHR')}</span>
               </div>
               <div className="flex justify-between text-[10px] text-slate-400">
                 <span>Exchange Rate:</span>
@@ -262,30 +299,38 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
               <div className="flex justify-between text-slate-600">
                 <span>Payment Method:</span>
                 <span className="font-semibold uppercase">
-                  {receiptData.payments.map((p) => p.paymentMethodName || p.paymentMethodCode).join(', ') || 'CASH'}
+                  {receiptData.payments
+                    .map((p) => p.paymentMethodName || p.paymentMethodCode)
+                    .join(', ') || 'CASH'}
                 </span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Tendered:</span>
                 <span className="font-semibold">
-                  ${(receiptData.paidUSD + receiptData.changeUSD).toFixed(2)}
+                  {formatCurrency(receiptData.paidUSD + receiptData.changeUSD, 'USD')}
                 </span>
               </div>
               <div className="flex justify-between font-bold text-emerald-700">
                 <span>CHANGE (USD):</span>
-                <span>${receiptData.changeUSD.toFixed(2)}</span>
+                <span>{formatCurrency(receiptData.changeUSD, 'USD')}</span>
               </div>
               <div className="flex justify-between font-bold text-emerald-700">
                 <span>CHANGE (KHR):</span>
-                <span>{receiptData.changeKHR.toLocaleString()} ៛</span>
+                <span>{formatCurrency(receiptData.changeKHR, 'KHR')}</span>
               </div>
             </div>
 
             {/* Footer Notice */}
             <div className="text-center text-[10px] text-slate-500 pt-1">
-              <p>{receiptData.receipt.headerText || 'Angkor Fresh Mart'}</p>
+              <p>
+                {settings.store.receipt.customHeader ||
+                  receiptData.receipt.headerText ||
+                  settings.business.name}
+              </p>
               <p className="mt-1 font-semibold">
-                {receiptData.receipt.footerText || 'Thank you! Please visit us again.'}
+                {settings.store.receipt.customFooter ||
+                  receiptData.receipt.footerText ||
+                  'Thank you! Please visit us again.'}
               </p>
             </div>
           </div>

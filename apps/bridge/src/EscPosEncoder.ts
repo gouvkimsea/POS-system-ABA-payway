@@ -307,7 +307,10 @@ export class EscPosEncoder {
       encoder.bold(true);
       encoder.twoColumn('Change Due (USD):', `$${data.changeUSD.toFixed(2)}`);
       if (data.changeKHR) {
-        encoder.twoColumn('Change Due (KHR):', `${Math.round(data.changeKHR).toLocaleString()} KHR`);
+        encoder.twoColumn(
+          'Change Due (KHR):',
+          `${Math.round(data.changeKHR).toLocaleString()} KHR`,
+        );
       }
       encoder.bold(false);
     }

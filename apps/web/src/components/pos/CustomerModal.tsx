@@ -14,6 +14,8 @@ interface CustomerModalProps {
     name: string;
     phone?: string;
     email?: string;
+    address?: string;
+    notes?: string;
   }) => Promise<PosCustomer | null>;
 }
 
@@ -32,6 +34,8 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
   const [name, setName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [address, setAddress] = useState<string>('');
+  const [notes, setNotes] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -41,7 +45,8 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
     (c) =>
       c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (c.phone && c.phone.includes(searchQuery)) ||
-      (c.email && c.email.toLowerCase().includes(searchQuery.toLowerCase())),
+      (c.email && c.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (c.address && c.address.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
@@ -58,6 +63,8 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
         name: name.trim(),
         phone: phone.trim() || undefined,
         email: email.trim() || undefined,
+        address: address.trim() || undefined,
+        notes: notes.trim() || undefined,
       });
       if (created) {
         onSelectCustomer(created);
@@ -72,7 +79,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4">
-      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[85dvh] animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
           <div className="flex items-center gap-2 text-slate-800">
@@ -179,7 +186,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-3 text-[11px] text-slate-500 mt-1">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500 mt-1">
                         {cust.phone && (
                           <span className="flex items-center gap-1 font-mono">
                             <Phone className="w-3 h-3 text-slate-400" />
@@ -192,7 +199,22 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
                             {cust.email}
                           </span>
                         )}
+                        {cust.address && (
+                          <span className="text-slate-400 truncate max-w-[200px]">
+                            📍 {cust.address}
+                          </span>
+                        )}
+                        {cust.creditBalanceUSD > 0 && (
+                          <span className="text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded text-[10px]">
+                            Credit: ${cust.creditBalanceUSD.toFixed(2)}
+                          </span>
+                        )}
                       </div>
+                      {cust.notes && (
+                        <div className="text-[11px] text-slate-400 italic mt-0.5 truncate max-w-[300px]">
+                          Note: {cust.notes}
+                        </div>
+                      )}
                     </div>
                     {isSelected && <Check className="w-4 h-4 text-indigo-600" />}
                   </div>
@@ -246,6 +268,32 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. customer@gmail.com"
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Street Address / Location
+              </label>
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="e.g. #128 Preah Monivong Blvd, Phnom Penh"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Notes & Preferences
+              </label>
+              <textarea
+                rows={2}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="e.g. Regular wholesale customer, prefers digital receipt"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 resize-none"
               />
             </div>
 

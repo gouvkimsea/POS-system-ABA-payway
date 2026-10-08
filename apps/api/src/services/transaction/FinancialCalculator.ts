@@ -55,8 +55,7 @@ export class FinancialCalculator {
     const business = await prisma.business.findUnique({
       where: { id: businessId },
     });
-    const exchangeRateKHR =
-      params.exchangeRateKHR || Number(business?.baseExchangeRate || 4100.0);
+    const exchangeRateKHR = params.exchangeRateKHR || Number(business?.baseExchangeRate || 4100.0);
 
     // 2. Fetch products and variants from PostgreSQL
     const productIds = Array.from(new Set(items.map((i) => i.productId)));
@@ -130,11 +129,52 @@ export class FinancialCalculator {
 
     grossSubtotalUSD = Number(grossSubtotalUSD.toFixed(2));
 
-    // 3. Process order-level discount
-    let effectiveOrderDiscountUSD = 0;
-    if (discountUSD > 0) {
-      effectiveOrderDiscountUSD = Math.min(grossSubtotalUSD, Number(discountUSD.toFixed(2)));
+    // 3. Process order-level discount strictly from database catalog rules
+    let verifiedDiscountUSD = 0;
+    if (params.discountCode && params.discountCode.trim()) {
+      const code = params.discountCode.trim();
+      const dbDiscount = await prisma.discount.findFirst({
+        where: {
+          code: { equals: code, mode: 'insensitive' },
+          businessId,
+          isActive: true,
+        },
+      });
+
+      if (!dbDiscount) {
+        throw new Error(`Discount code "${code}" is invalid or has expired`);
+      }
+
+      const now = new Date();
+      if (dbDiscount.startDate && dbDiscount.startDate > now) {
+        throw new Error(`Discount code "${code}" is not yet active`);
+      }
+      if (dbDiscount.endDate && dbDiscount.endDate < now) {
+        throw new Error(`Discount code "${code}" has expired`);
+      }
+      if (dbDiscount.minOrderAmountUSD && grossSubtotalUSD < Number(dbDiscount.minOrderAmountUSD)) {
+        throw new Error(
+          `Subtotal ($${grossSubtotalUSD.toFixed(2)}) does not meet the minimum requirement of $${Number(dbDiscount.minOrderAmountUSD).toFixed(2)} for discount "${code}"`,
+        );
+      }
+
+      if (dbDiscount.type === 'PERCENTAGE') {
+        const pct = Number(dbDiscount.value);
+        verifiedDiscountUSD = Number(((grossSubtotalUSD * pct) / 100).toFixed(2));
+      } else {
+        // FIXED_AMOUNT
+        verifiedDiscountUSD = Math.min(grossSubtotalUSD, Number(dbDiscount.value));
+      }
+    } else if (discountUSD > 0) {
+      // Manual custom cashier discount: cap at 50% to prevent fraud or client-side price bypass
+      const maxAllowedManual = Number((grossSubtotalUSD * 0.5).toFixed(2));
+      verifiedDiscountUSD = Math.min(Number(discountUSD.toFixed(2)), maxAllowedManual);
     }
+
+    const effectiveOrderDiscountUSD = Math.min(
+      grossSubtotalUSD,
+      Number(verifiedDiscountUSD.toFixed(2)),
+    );
 
     // 4. Compute Taxable Amount & Tax (10% VAT default)
     const taxableAmountUSD = Number((grossSubtotalUSD - effectiveOrderDiscountUSD).toFixed(2));

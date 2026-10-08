@@ -89,6 +89,12 @@ export const PERMISSIONS = {
   REGISTER_OPEN: 'register.open',
   REGISTER_CLOSE: 'register.close',
   CASH_MANAGE: 'cash.manage',
+  CUSTOMERS_VIEW: 'customers.view',
+  CUSTOMERS_MANAGE: 'customers.manage',
+  STORES_VIEW: 'stores.view',
+  STORES_MANAGE: 'stores.manage',
+  TRANSFERS_VIEW: 'transfers.view',
+  TRANSFERS_MANAGE: 'transfers.manage',
 } as const;
 
 export type PermissionCode = (typeof PERMISSIONS)[keyof typeof PERMISSIONS] | string;
@@ -103,6 +109,7 @@ export interface AuthUser {
   phone: string | null;
   businessId: string;
   storeId?: string | null;
+  authorizedStoreIds?: string[] | null;
   roles: RoleCode[];
   permissions: PermissionCode[];
 }
@@ -123,6 +130,7 @@ export interface TokenPayload {
   username: string;
   businessId: string;
   storeId?: string | null;
+  authorizedStoreIds?: string[] | null;
   roles: RoleCode[];
   permissions: PermissionCode[];
 }
@@ -144,6 +152,7 @@ export interface PosCategory {
 export interface PosProduct {
   id: string;
   name: string;
+  nameKhmer?: string | null;
   sku: string;
   barcode: string | null;
   description: string | null;
@@ -160,6 +169,14 @@ export interface PosProduct {
   categoryId: string | null;
   categoryName?: string;
   categoryColor?: string;
+  variants?: Array<{
+    id: string;
+    name: string;
+    sku: string;
+    barcode?: string | null;
+    priceUSD: number;
+    stockQuantity: number;
+  }>;
 }
 
 export interface PosCustomer {
@@ -167,6 +184,9 @@ export interface PosCustomer {
   name: string;
   phone: string | null;
   email: string | null;
+  address?: string | null;
+  notes?: string | null;
+  isWalkIn?: boolean;
   loyaltyPoints: number;
   creditBalanceUSD: number;
 }
@@ -240,20 +260,10 @@ export type OrderStatus =
   | 'CANCELLED';
 
 export type PaymentStatus =
-  | 'PENDING'
-  | 'COMPLETED'
-  | 'FAILED'
-  | 'REFUNDED'
-  | 'VOIDED'
-  | 'CANCELLED';
+  'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED' | 'VOIDED' | 'CANCELLED';
 
 export type PaymentMethodType =
-  | 'CASH'
-  | 'DIGITAL_QR'
-  | 'CARD'
-  | 'BANK_TRANSFER'
-  | 'CUSTOMER_CREDIT'
-  | 'OTHER';
+  'CASH' | 'DIGITAL_QR' | 'CARD' | 'BANK_TRANSFER' | 'CUSTOMER_CREDIT' | 'OTHER';
 
 export interface CheckoutItemInput {
   productId: string;
@@ -649,25 +659,13 @@ export interface CreateVariantInput {
 // ------------------------------------------------------------------------------
 
 export type HardwareDeviceType =
-  | 'PRINTER'
-  | 'SCANNER'
-  | 'CASH_DRAWER'
-  | 'CUSTOMER_DISPLAY'
-  | 'BRIDGE';
+  'PRINTER' | 'SCANNER' | 'CASH_DRAWER' | 'CUSTOMER_DISPLAY' | 'BRIDGE';
 
 export type HardwareConnectionStatus =
-  | 'CONNECTED'
-  | 'DISCONNECTED'
-  | 'CONNECTING'
-  | 'ERROR'
-  | 'STANDALONE_FALLBACK';
+  'CONNECTED' | 'DISCONNECTED' | 'CONNECTING' | 'ERROR' | 'STANDALONE_FALLBACK';
 
 export type PrinterDriverType =
-  | 'LOCAL_BRIDGE'
-  | 'NETWORK_TCP'
-  | 'WEB_SERIAL'
-  | 'WEB_USB'
-  | 'BROWSER_FALLBACK';
+  'LOCAL_BRIDGE' | 'NETWORK_TCP' | 'WEB_SERIAL' | 'WEB_USB' | 'BROWSER_FALLBACK';
 
 export type PaperSize = '58mm' | '80mm';
 
@@ -743,11 +741,7 @@ export interface PrintResult {
   fallbackUsed?: boolean;
 }
 
-export type ScannerInputMode =
-  | 'KEYBOARD_WEDGE'
-  | 'CAMERA'
-  | 'LOCAL_BRIDGE'
-  | 'WEB_SERIAL';
+export type ScannerInputMode = 'KEYBOARD_WEDGE' | 'CAMERA' | 'LOCAL_BRIDGE' | 'WEB_SERIAL';
 
 export interface ScannerConfig {
   mode: ScannerInputMode;
@@ -759,10 +753,7 @@ export interface ScannerConfig {
   suffix?: string;
 }
 
-export type CashDrawerDriverType =
-  | 'PRINTER_KICK'
-  | 'LOCAL_BRIDGE_DIRECT'
-  | 'MANUAL_FALLBACK';
+export type CashDrawerDriverType = 'PRINTER_KICK' | 'LOCAL_BRIDGE_DIRECT' | 'MANUAL_FALLBACK';
 
 export interface CashDrawerConfig {
   driver: CashDrawerDriverType;
@@ -779,10 +770,7 @@ export interface CashDrawerTriggerResult {
   message?: string;
 }
 
-export type CustomerDisplayDriverType =
-  | 'SECONDARY_WINDOW'
-  | 'LOCAL_BRIDGE_VFD'
-  | 'DISABLED';
+export type CustomerDisplayDriverType = 'SECONDARY_WINDOW' | 'LOCAL_BRIDGE_VFD' | 'DISABLED';
 
 export interface CustomerDisplayConfig {
   driver: CustomerDisplayDriverType;
@@ -877,3 +865,996 @@ export interface RegisterDeviceInput {
   hardwareConfig?: Partial<HardwareSettingsProfile>;
 }
 
+// ------------------------------------------------------------------------------
+// OFFLINE CAPABILITY & SYNCHRONIZATION TYPES
+// ------------------------------------------------------------------------------
+
+export type SyncItemStatus = 'pending' | 'syncing' | 'synchronized' | 'failed' | 'conflict';
+
+export type ConflictReasonCode =
+  | 'PRODUCT_NOT_FOUND'
+  | 'PRODUCT_INACTIVE'
+  | 'PRICE_MISMATCH'
+  | 'INVENTORY_NEGATIVE'
+  | 'CUSTOMER_NOT_FOUND'
+  | 'DUPLICATE_KEY'
+  | 'VALIDATION_FAILED'
+  | 'INTERNAL_ERROR';
+
+export interface OfflineConflictInfo {
+  reason: ConflictReasonCode;
+  message: string;
+  details?: Record<string, any>;
+  occurredAt: string;
+  localVersion?: Record<string, any>;
+  serverVersion?: Record<string, any>;
+  resolutionAction?: 'OVERRIDE_ACCEPT' | 'RETRY' | 'DISCARD';
+  resolvedAt?: string;
+  resolvedBy?: string;
+}
+
+export interface OfflineSyncQueueItem {
+  id: string; // Temporary local ID (e.g. OFF-TX-...)
+  clientSyncId: string; // Unique idempotency / sync key
+  offlineOrderNumber: string; // e.g. OFF-ORD-YYYYMMDD-XXXX
+  offlineReceiptNumber: string; // e.g. OFF-RCP-YYYYMMDD-XXXX
+  storeId: string;
+  registerId?: string;
+  cashierId: string;
+  cashierName: string;
+  status: SyncItemStatus;
+  createdAt: string;
+  lastAttemptAt?: string | null;
+  syncedAt?: string | null;
+  attempts: number;
+  errorMessage?: string | null;
+  conflict?: OfflineConflictInfo | null;
+  payload: CheckoutInput & {
+    offlineMetadata?: {
+      deviceIdentifier?: string;
+      offlineCreatedAt?: string;
+      subtotalUSD: number;
+      totalUSD: number;
+      totalKHR: number;
+      itemsDetail: Array<{
+        productId: string;
+        productName: string;
+        sku: string;
+        barcode?: string | null;
+        quantity: number;
+        unitPriceUSD: number;
+        discountUSD: number;
+      }>;
+    };
+  };
+  serverOrderId?: string | null;
+  serverOrderNumber?: string | null;
+}
+
+export interface SyncBatchRequest {
+  deviceId?: string;
+  deviceIdentifier?: string;
+  storeId?: string;
+  items: OfflineSyncQueueItem[];
+}
+
+export interface SyncBatchItemResult {
+  clientSyncId: string;
+  status: SyncItemStatus;
+  serverOrderId?: string;
+  serverOrderNumber?: string;
+  receiptNumber?: string;
+  conflict?: OfflineConflictInfo;
+  errorMessage?: string;
+  alreadySynced?: boolean;
+  inventoryReconciled?: boolean;
+}
+
+export interface SyncBatchResponse {
+  success: boolean;
+  total: number;
+  syncedCount: number;
+  conflictCount: number;
+  failedCount: number;
+  results: SyncBatchItemResult[];
+  timestamp: string;
+}
+
+export interface SyncMonitorStats {
+  totalQueued: number;
+  pendingCount: number;
+  syncingCount: number;
+  synchronizedCount: number;
+  conflictCount: number;
+  failedCount: number;
+  lastSyncTimestamp?: string | null;
+  isOnline: boolean;
+}
+
+export interface SyncQueueRecord {
+  id: string;
+  clientSyncId: string;
+  storeId: string;
+  storeName?: string;
+  deviceId: string;
+  deviceName?: string;
+  status: 'PENDING' | 'PROCESSED' | 'CONFLICT' | 'FAILED';
+  errorMessage?: string | null;
+  conflictDetails?: any;
+  orderId?: string | null;
+  orderNumber?: string | null;
+  payload: any;
+  receivedAt: string;
+  processedAt?: string | null;
+}
+
+export interface CatalogSnapshot {
+  store: {
+    id: string;
+    name: string;
+    code: string;
+    taxRate: number;
+    baseExchangeRate: number;
+    currency: string;
+    address?: string | null;
+    phone?: string | null;
+  };
+  business: {
+    id: string;
+    name: string;
+    taxNumber?: string | null;
+  };
+  products: PosProduct[];
+  categories: Array<{ id: string; name: string; code: string; color?: string | null }>;
+  customers: PosCustomer[];
+  taxConfig: {
+    vatRate: number;
+    taxNumber?: string | null;
+  };
+  cachedAt: string;
+  version: string;
+}
+
+// ------------------------------------------------------------------------------
+// 12. REGISTER SESSION & CASH MANAGEMENT CONTRACTS
+// ------------------------------------------------------------------------------
+
+export type CashMovementTypeEnum = 'CASH_IN' | 'CASH_OUT' | 'FLOAT_ADD' | 'PAY_OUT' | 'EXPENSE';
+
+export type SessionStatusEnum = 'OPEN' | 'CLOSED';
+
+export interface DenominationBreakdown {
+  usd?: {
+    100?: number;
+    50?: number;
+    20?: number;
+    10?: number;
+    5?: number;
+    1?: number;
+    coins?: number;
+  };
+  khr?: {
+    100000?: number;
+    50000?: number;
+    20000?: number;
+    15000?: number;
+    10000?: number;
+    5000?: number;
+    2000?: number;
+    1000?: number;
+    500?: number;
+    100?: number;
+  };
+}
+
+export interface RegisterSessionSummary {
+  id: string;
+  registerId: string;
+  registerName: string;
+  registerCode: string;
+  storeId: string;
+  storeName: string;
+  cashierId: string;
+  cashierName: string;
+  openedAt: string;
+  closedAt: string | null;
+  status: SessionStatusEnum;
+  openingFloatUSD: number;
+  openingFloatKHR: number;
+  cashSalesUSD: number;
+  cashSalesKHR: number;
+  cashRefundsUSD: number;
+  cashRefundsKHR: number;
+  cashInUSD: number;
+  cashInKHR: number;
+  cashOutUSD: number;
+  cashOutKHR: number;
+  expensesUSD: number;
+  expensesKHR: number;
+  expectedCashUSD: number;
+  expectedCashKHR: number;
+  actualCashUSD: number | null;
+  actualCashKHR: number | null;
+  differenceUSD: number | null;
+  differenceKHR: number | null;
+  totalSalesCount: number;
+  totalSalesUSD: number;
+  totalSalesKHR: number;
+  closingNotes: string | null;
+  denominationBreakdown?: DenominationBreakdown | null;
+  closedById: string | null;
+  closedByName: string | null;
+}
+
+export interface CashMovementRecord {
+  id: string;
+  sessionId: string;
+  type: CashMovementTypeEnum;
+  amountUSD: number;
+  amountKHR: number;
+  reason: string;
+  referenceNumber: string | null;
+  createdAt: string;
+  cashierId: string;
+  cashierName: string;
+  registerId: string;
+  registerCode: string;
+  storeId: string;
+  storeName: string;
+  auditLogId?: string | null;
+}
+
+export interface OpenRegisterInput {
+  registerId: string;
+  openingFloatUSD: number;
+  openingFloatKHR: number;
+  notes?: string;
+}
+
+export interface CashMovementInput {
+  sessionId?: string;
+  registerId?: string;
+  type: CashMovementTypeEnum;
+  amountUSD: number;
+  amountKHR: number;
+  reason: string;
+  referenceNumber?: string;
+  category?: string; // For store expense categorization
+}
+
+export interface CloseRegisterInput {
+  sessionId: string;
+  actualCashUSD: number;
+  actualCashKHR: number;
+  denominationBreakdown?: DenominationBreakdown;
+  closingNotes?: string;
+}
+
+export interface RegisterReportFilters {
+  storeId?: string;
+  registerId?: string;
+  cashierId?: string;
+  status?: SessionStatusEnum;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface RegisterReportSummary {
+  totalSessions: number;
+  openSessions: number;
+  closedSessions: number;
+  totalSalesCount: number;
+  totalSalesUSD: number;
+  totalCashSalesUSD: number;
+  totalCashInUSD: number;
+  totalCashOutUSD: number;
+  totalExpensesUSD: number;
+  totalExpectedCashUSD: number;
+  totalActualCashUSD: number;
+  totalDifferenceUSD: number;
+}
+
+// ------------------------------------------------------------------------------
+// CUSTOMER MANAGEMENT & PROFILES
+// ------------------------------------------------------------------------------
+
+export interface CustomerProfile {
+  id: string;
+  businessId: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  notes: string | null;
+  isWalkIn: boolean;
+  taxNumber: string | null;
+  loyaltyPoints: number;
+  creditBalanceUSD: number;
+  totalOrdersCount: number;
+  totalSpentUSD: number;
+  lastOrderDate: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CustomerPurchaseHistoryItem {
+  id: string;
+  productId: string;
+  productName: string;
+  sku: string;
+  quantity: number;
+  unitPriceUSD: number;
+  unitPriceKHR: number;
+  totalUSD: number;
+  refundedQuantity: number;
+}
+
+export interface CustomerPurchaseHistoryOrder {
+  id: string;
+  orderNumber: string;
+  createdAt: string;
+  status: OrderStatus;
+  totalUSD: number;
+  totalKHR: number;
+  paidUSD: number;
+  changeUSD: number;
+  refundedAmountUSD: number;
+  storeName: string;
+  cashierName: string;
+  itemsCount: number;
+  items: CustomerPurchaseHistoryItem[];
+  returns?: Array<{
+    id: string;
+    returnNumber: string;
+    totalUSD: number;
+    createdAt: string;
+  }>;
+}
+
+export interface CustomerHistoryResponse {
+  customer: CustomerProfile;
+  orders: CustomerPurchaseHistoryOrder[];
+  summary: {
+    totalSpentUSD: number;
+    totalOrders: number;
+    averageOrderValueUSD: number;
+    lastVisitDate: string | null;
+  };
+}
+
+export interface CreateCustomerInput {
+  name: string;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  notes?: string | null;
+  taxNumber?: string | null;
+  isWalkIn?: boolean;
+}
+
+export interface UpdateCustomerInput {
+  name?: string;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  notes?: string | null;
+  taxNumber?: string | null;
+  isWalkIn?: boolean;
+  loyaltyPoints?: number;
+  creditBalanceUSD?: number;
+}
+
+// ------------------------------------------------------------------------------
+// RETURNS & REFUNDS CONTRACTS
+// ------------------------------------------------------------------------------
+
+export type ReturnReason =
+  'DEFECTIVE' | 'WRONG_ITEM' | 'CUSTOMER_CHANGED_MIND' | 'DAMAGED' | 'EXPIRED' | 'OTHER';
+
+export type ReturnStatus = 'PENDING' | 'COMPLETED' | 'CANCELLED';
+export type RefundStatus = 'PENDING' | 'COMPLETED' | 'FAILED';
+
+export interface ReturnItemInput {
+  orderItemId: string;
+  quantity: number;
+  restockInventory?: boolean;
+  condition?: 'RESELLABLE' | 'DAMAGED' | 'DEFECTIVE';
+  notes?: string;
+}
+
+export interface ProcessReturnRefundInput {
+  orderId: string;
+  reason: ReturnReason;
+  reasonNotes?: string;
+  items: ReturnItemInput[];
+  refundMethodCode: string; // 'CASH', 'CUSTOMER_CREDIT', 'CARD', etc.
+  sessionId?: string;
+  notes?: string;
+}
+
+export interface ReturnItemRecord {
+  id: string;
+  returnId: string;
+  orderItemId: string;
+  productId: string;
+  productName: string;
+  sku: string;
+  quantity: number;
+  unitPriceUSD: number;
+  unitPriceKHR: number;
+  taxAmountUSD: number;
+  totalUSD: number;
+  totalKHR: number;
+  restockInventory: boolean;
+  condition: string | null;
+  notes: string | null;
+  createdAt: string;
+}
+
+export interface RefundRecord {
+  id: string;
+  refundNumber: string;
+  orderId: string;
+  returnId: string | null;
+  paymentMethodCode: string;
+  paymentMethodName: string;
+  amountUSD: number;
+  amountKHR: number;
+  reason: string | null;
+  transactionRef: string | null;
+  status: RefundStatus;
+  processedById: string;
+  processedByName: string;
+  sessionId: string | null;
+  createdAt: string;
+}
+
+export interface ReturnRecord {
+  id: string;
+  returnNumber: string;
+  orderId: string;
+  orderNumber: string;
+  customerId: string | null;
+  customerName: string | null;
+  processedById: string;
+  processedByName: string;
+  status: ReturnStatus;
+  reason: ReturnReason;
+  reasonNotes: string | null;
+  subtotalUSD: number;
+  taxAmountUSD: number;
+  totalUSD: number;
+  totalKHR: number;
+  items: ReturnItemRecord[];
+  refunds: RefundRecord[];
+  createdAt: string;
+}
+
+export interface OrderRefundEligibilityItem {
+  orderItemId: string;
+  productId: string;
+  productName: string;
+  sku: string;
+  purchasedQuantity: number;
+  alreadyRefundedQuantity: number;
+  maxReturnableQuantity: number;
+  unitPriceUSD: number;
+  unitPriceKHR: number;
+  taxAmountUSD: number;
+}
+
+export interface OrderRefundEligibility {
+  orderId: string;
+  orderNumber: string;
+  createdAt: string;
+  customerId: string | null;
+  customerName: string | null;
+  totalUSD: number;
+  totalPaidUSD: number;
+  refundedAmountUSD: number;
+  maxRefundableUSD: number;
+  items: OrderRefundEligibilityItem[];
+}
+
+// ------------------------------------------------------------------------------
+// REPORTING & ANALYTICS DATA CONTRACTS
+// ------------------------------------------------------------------------------
+
+export interface ReportFilterParams {
+  startDate?: string;
+  endDate?: string;
+  storeId?: string;
+  storeIds?: string[] | string;
+  cashierId?: string;
+  paymentMethodCode?: string;
+  paymentMethodId?: string;
+  interval?: 'daily' | 'weekly' | 'monthly';
+  format?: 'json' | 'csv' | 'excel';
+}
+
+export interface ReportingPaymentBreakdownItem {
+  code: string;
+  name: string;
+  amountUSD: number;
+  amountKHR: number;
+  count: number;
+  percentage: number;
+}
+
+export interface ReportingTopProductItem {
+  productId: string;
+  productName: string;
+  sku: string;
+  categoryName: string;
+  quantitySold: number;
+  revenueUSD: number;
+  costUSD: number;
+  profitUSD: number;
+}
+
+export interface ReportingLowStockItem {
+  productId: string;
+  productName: string;
+  sku: string;
+  barcode: string | null;
+  storeName: string;
+  currentQuantity: number;
+  minStockLevel: number;
+  unit: string;
+}
+
+export interface ReportingCashierPerformanceItem {
+  cashierId: string;
+  cashierName: string;
+  ordersCount: number;
+  grossSalesUSD: number;
+  refundsUSD: number;
+  netSalesUSD: number;
+  avgOrderValueUSD: number;
+}
+
+export interface ReportingDashboardSummary {
+  todaySalesUSD: number;
+  todaySalesKHR: number;
+  todayOrdersCount: number;
+  todayAverageOrderValueUSD: number;
+  grossSalesUSD: number;
+  refundsUSD: number;
+  netSalesUSD: number;
+  discountsUSD: number;
+  taxesUSD: number;
+  costOfGoodsSoldUSD: number;
+  profitEstimateUSD: number;
+  profitMarginPercent: number;
+  totalOrdersCount: number;
+  paymentBreakdown: ReportingPaymentBreakdownItem[];
+  topProducts: ReportingTopProductItem[];
+  lowStockProducts: ReportingLowStockItem[];
+  cashierPerformance: ReportingCashierPerformanceItem[];
+}
+
+export interface SalesTimeSeriesRow {
+  periodKey: string;
+  periodLabel: string;
+  ordersCount: number;
+  grossSalesUSD: number;
+  discountsUSD: number;
+  refundsUSD: number;
+  netSalesUSD: number;
+  taxesUSD: number;
+  profitEstimateUSD: number;
+}
+
+export interface ProductSalesReportRow {
+  productId: string;
+  productName: string;
+  sku: string;
+  categoryName: string;
+  quantitySold: number;
+  unitPriceAvgUSD: number;
+  grossSalesUSD: number;
+  discountsUSD: number;
+  netSalesUSD: number;
+  cogsUSD: number;
+  profitUSD: number;
+  marginPercent: number;
+}
+
+export interface CategorySalesReportRow {
+  categoryId: string;
+  categoryName: string;
+  itemsCount: number;
+  quantitySold: number;
+  grossSalesUSD: number;
+  discountsUSD: number;
+  netSalesUSD: number;
+  revenueSharePercent: number;
+}
+
+export interface CashierSalesReportRow {
+  cashierId: string;
+  cashierName: string;
+  ordersCount: number;
+  grossSalesUSD: number;
+  discountsUSD: number;
+  refundsUSD: number;
+  netSalesUSD: number;
+  avgOrderValueUSD: number;
+}
+
+export interface PaymentMethodReportRow {
+  paymentMethodId: string;
+  code: string;
+  name: string;
+  transactionsCount: number;
+  totalUSD: number;
+  totalKHR: number;
+  percentage: number;
+}
+
+export interface InventoryReportRow {
+  productId: string;
+  productName: string;
+  sku: string;
+  categoryName: string;
+  storeName: string;
+  locationName: string;
+  currentStock: number;
+  reservedStock: number;
+  minStockLevel: number;
+  unitCostUSD: number;
+  sellingPriceUSD: number;
+  totalCostValueUSD: number;
+  totalRetailValueUSD: number;
+  stockStatus: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
+}
+
+export interface StockMovementReportRow {
+  id: string;
+  createdAt: string;
+  storeName: string;
+  locationName: string;
+  productName: string;
+  sku: string;
+  type: string;
+  quantityChange: number;
+  quantityBefore: number;
+  quantityAfter: number;
+  unitCostUSD: number;
+  totalMovementCostUSD: number;
+  referenceType: string;
+  referenceId: string | null;
+  createdByName: string;
+  notes: string | null;
+}
+
+export interface RefundReportRow {
+  id: string;
+  createdAt: string;
+  refundNumber: string;
+  returnNumber: string | null;
+  orderNumber: string;
+  customerName: string | null;
+  cashierName: string;
+  storeName: string;
+  reason: string;
+  amountUSD: number;
+  amountKHR: number;
+  paymentMethodName: string;
+  itemsSummary: string;
+}
+
+export interface ProfitEstimateReport {
+  grossSalesUSD: number;
+  discountsUSD: number;
+  netSalesUSD: number;
+  cogsUSD: number;
+  grossProfitUSD: number;
+  grossProfitMarginPercent: number;
+  refundsUSD: number;
+  netProfitEstimateUSD: number;
+  netProfitMarginPercent: number;
+  taxesCollectedUSD: number;
+  expensesUSD: number;
+  netOperatingProfitUSD: number;
+}
+
+export interface ReportDataResponse<T> {
+  summary?: any;
+  rows: T[];
+  totalRows: number;
+  filtersApplied: ReportFilterParams;
+  generatedAt: string;
+}
+
+export interface RegisterSessionReportRow {
+  id: string;
+  storeName: string;
+  registerName: string;
+  registerCode: string;
+  cashierName: string;
+  openedAt: string;
+  closedAt: string | null;
+  status: string;
+  openingFloatUSD: number;
+  openingFloatKHR: number;
+  expectedCashUSD: number;
+  expectedCashKHR: number;
+  actualCashUSD: number | null;
+  actualCashKHR: number | null;
+  differenceUSD: number | null;
+  differenceKHR: number | null;
+  totalSalesCount: number;
+  totalSalesUSD: number;
+  totalSalesKHR: number;
+  closingNotes: string | null;
+}
+
+// ------------------------------------------------------------------------------
+// MULTI-STORE & INVENTORY TRANSFER TYPES
+// ------------------------------------------------------------------------------
+
+export interface StoreSettings {
+  defaultCurrency?: CurrencyCode;
+  timezone?: string;
+  receiptHeader?: string | null;
+  receiptFooter?: string | null;
+  taxRate?: number;
+  autoPrintReceipt?: boolean;
+  allowNegativeStock?: boolean;
+  lowStockThreshold?: number;
+}
+
+export interface StoreDetail {
+  id: string;
+  businessId: string;
+  name: string;
+  code: string;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  receiptHeader: string | null;
+  receiptFooter: string | null;
+  settings: StoreSettings | null;
+  isActive: boolean;
+  registerCount?: number;
+  userCount?: number;
+  productCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StoreProductOverride {
+  id: string;
+  storeId: string;
+  productId: string;
+  variantId?: string | null;
+  isActive: boolean;
+  customPriceUSD?: number | null;
+  customPriceKHR?: number | null;
+  minStockLevel?: number | null;
+  maxStockLevel?: number | null;
+}
+
+export type TransferStatusType = 'REQUESTED' | 'IN_TRANSIT' | 'COMPLETED' | 'CANCELLED';
+
+export interface InventoryTransferItemDto {
+  id: string;
+  transferId: string;
+  productId: string;
+  variantId?: string | null;
+  productName: string;
+  sku: string;
+  requestedQuantity: number;
+  sentQuantity: number;
+  receivedQuantity: number;
+  notes?: string | null;
+}
+
+export interface InventoryTransferDto {
+  id: string;
+  transferNumber: string;
+  businessId: string;
+  sourceStoreId: string;
+  sourceStoreName: string;
+  targetStoreId: string;
+  targetStoreName: string;
+  status: TransferStatusType;
+  notes?: string | null;
+  requestedById: string;
+  requestedByName: string;
+  sentById?: string | null;
+  sentByName?: string | null;
+  receivedById?: string | null;
+  receivedByName?: string | null;
+  requestedAt: string;
+  sentAt?: string | null;
+  receivedAt?: string | null;
+  cancelledAt?: string | null;
+  items: InventoryTransferItemDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StoreUserAssignment {
+  userId: string;
+  username: string;
+  fullName: string;
+  email?: string | null;
+  roleId: string;
+  roleName: string;
+  storeId?: string | null;
+  storeName?: string | null;
+  assignedAt: string;
+}
+
+// ------------------------------------------------------------------------------
+// UNIFIED SETTINGS SYSTEM CONTRACTS
+// ------------------------------------------------------------------------------
+
+export interface BusinessSettings {
+  id: string;
+  name: string;
+  code: string;
+  logoUrl: string | null;
+  address: string | null;
+  phone: string | null;
+  email: string | null;
+  taxNumber: string | null;
+  defaultCurrency: string;
+  baseExchangeRate: number;
+  timezone: string;
+}
+
+export interface StoreReceiptSettings {
+  showLogo: boolean;
+  showTaxBreakdown: boolean;
+  showCashierName: boolean;
+  showCustomerInfo: boolean;
+  paperSize: '58mm' | '80mm';
+  customHeader: string | null;
+  customFooter: string | null;
+}
+
+export interface StoreTaxSettings {
+  defaultTaxRate: number;
+  isTaxInclusive: boolean;
+  enableTax: boolean;
+  taxNumber: string | null;
+}
+
+export interface StoreInventorySettings {
+  allowNegativeStock: boolean;
+  defaultLowStockAlert: number;
+  trackBatches: boolean;
+  enableStockTransfers: boolean;
+}
+
+export interface StoreSettingsUnified {
+  id: string;
+  storeId: string;
+  storeName: string;
+  receipt: StoreReceiptSettings;
+  tax: StoreTaxSettings;
+  inventory: StoreInventorySettings;
+}
+
+export interface PosOperationalSettings {
+  receiptSize: '58mm' | '80mm';
+  barcodeBehavior: {
+    autoAddToCart: boolean;
+    beepOnScan: boolean;
+    focusInputByDefault: boolean;
+    minLength: number;
+  };
+  sound: {
+    enabled: boolean;
+    volume: number; // 0.0 to 1.0
+    playBeep: boolean;
+    playCashDrawer: boolean;
+    playWarning: boolean;
+    playSuccess: boolean;
+  };
+  keyboardShortcuts: {
+    enabled: boolean;
+    customBindings: Record<string, string>; // e.g. { search: 'F1', barcode: 'F2', customer: 'F4', payment: 'F8', clear: 'Delete', shortcuts: '?' }
+  };
+  customerDisplay: {
+    enabled: boolean;
+    port: string;
+    baudRate: number;
+    lineLength: number;
+    welcomeMessage: string;
+    idleMessage: string;
+  };
+  printer: {
+    enabled: boolean;
+    type: 'network' | 'usb' | 'bluetooth';
+    ip: string;
+    port: number;
+    charactersPerLine: number;
+    autoCut: boolean;
+  };
+  cashDrawer: {
+    enabled: boolean;
+    driver: 'printer_kick' | 'direct_serial';
+    pulsePin: number;
+    openOnCashSale: boolean;
+  };
+}
+
+export interface LocalizationSettings {
+  language: 'en' | 'km' | 'zh';
+  defaultCurrency: 'USD' | 'KHR';
+  currencyFormatting: {
+    symbol: string;
+    position: 'prefix' | 'suffix';
+    decimalPlaces: number;
+    thousandsSeparator: string;
+    decimalSeparator: string;
+  };
+  dateTimeFormatting: {
+    dateFormat: string; // e.g. "DD/MM/YYYY" or "YYYY-MM-DD"
+    timeFormat: string; // e.g. "hh:mm A" or "HH:mm"
+    timezone: string;
+    use24Hour: boolean;
+  };
+}
+
+export interface PaymentMethodConfig {
+  id: string;
+  businessId: string;
+  name: string;
+  code: string;
+  type: string;
+  isActive: boolean;
+  isDefault: boolean;
+  config: Record<string, any> | null;
+}
+
+export interface UserDetailExtended {
+  id: string;
+  username: string;
+  email: string | null;
+  fullName: string;
+  phone: string | null;
+  isActive: boolean;
+  roles: Array<{
+    roleId: string;
+    roleName: string;
+    storeId: string | null;
+    storeName: string | null;
+  }>;
+  permissions: string[];
+  storeAccess: Array<{
+    storeId: string;
+    storeName: string;
+  }>;
+  lastLoginAt: string | null;
+  createdAt: string;
+}
+
+export interface RoleDetailExtended {
+  id: string;
+  businessId: string;
+  name: string;
+  description: string | null;
+  isSystem: boolean;
+  permissions: Array<{
+    id: string;
+    code: string;
+    name: string;
+    category: string;
+  }>;
+  userCount: number;
+  createdAt: string;
+}
+
+export interface UnifiedSettingsPayload {
+  business: BusinessSettings;
+  store: StoreSettingsUnified;
+  pos: PosOperationalSettings;
+  localization: LocalizationSettings;
+  paymentMethods: PaymentMethodConfig[];
+  storesList: Array<{ id: string; name: string; code: string }>;
+}

@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { prisma } from '../db/index.js';
-import { requireAuth, requirePermission } from '../middleware/auth.js';
+import { requireAuth, requirePermission, isUserAuthorizedForStore } from '../middleware/auth.js';
 import { PERMISSIONS, PosInitData, PosProduct, PosCartItem, HeldOrderSummary } from '@pos/types';
 import {
   checkoutInputSchema,
@@ -13,9 +13,14 @@ import {
 } from '@pos/validation';
 import { OrderStatus, StockMovementType, PaymentStatus, Prisma } from '@prisma/client';
 import crypto from 'crypto';
-import { TransactionEngine, TransactionEngineError } from '../services/transaction/TransactionEngine.js';
+import {
+  TransactionEngine,
+  TransactionEngineError,
+} from '../services/transaction/TransactionEngine.js';
 import { FinancialCalculator } from '../services/transaction/FinancialCalculator.js';
 import { paymentRegistry } from '../services/payment/PaymentRegistry.js';
+import { IdempotencyManager } from '../services/transaction/IdempotencyManager.js';
+import { cache } from '../redis/index.js';
 
 export const posRouter: Router = Router();
 
@@ -46,21 +51,32 @@ posRouter.get(
       const user = req.user!;
       const businessId = user.businessId;
 
-      // 1. Resolve store
+      // 1. Resolve store with business scoping and authorization
       let store = user.storeId
-        ? await prisma.store.findUnique({ where: { id: user.storeId } })
+        ? await prisma.store.findFirst({ where: { id: user.storeId, businessId, deletedAt: null } })
         : null;
 
       if (!store) {
+        const storeWhere: any = { businessId, isActive: true, deletedAt: null };
+        if (
+          !user.roles.includes('ADMIN') &&
+          user.authorizedStoreIds &&
+          user.authorizedStoreIds.length > 0
+        ) {
+          storeWhere.id = { in: user.authorizedStoreIds };
+        }
         store = await prisma.store.findFirst({
-          where: { businessId, isActive: true },
+          where: storeWhere,
         });
       }
 
-      if (!store) {
-        res.status(404).json({
+      if (!store || !isUserAuthorizedForStore(user, store.id)) {
+        res.status(403).json({
           success: false,
-          error: { code: 'STORE_NOT_FOUND', message: 'No active store found for business' },
+          error: {
+            code: 'STORE_UNAUTHORIZED',
+            message: 'No authorized active store found for user',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -193,6 +209,9 @@ posRouter.get(
           name: cust.name,
           phone: cust.phone,
           email: cust.email,
+          address: cust.address,
+          notes: cust.notes,
+          isWalkIn: cust.isWalkIn,
           loyaltyPoints: cust.loyaltyPoints,
           creditBalanceUSD: Number(cust.creditBalanceUSD),
         })),
@@ -241,9 +260,28 @@ posRouter.get(
       const barcode = (req.query.barcode as string)?.trim();
       const categoryId = req.query.categoryId as string;
 
+      const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
+      const limit = Math.min(200, Math.max(1, parseInt(req.query.limit as string, 10) || 50));
+      const skip = (page - 1) * limit;
+
       const store = user.storeId
         ? await prisma.store.findUnique({ where: { id: user.storeId } })
         : await prisma.store.findFirst({ where: { businessId, isActive: true } });
+
+      // Fast Path: Check Barcode Cache
+      if (barcode) {
+        const cacheKey = `pos:barcode:${businessId}:${store?.id || ''}:${barcode}`;
+        const cached = await cache.get(cacheKey);
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            res.status(200).json(parsed);
+            return;
+          } catch {
+            // Fallthrough on parse error
+          }
+        }
+      }
 
       const whereClause: Prisma.ProductWhereInput = {
         businessId,
@@ -274,7 +312,8 @@ posRouter.get(
           },
         },
         orderBy: { name: 'asc' },
-        take: 50,
+        skip: barcode ? 0 : skip,
+        take: barcode ? 1 : limit,
       });
 
       const mapped: PosProduct[] = products.map((p) => {
@@ -302,11 +341,23 @@ posRouter.get(
         };
       });
 
-      res.status(200).json({
+      const responsePayload = {
         success: true,
         data: mapped,
+        pagination: {
+          page,
+          limit,
+          returned: mapped.length,
+        },
         timestamp: new Date().toISOString(),
-      });
+      };
+
+      if (barcode && mapped.length > 0) {
+        const cacheKey = `pos:barcode:${businessId}:${store?.id || ''}:${barcode}`;
+        cache.set(cacheKey, JSON.stringify(responsePayload), 180).catch(() => {});
+      }
+
+      res.status(200).json(responsePayload);
     } catch (error) {
       next(error);
     }
@@ -352,6 +403,9 @@ posRouter.get(
           name: c.name,
           phone: c.phone,
           email: c.email,
+          address: c.address,
+          notes: c.notes,
+          isWalkIn: c.isWalkIn,
           loyaltyPoints: c.loyaltyPoints,
           creditBalanceUSD: Number(c.creditBalanceUSD),
         })),
@@ -393,6 +447,8 @@ posRouter.post(
           phone: parsed.data.phone || null,
           email: parsed.data.email || null,
           address: parsed.data.address || null,
+          notes: parsed.data.notes || null,
+          isWalkIn: parsed.data.isWalkIn || false,
           loyaltyPoints: 0,
           creditBalanceUSD: 0,
         },
@@ -405,6 +461,9 @@ posRouter.post(
           name: customer.name,
           phone: customer.phone,
           email: customer.email,
+          address: customer.address,
+          notes: customer.notes,
+          isWalkIn: customer.isWalkIn,
           loyaltyPoints: customer.loyaltyPoints,
           creditBalanceUSD: Number(customer.creditBalanceUSD),
         },
@@ -447,11 +506,43 @@ posRouter.post(
         return;
       }
 
+      const targetStoreId = parsed.data.storeId || user.storeId;
+      if (targetStoreId && !isUserAuthorizedForStore(user, targetStoreId)) {
+        res.status(403).json({
+          success: false,
+          error: {
+            code: 'FORBIDDEN_STORE_ACCESS',
+            message: `You are not authorized to process transactions for store ${targetStoreId}`,
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
       const result = await TransactionEngine.checkout(parsed.data, {
         userId: user.userId,
         businessId: user.businessId,
-        storeId: parsed.data.storeId || user.storeId,
+        storeId: targetStoreId,
       });
+
+      // Asynchronously invalidate product barcode cache to keep stock counts fresh
+      (async () => {
+        try {
+          const productIds = parsed.data.items.map((i) => i.productId);
+          const boughtProducts = await prisma.product.findMany({
+            where: { id: { in: productIds } },
+            select: { barcode: true },
+          });
+          for (const bp of boughtProducts) {
+            if (bp.barcode) {
+              const cacheKey = `pos:barcode:${user.businessId}:${targetStoreId}:${bp.barcode}`;
+              await cache.del(cacheKey);
+            }
+          }
+        } catch {
+          // Non-blocking background invalidation
+        }
+      })();
 
       res.status(200).json({
         success: true,
@@ -535,9 +626,10 @@ posRouter.get(
   requirePermission(PERMISSIONS.SALES_CREATE),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const user = req.user!;
       const orderId = req.params.id as string;
-      const order = await prisma.order.findUnique({
-        where: { id: orderId },
+      const order = await prisma.order.findFirst({
+        where: { id: orderId, businessId: user.businessId },
         include: {
           items: true,
           payments: { include: { paymentMethod: true } },
@@ -551,6 +643,18 @@ posRouter.get(
         res.status(404).json({
           success: false,
           error: { code: 'ORDER_NOT_FOUND', message: 'Order not found' },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (!isUserAuthorizedForStore(user, order.storeId)) {
+        res.status(403).json({
+          success: false,
+          error: {
+            code: 'FORBIDDEN_STORE_ACCESS',
+            message: 'You are not authorized to view orders from this store',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -592,10 +696,50 @@ posRouter.post(
       }
 
       const orderId = req.params.id as string;
+      const existingOrder = await prisma.order.findFirst({
+        where: { id: orderId, businessId: user.businessId },
+      });
+      if (!existingOrder) {
+        res.status(404).json({
+          success: false,
+          error: { code: 'ORDER_NOT_FOUND', message: 'Order not found' },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (!isUserAuthorizedForStore(user, existingOrder.storeId)) {
+        res.status(403).json({
+          success: false,
+          error: {
+            code: 'FORBIDDEN_STORE_ACCESS',
+            message: 'You are not authorized to modify orders for this store',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      const idempotencyKey = req.header('idempotency-key');
+      if (idempotencyKey) {
+        const lock = await IdempotencyManager.acquireLock(idempotencyKey);
+        if (!lock) {
+          res.status(409).json({
+            success: false,
+            error: {
+              code: 'DUPLICATE_IN_FLIGHT',
+              message: 'Payment transaction is already in flight',
+            },
+            timestamp: new Date().toISOString(),
+          });
+          return;
+        }
+      }
+
       const result = await TransactionEngine.addPayment(orderId, parsed.data, {
         userId: user.userId,
         businessId: user.businessId,
-        storeId: user.storeId,
+        storeId: existingOrder.storeId,
       });
 
       res.status(200).json({
@@ -646,6 +790,30 @@ posRouter.post(
       }
 
       const orderId = req.params.id as string;
+      const existingOrder = await prisma.order.findFirst({
+        where: { id: orderId, businessId: user.businessId },
+      });
+      if (!existingOrder) {
+        res.status(404).json({
+          success: false,
+          error: { code: 'ORDER_NOT_FOUND', message: 'Order not found' },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (!isUserAuthorizedForStore(user, existingOrder.storeId)) {
+        res.status(403).json({
+          success: false,
+          error: {
+            code: 'FORBIDDEN_STORE_ACCESS',
+            message: 'You are not authorized to void orders for this store',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
       const result = await TransactionEngine.voidOrder(orderId, parsed.data, {
         userId: user.userId,
         businessId: user.businessId,
@@ -698,6 +866,46 @@ posRouter.post(
       }
 
       const orderId = req.params.id as string;
+      const existingOrder = await prisma.order.findFirst({
+        where: { id: orderId, businessId: user.businessId },
+      });
+      if (!existingOrder) {
+        res.status(404).json({
+          success: false,
+          error: { code: 'ORDER_NOT_FOUND', message: 'Order not found' },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (!isUserAuthorizedForStore(user, existingOrder.storeId)) {
+        res.status(403).json({
+          success: false,
+          error: {
+            code: 'FORBIDDEN_STORE_ACCESS',
+            message: 'You are not authorized to refund orders for this store',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      const idempotencyKey = req.header('idempotency-key');
+      if (idempotencyKey) {
+        const lock = await IdempotencyManager.acquireLock(idempotencyKey);
+        if (!lock) {
+          res.status(409).json({
+            success: false,
+            error: {
+              code: 'DUPLICATE_IN_FLIGHT',
+              message: 'Refund transaction is already in flight',
+            },
+            timestamp: new Date().toISOString(),
+          });
+          return;
+        }
+      }
+
       const result = await TransactionEngine.refundOrder(orderId, parsed.data, {
         userId: user.userId,
         businessId: user.businessId,
@@ -750,6 +958,30 @@ posRouter.post(
       }
 
       const orderId = req.params.id as string;
+      const existingOrder = await prisma.order.findFirst({
+        where: { id: orderId, businessId: user.businessId },
+      });
+      if (!existingOrder) {
+        res.status(404).json({
+          success: false,
+          error: { code: 'ORDER_NOT_FOUND', message: 'Order not found' },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (!isUserAuthorizedForStore(user, existingOrder.storeId)) {
+        res.status(403).json({
+          success: false,
+          error: {
+            code: 'FORBIDDEN_STORE_ACCESS',
+            message: 'You are not authorized to cancel orders for this store',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
       const result = await TransactionEngine.cancelOrder(orderId, parsed.data, {
         userId: user.userId,
         businessId: user.businessId,

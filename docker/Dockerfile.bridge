@@ -1,0 +1,28 @@
+# Production Multi-Stage Dockerfile for POS Hardware & Device Bridge Service
+FROM node:20-alpine AS base
+RUN corepack enable && corepack prepare pnpm@latest --activate
+WORKDIR /app
+
+FROM base AS dependencies
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/ ./packages/
+COPY apps/bridge/package.json ./apps/bridge/
+RUN pnpm install --frozen-lockfile
+
+FROM dependencies AS builder
+COPY . .
+RUN pnpm --filter @pos/types build && \
+    pnpm --filter @pos/config build && \
+    pnpm --filter @pos/bridge build
+
+FROM base AS runner
+ENV NODE_ENV=production
+ENV BRIDGE_PORT=9124
+EXPOSE 9124
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apps/bridge/dist ./apps/bridge/dist
+COPY --from=builder /app/packages ./packages
+COPY package.json pnpm-workspace.yaml ./
+
+CMD ["node", "apps/bridge/dist/index.js"]

@@ -117,3 +117,50 @@ export function requirePermission(...requiredPermissions: PermissionCode[]) {
     next();
   };
 }
+
+/**
+ * Check if the user is authorized for a specific store.
+ * Administrators and business-wide users (authorizedStoreIds === null) have access to ALL stores.
+ * Branch-scoped users can only access stores in their authorizedStoreIds list.
+ */
+export function isUserAuthorizedForStore(user: TokenPayload, storeId?: string | null): boolean {
+  if (!storeId) return true;
+  if (user.roles.includes('ADMIN')) return true;
+  if (user.authorizedStoreIds === null || user.authorizedStoreIds === undefined) return true;
+  return user.authorizedStoreIds.includes(storeId);
+}
+
+/**
+ * Middleware: require store authorization
+ * Extracts storeId from req.params.storeId, req.query.storeId, or req.body.storeId
+ */
+export function requireStoreAccess(storeIdExtractor?: (req: Request) => string | undefined) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const storeId = storeIdExtractor
+      ? storeIdExtractor(req)
+      : ((req.params.storeId || req.query.storeId || req.body.storeId) as string | undefined);
+
+    if (storeId && !isUserAuthorizedForStore(req.user, storeId)) {
+      res.status(403).json({
+        success: false,
+        error: {
+          code: 'FORBIDDEN_STORE_ACCESS',
+          message: `Access denied. You are not authorized to access store ${storeId}.`,
+        },
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    next();
+  };
+}

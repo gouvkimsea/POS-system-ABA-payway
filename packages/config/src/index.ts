@@ -2,9 +2,21 @@ import { z } from 'zod';
 import dotenv from 'dotenv';
 import path from 'path';
 
+import fs from 'fs';
+
 // Load environment variables if running in Node
 if (typeof process !== 'undefined' && process.env) {
-  dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+  const candidatePaths = [
+    path.resolve(process.cwd(), '.env'),
+    path.resolve(process.cwd(), '../../.env'),
+    path.resolve(process.cwd(), '../.env'),
+  ];
+  for (const envPath of candidatePaths) {
+    if (fs.existsSync(envPath)) {
+      dotenv.config({ path: envPath });
+      break;
+    }
+  }
 }
 
 export const envSchema = z.object({
@@ -24,6 +36,10 @@ export const envSchema = z.object({
   DEFAULT_LOCALE: z.string().default('en'),
   SUPPORTED_LOCALES: z.string().default('en,km'),
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
+  JWT_SECRET: z.string().default('dev_pos_jwt_secret_key_minimum_32_characters_long_12345'),
+  REFRESH_TOKEN_SECRET: z
+    .string()
+    .default('dev_pos_refresh_secret_key_minimum_32_characters_long_12345'),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
@@ -39,6 +55,12 @@ export function getEnvConfig(): EnvConfig {
     cachedConfig = envSchema.parse({});
   } else {
     cachedConfig = parsed.data;
+  }
+  // Ensure process.env has the parsed configuration (critical for Prisma and child libraries)
+  for (const [k, v] of Object.entries(cachedConfig)) {
+    if (process.env[k] === undefined && v !== undefined) {
+      process.env[k] = String(v);
+    }
   }
   return cachedConfig;
 }

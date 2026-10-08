@@ -112,8 +112,8 @@ export class EscPosEncoder {
   public barcode(data: string): this {
     this.align('center');
     this.buffer.push(0x1d, 0x68, 50); // Height
-    this.buffer.push(0x1d, 0x77, 2);  // Width
-    this.buffer.push(0x1d, 0x48, 2);  // Text position below
+    this.buffer.push(0x1d, 0x77, 2); // Width
+    this.buffer.push(0x1d, 0x48, 2); // Text position below
     const rawBytes = this.textEncoder.encode(data);
     this.buffer.push(0x1d, 0x6b, 73, rawBytes.length, ...rawBytes);
     this.feed(1);
@@ -245,7 +245,10 @@ export class EscPosEncoder {
       encoder.bold(true);
       encoder.twoColumn('Change Due (USD):', `$${data.changeUSD.toFixed(2)}`);
       if (data.changeKHR) {
-        encoder.twoColumn('Change Due (KHR):', `${Math.round(data.changeKHR).toLocaleString()} KHR`);
+        encoder.twoColumn(
+          'Change Due (KHR):',
+          `${Math.round(data.changeKHR).toLocaleString()} KHR`,
+        );
       }
       encoder.bold(false);
     }

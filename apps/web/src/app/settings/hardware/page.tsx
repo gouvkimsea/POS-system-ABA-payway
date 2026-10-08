@@ -18,10 +18,7 @@ import {
   Eye,
   Zap,
 } from 'lucide-react';
-import {
-  hardwareManager,
-  HardwareStatusReport,
-} from '../../../lib/hardware/HardwareManager';
+import { hardwareManager, HardwareStatusReport } from '../../../lib/hardware/HardwareManager';
 import { printerService } from '../../../lib/hardware/PrinterService';
 import { scannerService } from '../../../lib/hardware/ScannerService';
 import { cashDrawerService } from '../../../lib/hardware/CashDrawerService';
@@ -31,11 +28,15 @@ import { HardwareSettingsProfile } from '@pos/types';
 export default function HardwareSettingsPage() {
   const [profile, setProfile] = useState<HardwareSettingsProfile>(hardwareManager.getProfile());
   const [report, setReport] = useState<HardwareStatusReport>(hardwareManager.getStatusReport());
-  const [activeTab, setActiveTab] = useState<'bridge' | 'printer' | 'scanner' | 'drawer' | 'display'>('printer');
+  const [activeTab, setActiveTab] = useState<
+    'bridge' | 'printer' | 'scanner' | 'drawer' | 'display'
+  >('printer');
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string>('');
   const [testLog, setTestLog] = useState<string>('');
-  const [scannedTestHistory, setScannedTestHistory] = useState<Array<{ code: string; time: string }>>([]);
+  const [scannedTestHistory, setScannedTestHistory] = useState<
+    Array<{ code: string; time: string }>
+  >([]);
   const [isTesting, setIsTesting] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
 
@@ -116,7 +117,9 @@ export default function HardwareSettingsPage() {
     setTestLog('Triggering drawer kick...');
     try {
       const res = await cashDrawerService.openDrawer('Settings page test');
-      setTestLog(res.success ? `✓ Cash Drawer OK: ${res.message}` : `✗ Drawer Error: ${res.message}`);
+      setTestLog(
+        res.success ? `✓ Cash Drawer OK: ${res.message}` : `✗ Drawer Error: ${res.message}`,
+      );
     } catch (e: any) {
       setTestLog(`Drawer Failed: ${e.message}`);
     } finally {
@@ -152,7 +155,9 @@ export default function HardwareSettingsPage() {
               <Cpu className="w-5 h-5 text-indigo-400" />
               Hardware Integration & Device Settings
             </h1>
-            <p className="text-xs text-slate-400">Configure POS peripherals, thermal printers, scanners & bridge</p>
+            <p className="text-xs text-slate-400">
+              Configure POS peripherals, thermal printers, scanners & bridge
+            </p>
           </div>
         </div>
 
@@ -185,7 +190,7 @@ export default function HardwareSettingsPage() {
       )}
 
       {/* Main Container */}
-      <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 flex flex-col lg:flex-row gap-6">
+      <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 pb-24 lg:pb-8 flex flex-col lg:flex-row gap-6">
         {/* Left Navigation Tabs */}
         <div className="lg:w-64 shrink-0 space-y-1.5">
           <button
@@ -230,7 +235,9 @@ export default function HardwareSettingsPage() {
               <Coins className="w-4 h-4" />
               <span>Cash Drawer</span>
             </div>
-            <span className="text-[10px] font-mono opacity-80">Pin {profile.cashDrawer.kickPin}</span>
+            <span className="text-[10px] font-mono opacity-80">
+              Pin {profile.cashDrawer.kickPin}
+            </span>
           </button>
 
           <button
@@ -282,7 +289,8 @@ export default function HardwareSettingsPage() {
               </span>
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              If the local companion service is offline, the POS safely falls back to browser printing, keyboard wedge scanning, and chime alerts without disruption.
+              If the local companion service is offline, the POS safely falls back to browser
+              printing, keyboard wedge scanning, and chime alerts without disruption.
             </p>
           </div>
         </div>
@@ -339,9 +347,15 @@ export default function HardwareSettingsPage() {
                       }
                       className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     >
-                      <option value="LOCAL_BRIDGE">Local Device Bridge (Recommended ESC/POS)</option>
-                      <option value="NETWORK_TCP">Network Thermal Printer (Raw TCP Port 9100)</option>
-                      <option value="BROWSER_FALLBACK">Browser Print Fallback (HTML5 Dialog)</option>
+                      <option value="LOCAL_BRIDGE">
+                        Local Device Bridge (Recommended ESC/POS)
+                      </option>
+                      <option value="NETWORK_TCP">
+                        Network Thermal Printer (Raw TCP Port 9100)
+                      </option>
+                      <option value="BROWSER_FALLBACK">
+                        Browser Print Fallback (HTML5 Dialog)
+                      </option>
                     </select>
                     <p className="text-[11px] text-slate-400 mt-1">
                       {profile.printer.driver === 'BROWSER_FALLBACK'
@@ -371,7 +385,9 @@ export default function HardwareSettingsPage() {
                         }`}
                       >
                         <div className="text-sm font-bold">58 mm</div>
-                        <div className="text-[10px] text-slate-400 mt-0.5">32 Characters / Line</div>
+                        <div className="text-[10px] text-slate-400 mt-0.5">
+                          32 Characters / Line
+                        </div>
                       </button>
 
                       <button
@@ -389,7 +405,9 @@ export default function HardwareSettingsPage() {
                         }`}
                       >
                         <div className="text-sm font-bold">80 mm</div>
-                        <div className="text-[10px] text-slate-400 mt-0.5">48 Characters / Line</div>
+                        <div className="text-[10px] text-slate-400 mt-0.5">
+                          48 Characters / Line
+                        </div>
                       </button>
                     </div>
                   </div>
@@ -433,7 +451,9 @@ export default function HardwareSettingsPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">Port</label>
+                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                          Port
+                        </label>
                         <input
                           type="number"
                           value={profile.printer.networkPort || 9100}
@@ -469,7 +489,9 @@ export default function HardwareSettingsPage() {
                         }
                         className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
                       />
-                      <span className="text-xs text-slate-300">Auto-cut paper at end of receipt</span>
+                      <span className="text-xs text-slate-300">
+                        Auto-cut paper at end of receipt
+                      </span>
                     </label>
 
                     <label className="flex items-center gap-2.5 cursor-pointer">
@@ -566,7 +588,8 @@ export default function HardwareSettingsPage() {
                       <option value="LOCAL_BRIDGE">Local Device Bridge Serial/COM Port</option>
                     </select>
                     <p className="text-[11px] text-slate-400 mt-1">
-                      Standard handheld barcode scanners output keystrokes automatically without special drivers.
+                      Standard handheld barcode scanners output keystrokes automatically without
+                      special drivers.
                     </p>
                   </div>
 
@@ -591,12 +614,15 @@ export default function HardwareSettingsPage() {
                       className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white font-mono"
                     />
                     <p className="text-[11px] text-slate-400 mt-1">
-                      Distinguishes automated laser scanner bursts (&lt; 50ms) from manual human typing.
+                      Distinguishes automated laser scanner bursts (&lt; 50ms) from manual human
+                      typing.
                     </p>
                   </div>
 
                   <div className="space-y-3">
-                    <label className="block text-xs font-semibold text-slate-300">Feedback Alerts</label>
+                    <label className="block text-xs font-semibold text-slate-300">
+                      Feedback Alerts
+                    </label>
                     <label className="flex items-center gap-2.5 cursor-pointer">
                       <input
                         type="checkbox"
@@ -609,7 +635,9 @@ export default function HardwareSettingsPage() {
                         }
                         className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
                       />
-                      <span className="text-xs text-slate-300">Play audio beep sound upon scan</span>
+                      <span className="text-xs text-slate-300">
+                        Play audio beep sound upon scan
+                      </span>
                     </label>
 
                     <label className="flex items-center gap-2.5 cursor-pointer">
@@ -624,7 +652,9 @@ export default function HardwareSettingsPage() {
                         }
                         className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
                       />
-                      <span className="text-xs text-slate-300">Haptic vibration (mobile & tablets)</span>
+                      <span className="text-xs text-slate-300">
+                        Haptic vibration (mobile & tablets)
+                      </span>
                     </label>
                   </div>
 
@@ -644,7 +674,8 @@ export default function HardwareSettingsPage() {
                     </div>
 
                     <p className="text-[11px] text-slate-400 mb-3">
-                      Pull your USB or Bluetooth barcode scanner trigger now to verify instant detection:
+                      Pull your USB or Bluetooth barcode scanner trigger now to verify instant
+                      detection:
                     </p>
 
                     <div className="space-y-1.5 max-h-36 overflow-y-auto font-mono text-[11px]">
@@ -739,7 +770,9 @@ export default function HardwareSettingsPage() {
                   </div>
 
                   <div className="space-y-3">
-                    <label className="block text-xs font-semibold text-slate-300">Drawer Behavior</label>
+                    <label className="block text-xs font-semibold text-slate-300">
+                      Drawer Behavior
+                    </label>
                     <label className="flex items-center gap-2.5 cursor-pointer">
                       <input
                         type="checkbox"
@@ -863,7 +896,8 @@ export default function HardwareSettingsPage() {
                       Local Device Bridge (Companion Service)
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      Cross-platform service allowing browsers to control raw USB, Serial, and TCP printers
+                      Cross-platform service allowing browsers to control raw USB, Serial, and TCP
+                      printers
                     </p>
                   </div>
 
@@ -907,7 +941,9 @@ export default function HardwareSettingsPage() {
                           }`}
                         />
                         <span className="text-xs font-bold text-white">
-                          {isBridgeConnected ? 'Companion Bridge Active' : 'Bridge Offline (Fallback Active)'}
+                          {isBridgeConnected
+                            ? 'Companion Bridge Active'
+                            : 'Bridge Offline (Fallback Active)'}
                         </span>
                       </div>
                       {report.bridgeDetails?.latencyMs !== undefined && (
@@ -923,7 +959,8 @@ export default function HardwareSettingsPage() {
                 {report.bridgeDetails?.discoveredPrinters && (
                   <div className="mt-4 pt-4 border-t border-slate-800">
                     <h4 className="text-xs font-bold text-slate-300 mb-2">
-                      Detected Operating System Printers ({report.bridgeDetails.discoveredPrinters.length})
+                      Detected Operating System Printers (
+                      {report.bridgeDetails.discoveredPrinters.length})
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
                       {report.bridgeDetails.discoveredPrinters.map((p, idx) => (
@@ -966,9 +1003,7 @@ export default function HardwareSettingsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl max-w-sm w-full p-5 text-slate-800 shadow-2xl space-y-4">
             <div className="flex justify-between items-center border-b pb-2">
-              <h3 className="font-bold text-sm">
-                Receipt Preview ({profile.printer.paperSize})
-              </h3>
+              <h3 className="font-bold text-sm">Receipt Preview ({profile.printer.paperSize})</h3>
               <button
                 onClick={() => setShowPreviewModal(false)}
                 className="text-slate-400 hover:text-slate-700"

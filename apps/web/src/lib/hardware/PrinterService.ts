@@ -68,11 +68,15 @@ export class PrinterService {
 
       // If bridge returned non-200, degrade to browser print
       console.warn('[PrinterService] Bridge rejected print job, falling back to browser print');
-      return this.triggerBrowserPrint(`Local bridge print failed (HTTP ${res.status}). Used browser print.`);
+      return this.triggerBrowserPrint(
+        `Local bridge print failed (HTTP ${res.status}). Used browser print.`,
+      );
     } catch (err: any) {
       // Bridge unreachable / network error: Safe graceful fallback!
       console.warn('[PrinterService] Local bridge unreachable, falling back to browser print', err);
-      return this.triggerBrowserPrint('Hardware bridge offline. Switched to browser print fallback.');
+      return this.triggerBrowserPrint(
+        'Hardware bridge offline. Switched to browser print fallback.',
+      );
     }
   }
 

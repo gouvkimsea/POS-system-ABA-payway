@@ -131,7 +131,9 @@ export function VariantModal({
               <h2 className="text-base font-bold text-white">
                 {isEditing ? `Edit Variant: ${variant?.name}` : `Add Variant to ${product.name}`}
               </h2>
-              <p className="text-xs text-slate-400">Configure size, color, weight, model, and barcode</p>
+              <p className="text-xs text-slate-400">
+                Configure size, color, weight, model, and barcode
+              </p>
             </div>
           </div>
           <button
@@ -166,7 +168,9 @@ export function VariantModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Variant SKU *</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Variant SKU *
+              </label>
               <input
                 type="text"
                 required
@@ -178,7 +182,9 @@ export function VariantModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Variant Barcode</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Variant Barcode
+              </label>
               <input
                 type="text"
                 value={barcode}
@@ -191,10 +197,14 @@ export function VariantModal({
 
           {/* Variant Specific Attributes */}
           <div className="bg-slate-800/40 p-3.5 rounded-xl border border-slate-800 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Variant Attributes</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Variant Attributes
+            </h4>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Size (e.g. S, M, L, XL, 500ml)</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Size (e.g. S, M, L, XL, 500ml)
+                </label>
                 <input
                   type="text"
                   value={size}
@@ -205,7 +215,9 @@ export function VariantModal({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Color (e.g. Navy Blue, White)</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Color (e.g. Navy Blue, White)
+                </label>
                 <input
                   type="text"
                   value={color}
@@ -216,7 +228,9 @@ export function VariantModal({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Weight (e.g. 250g, 1kg, 0.5lb)</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Weight (e.g. 250g, 1kg, 0.5lb)
+                </label>
                 <input
                   type="text"
                   value={weight}
@@ -227,7 +241,9 @@ export function VariantModal({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Model / Edition (e.g. Slim 2026)</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Model / Edition (e.g. Slim 2026)
+                </label>
                 <input
                   type="text"
                   value={model}
@@ -242,7 +258,9 @@ export function VariantModal({
           {/* Pricing */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Cost Price ($ USD)</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Cost Price ($ USD)
+              </label>
               <input
                 type="number"
                 step="0.01"
@@ -254,7 +272,9 @@ export function VariantModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Selling Price ($ USD)</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Selling Price ($ USD)
+              </label>
               <input
                 type="number"
                 step="0.01"
@@ -269,7 +289,9 @@ export function VariantModal({
           {!isEditing && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Initial Opening Stock</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Initial Opening Stock
+                </label>
                 <input
                   type="number"
                   min="0"
@@ -280,7 +302,9 @@ export function VariantModal({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Storage Location</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Storage Location
+                </label>
                 <select
                   value={initialLocationId}
                   onChange={(e) => setInitialLocationId(e.target.value)}

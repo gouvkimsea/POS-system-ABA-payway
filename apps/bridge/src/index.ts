@@ -37,7 +37,8 @@ app.get('/status', async (_req: Request, res: Response) => {
     hostname: os.hostname(),
     uptimeSeconds: Math.floor((Date.now() - startTime) / 1000),
     discoveredPrinters: printers,
-    discoveredPorts: os.platform() === 'win32' ? ['COM1', 'COM2', 'COM3'] : ['/dev/ttyUSB0', '/dev/ttyS0'],
+    discoveredPorts:
+      os.platform() === 'win32' ? ['COM1', 'COM2', 'COM3'] : ['/dev/ttyUSB0', '/dev/ttyS0'],
     latencyMs: 1,
     lastCheckedAt: new Date().toISOString(),
   });
@@ -124,7 +125,13 @@ export function startBridge(port: number = PORT) {
 }
 
 // Auto-run if executed directly
-if (process.argv[1]?.includes('src/index') || process.argv[1]?.includes('dist/index')) {
+const isDirectRun =
+  process.argv[1]?.includes('src/index') ||
+  process.argv[1]?.includes('src\\index') ||
+  process.argv[1]?.includes('dist/index') ||
+  process.argv[1]?.includes('dist\\index');
+
+if (isDirectRun) {
   startBridge(PORT);
 }
 

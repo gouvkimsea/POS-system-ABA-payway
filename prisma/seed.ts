@@ -69,6 +69,8 @@ async function main() {
     { code: 'register.open', name: 'Open Register Shifts', category: 'Register' },
     { code: 'register.close', name: 'Close Register Shifts', category: 'Register' },
     { code: 'cash.manage', name: 'Manage Drawer Cash Movements', category: 'Cash' },
+    { code: 'customers.view', name: 'View Customer Profiles & History', category: 'Customers' },
+    { code: 'customers.manage', name: 'Create and Manage Customers', category: 'Customers' },
   ];
 
   const permissions = await Promise.all(
@@ -140,6 +142,8 @@ async function main() {
     'register.open',
     'register.close',
     'cash.manage',
+    'customers.view',
+    'customers.manage',
   ];
   for (const code of managerPermCodes) {
     const permId = permissionMap.get(code);
@@ -159,6 +163,9 @@ async function main() {
     'sales.create',
     'register.open',
     'register.close',
+    'cash.manage',
+    'customers.view',
+    'customers.manage',
   ];
   for (const code of cashierPermCodes) {
     const permId = permissionMap.get(code);
@@ -417,19 +424,31 @@ async function main() {
   const brandAngkor = await prisma.brand.upsert({
     where: { businessId_name: { businessId: business.id, name: 'Angkor Brands' } },
     update: {},
-    create: { businessId: business.id, name: 'Angkor Brands', description: 'Cambodian Local Premium Brands' },
+    create: {
+      businessId: business.id,
+      name: 'Angkor Brands',
+      description: 'Cambodian Local Premium Brands',
+    },
   });
 
   const brandNestle = await prisma.brand.upsert({
     where: { businessId_name: { businessId: business.id, name: 'Nestle Cambodia' } },
     update: {},
-    create: { businessId: business.id, name: 'Nestle Cambodia', description: 'Global Food & Beverage Manufacturer' },
+    create: {
+      businessId: business.id,
+      name: 'Nestle Cambodia',
+      description: 'Global Food & Beverage Manufacturer',
+    },
   });
 
   const brandUnilever = await prisma.brand.upsert({
     where: { businessId_name: { businessId: business.id, name: 'Unilever Cambodia' } },
     update: {},
-    create: { businessId: business.id, name: 'Unilever Cambodia', description: 'Consumer Goods & Personal Care' },
+    create: {
+      businessId: business.id,
+      name: 'Unilever Cambodia',
+      description: 'Consumer Goods & Personal Care',
+    },
   });
 
   const supplierFMCG = await prisma.supplier.upsert({
@@ -798,7 +817,8 @@ async function main() {
       alertLowStock: 5,
       reorderLevel: 5,
       unit: 'pcs',
-      imageUrl: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=400&q=80',
+      imageUrl:
+        'https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=400&q=80',
       isActive: true,
     },
   });
@@ -985,11 +1005,31 @@ async function main() {
   console.log(`[Seed] Products & Variants seeded with multi-location stock & audit movements`);
 
   // 12. Customers
+  // 12a. Default Walk-in Customer
+  const walkInCustomer = await prisma.customer.upsert({
+    where: { id: 'cust-walk-in-default' },
+    update: { isWalkIn: true, name: 'Walk-in Customer' },
+    create: {
+      id: 'cust-walk-in-default',
+      businessId: business.id,
+      name: 'Walk-in Customer',
+      phone: null,
+      email: null,
+      address: null,
+      notes: 'Default walk-in guest customer account',
+      isWalkIn: true,
+      loyaltyPoints: 0,
+      creditBalanceUSD: 0.0,
+    },
+  });
+
   const customersData = [
     {
       name: 'Sopheap Chan',
       phone: '012888123',
       email: 'sopheap.chan@gmail.com',
+      address: '#45, St 240, Daun Penh, Phnom Penh',
+      notes: 'VIP customer. Prefers receipts via email.',
       loyaltyPoints: 120,
       creditBalanceUSD: 0.0,
     },
@@ -997,6 +1037,8 @@ async function main() {
       name: 'Bopha Kem',
       phone: '098777654',
       email: 'bopha.kem@gmail.com',
+      address: '#12, St 63, BKK1, Phnom Penh',
+      notes: 'Loyal weekly shopper. Has store credit.',
       loyaltyPoints: 45,
       creditBalanceUSD: 15.0,
     },
@@ -1004,6 +1046,8 @@ async function main() {
       name: 'Vannak Ouk',
       phone: '087666321',
       email: 'vannak.ouk@gmail.com',
+      address: '#88, Russian Blvd, Tuol Kouk, Phnom Penh',
+      notes: 'Bulk corporate buyer for office events.',
       loyaltyPoints: 310,
       creditBalanceUSD: 0.0,
     },
@@ -1012,19 +1056,25 @@ async function main() {
   for (const cust of customersData) {
     await prisma.customer.upsert({
       where: { id: `cust-${cust.phone}` },
-      update: {},
+      update: {
+        address: cust.address,
+        notes: cust.notes,
+      },
       create: {
         id: `cust-${cust.phone}`,
         businessId: business.id,
         name: cust.name,
         phone: cust.phone,
         email: cust.email,
+        address: cust.address,
+        notes: cust.notes,
         loyaltyPoints: cust.loyaltyPoints,
         creditBalanceUSD: cust.creditBalanceUSD,
+        isWalkIn: false,
       },
     });
   }
-  console.log(`[Seed] Customers seeded: ${customersData.length} customers`);
+  console.log(`[Seed] Customers seeded: 1 walk-in + ${customersData.length} profiles`);
 
   // 13. Audit Log
   await prisma.auditLog.create({

@@ -83,9 +83,7 @@ export class ScannerService {
         const target = e.target as HTMLElement | null;
         const isEditable =
           target &&
-          (target.tagName === 'INPUT' ||
-            target.tagName === 'TEXTAREA' ||
-            target.isContentEditable);
+          (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
 
         // Enter key signifies barcode termination in standard scanners
         if (e.key === 'Enter') {

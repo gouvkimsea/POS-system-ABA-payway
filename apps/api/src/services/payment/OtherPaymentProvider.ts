@@ -35,7 +35,9 @@ export class OtherPaymentProvider implements IPaymentProvider {
       };
     }
 
-    const ref = transactionRef || `VOUCH-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+    const ref =
+      transactionRef ||
+      `VOUCH-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
 
     return {
       success: true,

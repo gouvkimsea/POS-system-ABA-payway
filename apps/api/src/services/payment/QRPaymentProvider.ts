@@ -42,7 +42,9 @@ export class QRPaymentProvider implements IPaymentProvider {
     }
 
     // Generate or verify KHQR transaction reference
-    const ref = transactionRef || `KHQR-${Date.now().toString().slice(-6)}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const ref =
+      transactionRef ||
+      `KHQR-${Date.now().toString().slice(-6)}-${Math.floor(1000 + Math.random() * 9000)}`;
 
     // KHQR payload string structure (EMVCo compliant QR payload simulation)
     const qrString = `00020101021229370016bakong@abaa0108${ref}5405${amountUSD.toFixed(2)}5802KH5916ANGKOR FRESH MART6010PHNOM PENH6304ABCD`;

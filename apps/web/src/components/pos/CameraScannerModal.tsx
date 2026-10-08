@@ -1,7 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, X, Flashlight, RefreshCw, Barcode as BarcodeIcon, AlertCircle } from 'lucide-react';
+import {
+  Camera,
+  X,
+  Flashlight,
+  RefreshCw,
+  Barcode as BarcodeIcon,
+  AlertCircle,
+} from 'lucide-react';
 import { scannerService } from '../../lib/hardware/ScannerService';
 
 interface CameraScannerModalProps {

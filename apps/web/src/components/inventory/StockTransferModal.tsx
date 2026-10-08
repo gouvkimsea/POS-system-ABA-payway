@@ -52,9 +52,12 @@ export function StockTransferModal({
     const checkStock = async () => {
       try {
         const token = localStorage.getItem('pos_access_token');
-        const res = await fetch(`/api/inventory/stock?locationId=${fromLocationId}&productId=${productId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          `/api/inventory/stock?locationId=${fromLocationId}&productId=${productId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
         if (res.ok) {
           const data = await res.json();
           if (isMounted && data.data) {
@@ -101,7 +104,9 @@ export function StockTransferModal({
       return;
     }
     if (parsedQty > availableStock) {
-      setError(`Requested transfer quantity (${parsedQty}) exceeds source location stock (${availableStock})`);
+      setError(
+        `Requested transfer quantity (${parsedQty}) exceeds source location stock (${availableStock})`,
+      );
       return;
     }
     if (!reason.trim() || reason.trim().length < 3) {
@@ -152,7 +157,9 @@ export function StockTransferModal({
             </div>
             <div>
               <h2 className="text-base font-bold text-white">Transfer Stock Between Locations</h2>
-              <p className="text-xs text-slate-400">Atomic two-way movement (Outflow &amp; Inflow)</p>
+              <p className="text-xs text-slate-400">
+                Atomic two-way movement (Outflow &amp; Inflow)
+              </p>
             </div>
           </div>
           <button
@@ -174,7 +181,9 @@ export function StockTransferModal({
           {/* Locations */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">From (Source) Location *</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                From (Source) Location *
+              </label>
               <select
                 required
                 value={fromLocationId}
@@ -190,7 +199,9 @@ export function StockTransferModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">To (Destination) Location *</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                To (Destination) Location *
+              </label>
               <select
                 required
                 value={toLocationId}
@@ -228,7 +239,9 @@ export function StockTransferModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Transfer Quantity *</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Transfer Quantity *
+              </label>
               <input
                 type="number"
                 min="1"
@@ -243,7 +256,9 @@ export function StockTransferModal({
 
           {availableVariants.length > 0 && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Product Variant (Optional)</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Product Variant (Optional)
+              </label>
               <select
                 value={variantId}
                 onChange={(e) => setVariantId(e.target.value)}

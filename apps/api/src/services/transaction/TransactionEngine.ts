@@ -54,7 +54,9 @@ export class TransactionEngine {
       // 1a. Check if order was already completed for this key
       const cached = await IdempotencyManager.getCompletedResult<CheckoutResult>(idempotencyKey);
       if (cached) {
-        logger.info(`[TransactionEngine] Returning cached order for idempotencyKey: ${idempotencyKey}`);
+        logger.info(
+          `[TransactionEngine] Returning cached order for idempotencyKey: ${idempotencyKey}`,
+        );
         return cached;
       }
 
@@ -69,7 +71,9 @@ export class TransactionEngine {
       });
 
       if (existingOrder) {
-        logger.info(`[TransactionEngine] Returning existing DB order for idempotencyKey: ${idempotencyKey}`);
+        logger.info(
+          `[TransactionEngine] Returning existing DB order for idempotencyKey: ${idempotencyKey}`,
+        );
         return this.formatOrderResult(existingOrder);
       }
 
@@ -96,9 +100,15 @@ export class TransactionEngine {
         throw new TransactionEngineError('STORE_REQUIRED', 'Store could not be resolved', 400);
       }
 
-      const store = await prisma.store.findUnique({ where: { id: storeId } });
+      const store = await prisma.store.findFirst({
+        where: { id: storeId, businessId: user.businessId },
+      });
       if (!store) {
-        throw new TransactionEngineError('STORE_NOT_FOUND', `Store ${storeId} not found`, 404);
+        throw new TransactionEngineError(
+          'STORE_NOT_FOUND',
+          `Store ${storeId} not found or unauthorized`,
+          404,
+        );
       }
 
       const business = await prisma.business.findUnique({ where: { id: user.businessId } });
@@ -114,13 +124,25 @@ export class TransactionEngine {
       }
 
       // STEP 3-7: Calculate Subtotal, Tax, Discounts, Totals via Server Financial Calculator
-      const breakdown = await FinancialCalculator.calculate({
-        items: input.items,
-        businessId: user.businessId,
-        discountCode: input.discountCode,
-        discountUSD: input.discountUSD,
-        exchangeRateKHR,
-      });
+      let breakdown;
+      try {
+        breakdown = await FinancialCalculator.calculate({
+          items: input.items,
+          businessId: user.businessId,
+          discountCode: input.discountCode,
+          discountUSD: input.discountUSD,
+          exchangeRateKHR,
+        });
+      } catch (calcErr: any) {
+        if (calcErr.message && calcErr.message.includes('was not found or is inactive')) {
+          throw new TransactionEngineError('PRODUCT_NOT_FOUND', calcErr.message, 404);
+        }
+        throw new TransactionEngineError(
+          'CALCULATION_ERROR',
+          calcErr.message || 'Cart calculation error',
+          400,
+        );
+      }
 
       // STEP 8-10: Process Payment Methods via Payment Abstraction Layer
       const processedPayments: any[] = [];
@@ -218,6 +240,17 @@ export class TransactionEngine {
       const receiptNumber = generateReceiptNumber();
 
       const createdOrder = await prisma.$transaction(async (tx: any) => {
+        // Resolve active open register session if registerId is specified
+        let activeSessionId: string | null = null;
+        if (input.registerId) {
+          const activeSession = await tx.registerSession.findFirst({
+            where: { registerId: input.registerId, status: 'OPEN' },
+          });
+          if (activeSession) {
+            activeSessionId = activeSession.id;
+          }
+        }
+
         // 11. Create Order
         const order = await tx.order.create({
           data: {
@@ -226,6 +259,7 @@ export class TransactionEngine {
             businessId: user.businessId,
             storeId,
             registerId: input.registerId || null,
+            sessionId: activeSessionId,
             cashierId: user.userId,
             customerId: input.customerId || null,
             status: orderStatus,
@@ -340,13 +374,37 @@ export class TransactionEngine {
           });
         }
 
+        // 13.5 Update active RegisterSession sales and expected cash tracking
+        if (activeSessionId) {
+          let netCashUSD = 0;
+          let netCashKHR = 0;
+          for (const pp of processedPayments) {
+            if (pp.methodCode === 'CASH') {
+              netCashUSD += pp.result.amountUSD || 0;
+              netCashKHR += pp.result.amountKHR || 0;
+            }
+          }
+
+          await tx.registerSession.update({
+            where: { id: activeSessionId },
+            data: {
+              totalSalesCount: { increment: 1 },
+              totalSalesUSD: { increment: new Prisma.Decimal(breakdown.totalUSD) },
+              totalSalesKHR: { increment: new Prisma.Decimal(breakdown.totalKHR) },
+              expectedCashUSD: { increment: new Prisma.Decimal(Math.max(0, netCashUSD)) },
+              expectedCashKHR: { increment: new Prisma.Decimal(Math.max(0, netCashKHR)) },
+            },
+          });
+        }
+
         // 14. Create Receipt Record
         const receipt = await tx.receipt.create({
           data: {
             orderId: order.id,
             receiptNumber,
             headerText: store.receiptHeader || 'Angkor Fresh Mart - Thank You!',
-            footerText: store.receiptFooter || 'Goods sold are refundable within 7 days with receipt.',
+            footerText:
+              store.receiptFooter || 'Goods sold are refundable within 7 days with receipt.',
             qrCodeData: `AFM-PAY:${orderNumber}:${breakdown.totalUSD}`,
           },
         });
@@ -405,8 +463,8 @@ export class TransactionEngine {
     input: AddPaymentInput,
     user: { userId: string; businessId: string; storeId?: string | null },
   ): Promise<CheckoutResult> {
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
+    const order = await prisma.order.findFirst({
+      where: { id: orderId, businessId: user.businessId },
       include: {
         payments: { include: { paymentMethod: true } },
         items: true,
@@ -416,7 +474,11 @@ export class TransactionEngine {
     });
 
     if (!order) {
-      throw new TransactionEngineError('ORDER_NOT_FOUND', `Order ${orderId} not found`, 404);
+      throw new TransactionEngineError(
+        'ORDER_NOT_FOUND',
+        `Order ${orderId} not found or unauthorized`,
+        404,
+      );
     }
 
     if (order.status !== OrderStatus.PARTIALLY_PAID && order.status !== OrderStatus.PENDING) {
@@ -545,13 +607,17 @@ export class TransactionEngine {
     input: VoidOrderInput,
     user: { userId: string; businessId: string },
   ): Promise<{ success: boolean; orderId: string; status: OrderStatus }> {
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
+    const order = await prisma.order.findFirst({
+      where: { id: orderId, businessId: user.businessId },
       include: { items: true, payments: true },
     });
 
     if (!order) {
-      throw new TransactionEngineError('ORDER_NOT_FOUND', `Order ${orderId} not found`, 404);
+      throw new TransactionEngineError(
+        'ORDER_NOT_FOUND',
+        `Order ${orderId} not found or unauthorized`,
+        404,
+      );
     }
 
     if (order.status === OrderStatus.VOIDED || order.status === OrderStatus.REFUNDED) {
@@ -571,7 +637,10 @@ export class TransactionEngine {
       // 1. Update order status to VOIDED
       await tx.order.update({
         where: { id: order.id },
-        data: { status: OrderStatus.VOIDED, notes: `[VOIDED: ${input.reason}] ${order.notes || ''}`.trim() },
+        data: {
+          status: OrderStatus.VOIDED,
+          notes: `[VOIDED: ${input.reason}] ${order.notes || ''}`.trim(),
+        },
       });
 
       // 2. Mark payments as VOIDED
@@ -665,13 +734,17 @@ export class TransactionEngine {
     input: RefundOrderInput,
     user: { userId: string; businessId: string },
   ): Promise<{ success: boolean; orderId: string; status: OrderStatus; refundAmountUSD: number }> {
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
+    const order = await prisma.order.findFirst({
+      where: { id: orderId, businessId: user.businessId },
       include: { items: true, payments: true },
     });
 
     if (!order) {
-      throw new TransactionEngineError('ORDER_NOT_FOUND', `Order ${orderId} not found`, 404);
+      throw new TransactionEngineError(
+        'ORDER_NOT_FOUND',
+        `Order ${orderId} not found or unauthorized`,
+        404,
+      );
     }
 
     if (order.status !== OrderStatus.PAID && order.status !== OrderStatus.COMPLETED) {
@@ -704,7 +777,8 @@ export class TransactionEngine {
         where: { id: order.id },
         data: {
           status: newStatus,
-          notes: `[REFUNDED $${input.amountUSD.toFixed(2)}: ${input.reason}] ${order.notes || ''}`.trim(),
+          notes:
+            `[REFUNDED $${input.amountUSD.toFixed(2)}: ${input.reason}] ${order.notes || ''}`.trim(),
         },
       });
 
@@ -719,7 +793,7 @@ export class TransactionEngine {
         for (const item of order.items) {
           const product = await tx.product.findUnique({ where: { id: item.productId } });
           if (product?.trackInventory) {
-            let inv = await tx.inventory.findFirst({
+            const inv = await tx.inventory.findFirst({
               where: {
                 storeId: order.storeId,
                 locationId: location.id,
@@ -794,10 +868,16 @@ export class TransactionEngine {
     input: CancelOrderInput,
     user: { userId: string; businessId: string },
   ): Promise<{ success: boolean; orderId: string; status: OrderStatus }> {
-    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    const order = await prisma.order.findFirst({
+      where: { id: orderId, businessId: user.businessId },
+    });
 
     if (!order) {
-      throw new TransactionEngineError('ORDER_NOT_FOUND', `Order ${orderId} not found`, 404);
+      throw new TransactionEngineError(
+        'ORDER_NOT_FOUND',
+        `Order ${orderId} not found or unauthorized`,
+        404,
+      );
     }
 
     if (order.status !== OrderStatus.PENDING) {

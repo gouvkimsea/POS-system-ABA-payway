@@ -93,10 +93,7 @@ async function testCatalogAndKhmerSupport() {
 
   assert(khmerSearch.status === 200, 'Search with Khmer Unicode query returned 200');
   assert(khmerSearch.body.data.items.length >= 1, 'Found product by Khmer name search');
-  assert(
-    khmerSearch.body.data.items[0].sku === 'BEV-CAM-330',
-    'Khmer search resolved correct SKU',
-  );
+  assert(khmerSearch.body.data.items[0].sku === 'BEV-CAM-330', 'Khmer search resolved correct SKU');
 
   // Filter by Category
   const bevCat = listRes.body.data.items[0].categoryId;
@@ -105,7 +102,10 @@ async function testCatalogAndKhmerSupport() {
     .set('Authorization', `Bearer ${adminToken}`);
 
   assert(catFilter.status === 200, 'Filter by category returned 200');
-  assert(catFilter.body.data.items.every((p: any) => p.categoryId === bevCat), 'All items belong to category');
+  assert(
+    catFilter.body.data.items.every((p: any) => p.categoryId === bevCat),
+    'All items belong to category',
+  );
 }
 
 async function testFastBarcodeLookup() {
@@ -175,9 +175,15 @@ async function testProductVariants() {
       initialLocationId: floorLocationId,
     });
 
-  assert(createVarRes.status === 201, 'POST /variants created variant with size/color/weight/model');
+  assert(
+    createVarRes.status === 201,
+    'POST /variants created variant with size/color/weight/model',
+  );
   assert(createVarRes.body.data.weight === '500g', 'Variant weight matches 500g');
-  assert(createVarRes.body.data.model === 'Arabica-Premium-2026', 'Variant model recorded correctly');
+  assert(
+    createVarRes.body.data.model === 'Arabica-Premium-2026',
+    'Variant model recorded correctly',
+  );
 
   // Verify variant listing
   const listVarRes = await request(app)
@@ -283,7 +289,10 @@ async function testMovementTypesAndAuditLogging() {
       reason: 'Shelf collapse accident - 4 cans punctured',
     });
   assert(damageRes.status === 200, 'DAMAGE adjustment successful');
-  assert(damageRes.body.data.quantityAfter === initialStock + 26, 'Stock decreased by 4 for damage');
+  assert(
+    damageRes.body.data.quantityAfter === initialStock + 26,
+    'Stock decreased by 4 for damage',
+  );
 
   // 4. EXPIRED (-2)
   const expiredRes = await request(app)
@@ -297,7 +306,10 @@ async function testMovementTypesAndAuditLogging() {
       reason: 'Past best-before date rotation audit',
     });
   assert(expiredRes.status === 200, 'EXPIRED adjustment successful');
-  assert(expiredRes.body.data.quantityAfter === initialStock + 24, 'Stock decreased by 2 for expiration');
+  assert(
+    expiredRes.body.data.quantityAfter === initialStock + 24,
+    'Stock decreased by 2 for expiration',
+  );
 
   // 5. Query movement audit logs
   const moveRes = await request(app)
@@ -314,8 +326,14 @@ async function testMovementTypesAndAuditLogging() {
   assert(typesFound.has('DAMAGE'), 'Audit log contains DAMAGE type');
   assert(typesFound.has('EXPIRED'), 'Audit log contains EXPIRED type');
 
-  assert(moves.every((m: any) => m.notes && m.notes.length >= 3), 'ALL stock movements have non-empty reason notes');
-  assert(moves.every((m: any) => m.createdByName), 'ALL stock movements track operator name');
+  assert(
+    moves.every((m: any) => m.notes && m.notes.length >= 3),
+    'ALL stock movements have non-empty reason notes',
+  );
+  assert(
+    moves.every((m: any) => m.createdByName),
+    'ALL stock movements track operator name',
+  );
 }
 
 async function testLocationTransferTransaction() {
@@ -351,8 +369,14 @@ async function testLocationTransferTransaction() {
   const floorAfter = await getStock(floorLocationId);
   const whAfter = await getStock(whLocationId);
 
-  assert(whAfter === whBefore - 30, `Warehouse decreased by exactly 30 (${whBefore} -> ${whAfter})`);
-  assert(floorAfter === floorBefore + 30, `Floor increased by exactly 30 (${floorBefore} -> ${floorAfter})`);
+  assert(
+    whAfter === whBefore - 30,
+    `Warehouse decreased by exactly 30 (${whBefore} -> ${whAfter})`,
+  );
+  assert(
+    floorAfter === floorBefore + 30,
+    `Floor increased by exactly 30 (${floorBefore} -> ${floorAfter})`,
+  );
 
   // Check audit records for TRANSFER_OUT and TRANSFER_IN
   const moveOut = await prisma.stockMovement.findFirst({
@@ -399,7 +423,10 @@ async function testInventoryAccuracyMultiCycle() {
       initialLocationId: floorLocationId,
     });
 
-  assert(newProductRes.status === 201, 'Created dedicated audited test product with initial stock 100');
+  assert(
+    newProductRes.status === 201,
+    'Created dedicated audited test product with initial stock 100',
+  );
   const productId = newProductRes.body.data.id;
 
   let expectedBalance = 100;
@@ -515,7 +542,10 @@ async function testInventoryAccuracyMultiCycle() {
   console.log(`  Expected Final Balance: ${expectedBalance}`);
   console.log(`  Actual DB Balance:      ${actualBalance}`);
 
-  assert(actualBalance === expectedBalance, `Mathematical inventory balance is 100% accurate (${actualBalance} === ${expectedBalance})`);
+  assert(
+    actualBalance === expectedBalance,
+    `Mathematical inventory balance is 100% accurate (${actualBalance} === ${expectedBalance})`,
+  );
 
   // Verify all movements match ledger
   const movements = await prisma.stockMovement.findMany({
@@ -524,7 +554,10 @@ async function testInventoryAccuracyMultiCycle() {
   });
 
   const ledgerNet = movements.reduce((acc, m) => acc + Number(m.quantityChange), 0);
-  assert(ledgerNet === expectedBalance, `Sum of movement log changes (${ledgerNet}) matches current stock balance (${expectedBalance})`);
+  assert(
+    ledgerNet === expectedBalance,
+    `Sum of movement log changes (${ledgerNet}) matches current stock balance (${expectedBalance})`,
+  );
 }
 
 async function testLowStockAlerts() {
@@ -543,7 +576,10 @@ async function testLowStockAlerts() {
     .set('Authorization', `Bearer ${adminToken}`);
 
   assert(catLowRes.status === 200, 'GET /api/catalog/products?lowStockOnly=true returned 200');
-  assert(catLowRes.body.data.items.every((p: any) => p.isLowStock), 'Every returned item is marked as low stock');
+  assert(
+    catLowRes.body.data.items.every((p: any) => p.isLowStock),
+    'Every returned item is marked as low stock',
+  );
 }
 
 async function runAll() {

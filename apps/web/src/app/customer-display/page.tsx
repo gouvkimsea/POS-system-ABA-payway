@@ -27,7 +27,13 @@ export default function CustomerDisplayPage() {
   // Live Clock
   useEffect(() => {
     const updateTime = () => {
-      setClock(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      setClock(
+        new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        }),
+      );
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
@@ -261,7 +267,9 @@ export default function CustomerDisplayPage() {
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-400 uppercase">Khmer Riel (KHR):</span>
+                  <span className="text-xs font-semibold text-slate-400 uppercase">
+                    Khmer Riel (KHR):
+                  </span>
                   <div className="text-2xl sm:text-3xl font-black text-amber-400 font-mono">
                     {Math.round(cartSummary?.totalKHR || 0).toLocaleString()} ៛
                   </div>
@@ -361,7 +369,9 @@ export default function CustomerDisplayPage() {
                     <Receipt className="w-3.5 h-3.5" />
                     Receipt No:
                   </span>
-                  <span className="font-bold text-white font-mono">{thankYouNotice.receiptNumber}</span>
+                  <span className="font-bold text-white font-mono">
+                    {thankYouNotice.receiptNumber}
+                  </span>
                 </div>
 
                 {thankYouNotice.changeUSD > 0 && (

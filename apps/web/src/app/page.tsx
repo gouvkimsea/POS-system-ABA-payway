@@ -161,7 +161,7 @@ function DashboardContent() {
   };
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <main className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8 pb-24 lg:pb-8">
       {/* Top Navigation & User Header */}
       <header className="bg-white border border-slate-200 rounded-xl p-5 mb-8 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -203,7 +203,35 @@ function DashboardContent() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 self-end md:self-auto">
+        <div className="flex items-center gap-3 self-end md:self-auto flex-wrap">
+          <a
+            href="/reports"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-lg text-xs font-bold shadow-md shadow-indigo-600/20 transition-all border border-indigo-400/30"
+          >
+            <span>📈 Reports &amp; Analytics</span>
+          </a>
+
+          <a
+            href="/reports/register-sessions"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold shadow-xs transition-colors border border-slate-700"
+          >
+            <span>📊 Shift Reports</span>
+          </a>
+
+          <a
+            href="/settings/stores"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold shadow-xs transition-colors border border-slate-700"
+          >
+            <span>🏢 Multi-Branch Stores</span>
+          </a>
+
+          <a
+            href="/inventory/transfers"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-sky-900/40 hover:bg-sky-800/60 text-sky-200 rounded-lg text-xs font-bold shadow-xs transition-colors border border-sky-700/50"
+          >
+            <span>🚚 Stock Transfers</span>
+          </a>
+
           <a
             href="/inventory"
             className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold shadow-xs transition-colors"

@@ -65,7 +65,10 @@ export function StockAdjustmentModal({
         setIsLoadingStock(true);
         const token = localStorage.getItem('pos_access_token');
         const url = `/api/inventory/stock?locationId=${selectedLocationId}&productId=${selectedProductId}`;
-        const res = await fetch(url, { credentials: 'include', headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(url, {
+          credentials: 'include',
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (res.ok) {
           const data = await res.json();
           if (isMounted && data.data) {
@@ -119,11 +122,15 @@ export function StockAdjustmentModal({
       return;
     }
     if (!reason.trim() || reason.trim().length < 3) {
-      setError('CRITICAL: Never change stock without recording a descriptive reason (minimum 3 characters)');
+      setError(
+        'CRITICAL: Never change stock without recording a descriptive reason (minimum 3 characters)',
+      );
       return;
     }
     if (projectedBalance < 0) {
-      setError(`Cannot deduct ${parsedQty} items: Current stock is only ${currentStock}. Negative stock is prohibited.`);
+      setError(
+        `Cannot deduct ${parsedQty} items: Current stock is only ${currentStock}. Negative stock is prohibited.`,
+      );
       return;
     }
 
@@ -198,7 +205,9 @@ export function StockAdjustmentModal({
           {/* Location & Product Selectors */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Target Storage Location *</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Target Storage Location *
+              </label>
               <select
                 required
                 value={selectedLocationId}
@@ -214,7 +223,9 @@ export function StockAdjustmentModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Target Product *</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Target Product *
+              </label>
               <select
                 required
                 value={selectedProductId}
@@ -236,7 +247,9 @@ export function StockAdjustmentModal({
           {/* Variant Selector (if product has variants) */}
           {availableVariants.length > 0 && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Specific Product Variant</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Specific Product Variant
+              </label>
               <select
                 value={selectedVariantId}
                 onChange={(e) => setSelectedVariantId(e.target.value)}
@@ -245,7 +258,8 @@ export function StockAdjustmentModal({
                 <option value="">-- Main Product (No Variant) --</option>
                 {availableVariants.map((v) => (
                   <option key={v.id} value={v.id}>
-                    {v.name} &bull; SKU: {v.sku} {v.size ? `(Size ${v.size})` : ''} {v.color ? `(${v.color})` : ''}
+                    {v.name} &bull; SKU: {v.sku} {v.size ? `(Size ${v.size})` : ''}{' '}
+                    {v.color ? `(${v.color})` : ''}
                   </option>
                 ))}
               </select>
@@ -255,7 +269,9 @@ export function StockAdjustmentModal({
           {/* Movement Type & Quantity */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Adjustment Reason / Type *</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Adjustment Reason / Type *
+              </label>
               <select
                 value={movementType}
                 onChange={(e) => setMovementType(e.target.value as any)}
@@ -275,7 +291,9 @@ export function StockAdjustmentModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Quantity Amount *</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Quantity Amount *
+              </label>
               <input
                 type="number"
                 step="1"
@@ -293,23 +311,30 @@ export function StockAdjustmentModal({
             <div className="text-center">
               <p className="text-[11px] text-slate-400 uppercase font-semibold">Current Stock</p>
               <p className="text-xl font-bold text-slate-200">
-                {isLoadingStock ? '...' : currentStock} <span className="text-xs font-normal">{selectedProduct?.unit || 'pcs'}</span>
+                {isLoadingStock ? '...' : currentStock}{' '}
+                <span className="text-xs font-normal">{selectedProduct?.unit || 'pcs'}</span>
               </p>
             </div>
-            <div className="text-2xl text-slate-500">
-              {isDeduction ? '➖' : '➕'}
-            </div>
+            <div className="text-2xl text-slate-500">{isDeduction ? '➖' : '➕'}</div>
             <div className="text-center">
               <p className="text-[11px] text-slate-400 uppercase font-semibold">Adjustment</p>
-              <p className={`text-xl font-bold ${isDeduction ? 'text-rose-400' : 'text-emerald-400'}`}>
-                {isDeduction ? `-${parsedQty}` : `+${parsedQty}`} <span className="text-xs font-normal">{selectedProduct?.unit || 'pcs'}</span>
+              <p
+                className={`text-xl font-bold ${isDeduction ? 'text-rose-400' : 'text-emerald-400'}`}
+              >
+                {isDeduction ? `-${parsedQty}` : `+${parsedQty}`}{' '}
+                <span className="text-xs font-normal">{selectedProduct?.unit || 'pcs'}</span>
               </p>
             </div>
             <div className="text-2xl text-slate-500">➔</div>
             <div className="text-center">
-              <p className="text-[11px] text-slate-400 uppercase font-semibold">Projected New Balance</p>
-              <p className={`text-xl font-extrabold ${projectedBalance < 0 ? 'text-rose-500 animate-pulse' : 'text-indigo-400'}`}>
-                {projectedBalance} <span className="text-xs font-normal">{selectedProduct?.unit || 'pcs'}</span>
+              <p className="text-[11px] text-slate-400 uppercase font-semibold">
+                Projected New Balance
+              </p>
+              <p
+                className={`text-xl font-extrabold ${projectedBalance < 0 ? 'text-rose-500 animate-pulse' : 'text-indigo-400'}`}
+              >
+                {projectedBalance}{' '}
+                <span className="text-xs font-normal">{selectedProduct?.unit || 'pcs'}</span>
               </p>
             </div>
           </div>
@@ -333,7 +358,9 @@ export function StockAdjustmentModal({
           {/* Reference Meta */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Reference Doc Type</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Reference Doc Type
+              </label>
               <input
                 type="text"
                 value={referenceType}
@@ -343,7 +370,9 @@ export function StockAdjustmentModal({
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Reference Doc ID</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Reference Doc ID
+              </label>
               <input
                 type="text"
                 value={referenceId}

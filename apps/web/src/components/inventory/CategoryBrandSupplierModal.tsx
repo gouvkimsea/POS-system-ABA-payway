@@ -160,7 +160,11 @@ export function CategoryBrandSupplierModal({
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
-              {type === 'category' ? 'Category Name *' : type === 'brand' ? 'Brand Name *' : 'Company / Supplier Name *'}
+              {type === 'category'
+                ? 'Category Name *'
+                : type === 'brand'
+                  ? 'Brand Name *'
+                  : 'Company / Supplier Name *'}
             </label>
             <input
               type="text"
@@ -174,7 +178,9 @@ export function CategoryBrandSupplierModal({
           {type === 'category' && (
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Code (Short)</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Code (Short)
+                </label>
                 <input
                   type="text"
                   value={code}
@@ -185,7 +191,9 @@ export function CategoryBrandSupplierModal({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Badge Color</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Badge Color
+                </label>
                 <input
                   type="color"
                   value={color}
@@ -195,7 +203,9 @@ export function CategoryBrandSupplierModal({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Display Order</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Display Order
+                </label>
                 <input
                   type="number"
                   value={sortOrder}
@@ -208,7 +218,9 @@ export function CategoryBrandSupplierModal({
 
           {type === 'brand' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Brand Description</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Brand Description
+              </label>
               <textarea
                 rows={3}
                 value={description}
@@ -223,7 +235,9 @@ export function CategoryBrandSupplierModal({
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Contact Person</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Contact Person
+                  </label>
                   <input
                     type="text"
                     value={contactPerson}
@@ -233,7 +247,9 @@ export function CategoryBrandSupplierModal({
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Phone Number</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Phone Number
+                  </label>
                   <input
                     type="text"
                     value={phone}
@@ -246,7 +262,9 @@ export function CategoryBrandSupplierModal({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Email Address
+                  </label>
                   <input
                     type="email"
                     value={email}
@@ -256,7 +274,9 @@ export function CategoryBrandSupplierModal({
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Tax ID / VAT Reg</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Tax ID / VAT Reg
+                  </label>
                   <input
                     type="text"
                     value={taxId}
@@ -268,7 +288,9 @@ export function CategoryBrandSupplierModal({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Physical Address / Warehouse</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Physical Address / Warehouse
+                </label>
                 <input
                   type="text"
                   value={address}

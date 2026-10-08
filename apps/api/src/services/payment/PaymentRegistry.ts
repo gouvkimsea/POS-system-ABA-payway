@@ -35,7 +35,9 @@ export class PaymentRegistry {
   public register(provider: IPaymentProvider): void {
     this.providers.set(provider.code.toUpperCase(), provider);
     this.providers.set(provider.type.toUpperCase(), provider);
-    logger.info(`[PaymentRegistry] Registered payment provider: ${provider.name} [${provider.code}]`);
+    logger.info(
+      `[PaymentRegistry] Registered payment provider: ${provider.name} [${provider.code}]`,
+    );
   }
 
   /**

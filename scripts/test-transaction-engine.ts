@@ -118,8 +118,14 @@ async function testOverpaymentWithChange() {
   assert(res.status === 200, 'Checkout returns 200 OK');
   const data = res.body.data;
   assert(data.status === 'PAID', 'Order status is PAID');
-  assert(data.changeUSD === expectedChangeUSD, `Change USD calculated correctly ($${data.changeUSD} == $${expectedChangeUSD})`);
-  assert(data.changeKHR === expectedChangeKHR, `Change KHR calculated correctly (${data.changeKHR} == ${expectedChangeKHR} KHR)`);
+  assert(
+    data.changeUSD === expectedChangeUSD,
+    `Change USD calculated correctly ($${data.changeUSD} == $${expectedChangeUSD})`,
+  );
+  assert(
+    data.changeKHR === expectedChangeKHR,
+    `Change KHR calculated correctly (${data.changeKHR} == ${expectedChangeKHR} KHR)`,
+  );
 }
 
 /**
@@ -155,7 +161,10 @@ async function testUnderpaymentRejection() {
 
   assert(res.status === 400, 'Underpayment without partial flag is REJECTED with 400');
   assert(res.body.error.code === 'UNDERPAYMENT_ERROR', 'Error code is UNDERPAYMENT_ERROR');
-  assert(res.body.error.details.remainingUSD === Number((total - underpaidAmount).toFixed(2)), 'Error details specify exact remaining balance');
+  assert(
+    res.body.error.details.remainingUSD === Number((total - underpaidAmount).toFixed(2)),
+    'Error details specify exact remaining balance',
+  );
 }
 
 /**
@@ -222,7 +231,10 @@ async function testMultipleItemsAndDiscounts() {
 
   assert(checkoutRes.status === 200, 'Checkout with discounts returns 200 OK');
   const orderData = checkoutRes.body.data;
-  assert(Math.abs(orderData.totalUSD - expectedTotal) < 0.01, `Order total matches server calculation ($${expectedTotal})`);
+  assert(
+    Math.abs(orderData.totalUSD - expectedTotal) < 0.01,
+    `Order total matches server calculation ($${expectedTotal})`,
+  );
   assert(orderData.items.length === 2, '2 line items persisted');
   assert(orderData.discountUSD === orderDiscount, 'Order discount recorded in DB');
 }
@@ -282,7 +294,10 @@ async function testPartialPaymentAndSecondTender() {
   assert(updatedOrder.status === 'PAID', 'Order status transitioned from PARTIALLY_PAID to PAID');
   assert(updatedOrder.paidUSD === 10.0, 'Total paid USD is $10.00');
   assert(updatedOrder.remainingUSD === 0.0, 'Remaining balance is $0.00');
-  assert(updatedOrder.payments.length === 2, '2 distinct payments recorded across CASH and KHQR_ABA');
+  assert(
+    updatedOrder.payments.length === 2,
+    '2 distinct payments recorded across CASH and KHQR_ABA',
+  );
 }
 
 /**
@@ -319,14 +334,20 @@ async function testFailedPaymentAtomicRollback() {
     });
 
   assert(failRes.status === 400, 'Declined card returns 400 Bad Request');
-  assert(failRes.body.error.code === 'CARD_DECLINED', 'Error code explicitly indicates CARD_DECLINED');
+  assert(
+    failRes.body.error.code === 'CARD_DECLINED',
+    'Error code explicitly indicates CARD_DECLINED',
+  );
 
   // Verify stock was NOT decremented
   const invAfter = await prisma.inventory.findFirst({
     where: { storeId, locationId: floorLocationId, productId: product.id },
   });
   const stockAfter = Number(invAfter?.quantity || 0);
-  assert(stockAfter === stockBefore, `Stock was safely preserved without decrement (${stockBefore} === ${stockAfter})`);
+  assert(
+    stockAfter === stockBefore,
+    `Stock was safely preserved without decrement (${stockBefore} === ${stockAfter})`,
+  );
 
   // Verify no orphaned order was left behind
   const orderCount = await prisma.order.count({
@@ -377,7 +398,10 @@ async function testIdempotencyAndDoubleClickProtection() {
     .send(checkoutPayload);
 
   assert(secondRes.status === 200, 'Second payment click returns 200 OK (Idempotent replay)');
-  assert(secondRes.body.data.orderId === firstOrderId, 'Returns same order ID rather than creating a duplicate');
+  assert(
+    secondRes.body.data.orderId === firstOrderId,
+    'Returns same order ID rather than creating a duplicate',
+  );
   assert(secondRes.body.data.orderNumber === firstOrderNumber, 'Returns identical order number');
 
   // Verify only 1 order exists in database with this key
@@ -397,7 +421,10 @@ async function testConfigurablePaymentMethods() {
 
   assert(methodsRes.status === 200, 'GET /api/pos/payment-methods returns 200 OK');
   const methods = methodsRes.body.data;
-  assert(Array.isArray(methods) && methods.length >= 5, `Configured methods returned (${methods.length} methods)`);
+  assert(
+    Array.isArray(methods) && methods.length >= 5,
+    `Configured methods returned (${methods.length} methods)`,
+  );
 
   const codes = methods.map((m: any) => m.code);
   assert(codes.includes('CASH'), 'Supports CASH method');
@@ -425,8 +452,14 @@ async function testConfigurablePaymentMethods() {
       notes: 'Test 8: Voucher payment',
     });
 
-  assert(voucherRes.status === 200, 'Voucher payment processed successfully via OtherPaymentProvider');
-  assert(voucherRes.body.data.payments[0].paymentMethodCode === 'OTHER', 'Payment recorded with OTHER method code');
+  assert(
+    voucherRes.status === 200,
+    'Voucher payment processed successfully via OtherPaymentProvider',
+  );
+  assert(
+    voucherRes.body.data.payments[0].paymentMethodCode === 'OTHER',
+    'Payment recorded with OTHER method code',
+  );
 }
 
 /**
@@ -460,7 +493,10 @@ async function testVoidAndRefundWorkflows() {
 
   const orderId = orderRes.body.data.orderId;
   const stockAfterSale = await getStock();
-  assert(stockAfterSale === initialStock - 4, `Stock decremented by 4 on sale (${initialStock} -> ${stockAfterSale})`);
+  assert(
+    stockAfterSale === initialStock - 4,
+    `Stock decremented by 4 on sale (${initialStock} -> ${stockAfterSale})`,
+  );
 
   // Void order
   const voidRes = await request(app)
@@ -473,7 +509,10 @@ async function testVoidAndRefundWorkflows() {
 
   // Verify stock restored
   const stockAfterVoid = await getStock();
-  assert(stockAfterVoid === initialStock, `Stock completely restored to initial balance on void (${stockAfterSale} -> ${stockAfterVoid})`);
+  assert(
+    stockAfterVoid === initialStock,
+    `Stock completely restored to initial balance on void (${stockAfterSale} -> ${stockAfterVoid})`,
+  );
 
   // Verify audit log
   const audit = await prisma.auditLog.findFirst({

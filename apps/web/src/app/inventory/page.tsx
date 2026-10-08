@@ -79,7 +79,10 @@ function InventoryHubContent() {
   const [barcodeMatchResult, setBarcodeMatchResult] = useState<any | null>(null);
 
   // Notification Toast State
-  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [toastMessage, setToastMessage] = useState<{
+    text: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
   const showToast = (text: string, type: 'success' | 'error' = 'success') => {
     setToastMessage({ text, type });
@@ -192,7 +195,12 @@ function InventoryHubContent() {
 
   const refreshAll = useCallback(async () => {
     setIsLoading(true);
-    await Promise.all([fetchClassifications(), fetchProducts(), fetchStockLevels(), fetchMovements()]);
+    await Promise.all([
+      fetchClassifications(),
+      fetchProducts(),
+      fetchStockLevels(),
+      fetchMovements(),
+    ]);
     setIsLoading(false);
   }, [fetchClassifications, fetchProducts, fetchStockLevels, fetchMovements]);
 
@@ -320,7 +328,7 @@ function InventoryHubContent() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 lg:pb-8 space-y-6">
         {/* Loading Indicator */}
         {isLoading && (
           <div className="w-full bg-slate-900 border border-indigo-500/30 rounded-xl p-3 flex items-center justify-between text-xs text-indigo-300 animate-pulse">
@@ -328,14 +336,16 @@ function InventoryHubContent() {
               <span className="animate-spin inline-block">⏳</span>
               <span>Syncing real-time catalog &amp; inventory balances with PostgreSQL...</span>
             </span>
-            <span className="font-mono text-[10px] text-slate-400">PostgreSQL Transaction Active</span>
+            <span className="font-mono text-[10px] text-slate-400">
+              PostgreSQL Transaction Active
+            </span>
           </div>
         )}
 
         {/* Toast Alert */}
         {toastMessage && (
           <div
-            className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-2xl border text-sm flex items-center space-x-2 animate-in slide-in-from-bottom-5 duration-200 ${
+            className={`fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-50 px-4 py-3 rounded-xl shadow-2xl border text-sm flex items-center space-x-2 animate-in slide-in-from-bottom-5 duration-200 ${
               toastMessage.type === 'success'
                 ? 'bg-emerald-950/90 text-emerald-200 border-emerald-500/40'
                 : 'bg-rose-950/90 text-rose-200 border-rose-500/40'
@@ -478,9 +488,13 @@ function InventoryHubContent() {
                                 <div>
                                   <p className="font-bold text-white text-sm">{product.name}</p>
                                   {product.nameKhmer && (
-                                    <p className="text-indigo-300 text-xs font-medium">{product.nameKhmer}</p>
+                                    <p className="text-indigo-300 text-xs font-medium">
+                                      {product.nameKhmer}
+                                    </p>
                                   )}
-                                  <span className="text-[10px] text-slate-400">Unit: {product.unit}</span>
+                                  <span className="text-[10px] text-slate-400">
+                                    Unit: {product.unit}
+                                  </span>
                                 </div>
                               </div>
                             </td>
@@ -488,7 +502,9 @@ function InventoryHubContent() {
                             {/* SKU & Barcode */}
                             <td className="py-3.5 px-4 font-mono text-slate-300">
                               <div className="font-semibold text-slate-200">{product.sku}</div>
-                              <div className="text-[11px] text-slate-400">{product.barcode || '—'}</div>
+                              <div className="text-[11px] text-slate-400">
+                                {product.barcode || '—'}
+                              </div>
                             </td>
 
                             {/* Classification */}
@@ -501,7 +517,9 @@ function InventoryHubContent() {
                                 <span className="text-slate-500">—</span>
                               )}
                               {product.brandName && (
-                                <div className="text-[11px] text-slate-400">&bull; {product.brandName}</div>
+                                <div className="text-[11px] text-slate-400">
+                                  &bull; {product.brandName}
+                                </div>
                               )}
                             </td>
 
@@ -513,7 +531,9 @@ function InventoryHubContent() {
                               <div className="text-[10px] text-slate-400">
                                 ៛{product.sellingPriceKHR.toLocaleString()}
                               </div>
-                              <div className="text-[10px] text-slate-500">Cost: ${product.costPriceUSD.toFixed(2)}</div>
+                              <div className="text-[10px] text-slate-500">
+                                Cost: ${product.costPriceUSD.toFixed(2)}
+                              </div>
                             </td>
 
                             {/* Stock & Low-Stock Indicator */}
@@ -608,14 +628,32 @@ function InventoryHubContent() {
                                             SKU: {v.sku} {v.barcode ? `&bull; ${v.barcode}` : ''}
                                           </p>
                                           <div className="flex flex-wrap gap-1 mt-1 text-[10px] text-indigo-300">
-                                            {v.size && <span className="bg-slate-700 px-1.5 py-0.2 rounded">Size: {v.size}</span>}
-                                            {v.color && <span className="bg-slate-700 px-1.5 py-0.2 rounded">Color: {v.color}</span>}
-                                            {v.weight && <span className="bg-slate-700 px-1.5 py-0.2 rounded">Wt: {v.weight}</span>}
-                                            {v.model && <span className="bg-slate-700 px-1.5 py-0.2 rounded">Mod: {v.model}</span>}
+                                            {v.size && (
+                                              <span className="bg-slate-700 px-1.5 py-0.2 rounded">
+                                                Size: {v.size}
+                                              </span>
+                                            )}
+                                            {v.color && (
+                                              <span className="bg-slate-700 px-1.5 py-0.2 rounded">
+                                                Color: {v.color}
+                                              </span>
+                                            )}
+                                            {v.weight && (
+                                              <span className="bg-slate-700 px-1.5 py-0.2 rounded">
+                                                Wt: {v.weight}
+                                              </span>
+                                            )}
+                                            {v.model && (
+                                              <span className="bg-slate-700 px-1.5 py-0.2 rounded">
+                                                Mod: {v.model}
+                                              </span>
+                                            )}
                                           </div>
                                         </div>
                                         <div className="text-right pl-2">
-                                          <span className="font-bold text-emerald-400 block">${v.sellingPriceUSD.toFixed(2)}</span>
+                                          <span className="font-bold text-emerald-400 block">
+                                            ${v.sellingPriceUSD.toFixed(2)}
+                                          </span>
                                           <span className="text-[11px] font-bold text-indigo-300">
                                             {v.stockQuantity} pcs
                                           </span>
@@ -781,7 +819,9 @@ function InventoryHubContent() {
                           </td>
                           <td className="py-3.5 px-4 font-mono text-slate-300">
                             <div>{item.variantSku || item.productSku}</div>
-                            <div className="text-[10px] text-slate-500">{item.productBarcode || '—'}</div>
+                            <div className="text-[10px] text-slate-500">
+                              {item.productBarcode || '—'}
+                            </div>
                           </td>
                           <td className="py-3.5 px-4 text-center">
                             <span
@@ -833,10 +873,16 @@ function InventoryHubContent() {
         {activeTab === 'adjustments' && (
           <section className="space-y-6">
             <div className="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-6 shadow-xl">
-              <h2 className="text-xl font-bold text-white mb-2">⚡ Transactional Stock Operations Center</h2>
+              <h2 className="text-xl font-bold text-white mb-2">
+                ⚡ Transactional Stock Operations Center
+              </h2>
               <p className="text-slate-300 text-sm max-w-3xl leading-relaxed">
                 Stock changes in our enterprise POS are protected by PostgreSQL ACID transactions.
-                <strong> Rule: Stock is never updated without recording an explicit reason and creating an immutable audit trail entry.</strong>
+                <strong>
+                  {' '}
+                  Rule: Stock is never updated without recording an explicit reason and creating an
+                  immutable audit trail entry.
+                </strong>
               </p>
 
               <div className="mt-6 flex flex-wrap gap-4">
@@ -866,7 +912,8 @@ function InventoryHubContent() {
                 </div>
                 <h3 className="font-bold text-white text-base">Purchase Receiving</h3>
                 <p className="text-xs text-slate-400">
-                  Receive inbound supplier deliveries directly into the central warehouse or floor displays with supplier invoice references.
+                  Receive inbound supplier deliveries directly into the central warehouse or floor
+                  displays with supplier invoice references.
                 </p>
               </div>
 
@@ -874,9 +921,12 @@ function InventoryHubContent() {
                 <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl">
                   💥
                 </div>
-                <h3 className="font-bold text-white text-base">Damage &amp; Expiration Write-offs</h3>
+                <h3 className="font-bold text-white text-base">
+                  Damage &amp; Expiration Write-offs
+                </h3>
                 <p className="text-xs text-slate-400">
-                  Deduct broken cans, damaged packaging, or date-expired goods with strict reason documentation.
+                  Deduct broken cans, damaged packaging, or date-expired goods with strict reason
+                  documentation.
                 </p>
               </div>
 
@@ -886,7 +936,8 @@ function InventoryHubContent() {
                 </div>
                 <h3 className="font-bold text-white text-base">Store Location Transfers</h3>
                 <p className="text-xs text-slate-400">
-                  Move inventory between storage rooms and counter shelves atomically: debit source and credit destination in one transaction.
+                  Move inventory between storage rooms and counter shelves atomically: debit source
+                  and credit destination in one transaction.
                 </p>
               </div>
             </div>
@@ -985,16 +1036,16 @@ function InventoryHubContent() {
                                   m.type === 'SALE'
                                     ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
                                     : m.type === 'PURCHASE'
-                                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                                    : m.type === 'RETURN'
-                                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                                    : m.type === 'DAMAGE'
-                                    ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                                    : m.type === 'EXPIRED'
-                                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                                    : m.type === 'TRANSFER_IN' || m.type === 'TRANSFER_OUT'
-                                    ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
-                                    : 'bg-slate-800 text-slate-300'
+                                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                      : m.type === 'RETURN'
+                                        ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                                        : m.type === 'DAMAGE'
+                                          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                                          : m.type === 'EXPIRED'
+                                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                            : m.type === 'TRANSFER_IN' || m.type === 'TRANSFER_OUT'
+                                              ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
+                                              : 'bg-slate-800 text-slate-300'
                                 }`}
                               >
                                 {m.type}
@@ -1002,9 +1053,13 @@ function InventoryHubContent() {
                             </td>
                             <td className="py-3 px-4">
                               <p className="font-bold text-white">{m.productName}</p>
-                              <span className="font-mono text-[10px] text-slate-400">{m.productSku}</span>
+                              <span className="font-mono text-[10px] text-slate-400">
+                                {m.productSku}
+                              </span>
                               {m.variantName && (
-                                <span className="text-[10px] text-amber-300 ml-1">({m.variantName})</span>
+                                <span className="text-[10px] text-amber-300 ml-1">
+                                  ({m.variantName})
+                                </span>
                               )}
                             </td>
                             <td className="py-3 px-4 text-slate-300">{m.locationName}</td>
@@ -1014,7 +1069,8 @@ function InventoryHubContent() {
                               </span>
                             </td>
                             <td className="py-3 px-4 text-center text-slate-300 font-mono">
-                              {m.quantityBefore} &rarr; <span className="font-bold text-white">{m.quantityAfter}</span>
+                              {m.quantityBefore} &rarr;{' '}
+                              <span className="font-bold text-white">{m.quantityAfter}</span>
                             </td>
                             <td className="py-3 px-4 max-w-xs text-slate-200">
                               <p className="italic text-xs">"{m.notes}"</p>
@@ -1127,7 +1183,9 @@ function InventoryHubContent() {
                     <span>🏷️</span>
                     <span>Product Categories ({categories.length})</span>
                   </h3>
-                  <p className="text-xs text-slate-400">Organize items for touchscreen category navigation</p>
+                  <p className="text-xs text-slate-400">
+                    Organize items for touchscreen category navigation
+                  </p>
                 </div>
                 <button
                   onClick={() => {
@@ -1227,7 +1285,9 @@ function InventoryHubContent() {
                     <span>🏭</span>
                     <span>Suppliers &amp; Distributors ({suppliers.length})</span>
                   </h3>
-                  <p className="text-xs text-slate-400">Vendor contacts and replenishment sources</p>
+                  <p className="text-xs text-slate-400">
+                    Vendor contacts and replenishment sources
+                  </p>
                 </div>
                 <button
                   onClick={() => {
@@ -1243,7 +1303,10 @@ function InventoryHubContent() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {suppliers.map((s) => (
-                  <div key={s.id} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl space-y-2">
+                  <div
+                    key={s.id}
+                    className="p-4 bg-slate-900 border border-slate-800 rounded-2xl space-y-2"
+                  >
                     <div className="flex items-center justify-between">
                       <h4 className="font-bold text-white text-sm">{s.name}</h4>
                       <button
@@ -1291,7 +1354,9 @@ function InventoryHubContent() {
 
             <div className="space-y-2">
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                {barcodeMatchResult.matchType === 'VARIANT' ? 'Product Variant' : 'Standard Product'}
+                {barcodeMatchResult.matchType === 'VARIANT'
+                  ? 'Product Variant'
+                  : 'Standard Product'}
               </span>
 
               <h4 className="text-lg font-extrabold text-white">
@@ -1301,7 +1366,9 @@ function InventoryHubContent() {
               </h4>
 
               {barcodeMatchResult.product?.nameKhmer && (
-                <p className="text-sm font-semibold text-indigo-300">{barcodeMatchResult.product.nameKhmer}</p>
+                <p className="text-sm font-semibold text-indigo-300">
+                  {barcodeMatchResult.product.nameKhmer}
+                </p>
               )}
 
               <div className="grid grid-cols-2 gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-800 text-xs">
@@ -1325,10 +1392,9 @@ function InventoryHubContent() {
                   <span className="text-slate-400">Selling Price:</span>
                   <span className="font-bold text-emerald-400 block">
                     $
-                    {(
-                      barcodeMatchResult.matchType === 'VARIANT'
-                        ? barcodeMatchResult.variant.sellingPriceUSD
-                        : barcodeMatchResult.product.sellingPriceUSD
+                    {(barcodeMatchResult.matchType === 'VARIANT'
+                      ? barcodeMatchResult.variant.sellingPriceUSD
+                      : barcodeMatchResult.product.sellingPriceUSD
                     ).toFixed(2)}
                   </span>
                 </div>
@@ -1345,7 +1411,9 @@ function InventoryHubContent() {
 
               {/* Per Location Inventory Breakdown */}
               <div className="space-y-1.5 pt-2">
-                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Stock by Location</p>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Stock by Location
+                </p>
                 {(
                   (barcodeMatchResult.matchType === 'VARIANT'
                     ? barcodeMatchResult.variant.inventory

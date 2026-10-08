@@ -14,6 +14,7 @@ import {
   Percent,
   ChevronRight,
 } from 'lucide-react';
+import { useSettings } from '../../lib/settings-context';
 
 interface CartAreaProps {
   cart: PosCartItem[];
@@ -44,6 +45,7 @@ export const CartArea: React.FC<CartAreaProps> = ({
   onSelectItem,
   discountUSD,
 }) => {
+  const { settings, formatCurrency } = useSettings();
   const [editingDiscountId, setEditingDiscountId] = useState<string | null>(null);
   const [discountVal, setDiscountVal] = useState<string>('');
 
@@ -52,7 +54,8 @@ export const CartArea: React.FC<CartAreaProps> = ({
   const finalTotalUSD = Math.max(0, Number((subtotalUSD - discountUSD).toFixed(2)));
   const finalTotalKHR = Math.round(finalTotalUSD * 4100);
   const totalItemUnits = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const taxUSD = Number((finalTotalUSD * 0.1).toFixed(2)); // 10% VAT
+  const taxRatePercent = settings.store?.tax?.defaultTaxRate ?? 10;
+  const taxUSD = Number((finalTotalUSD * (taxRatePercent / 100)).toFixed(2));
 
   const handleSaveDiscount = (productId: string) => {
     const val = parseFloat(discountVal) || 0;
@@ -167,12 +170,12 @@ export const CartArea: React.FC<CartAreaProps> = ({
                       {item.product.name}
                     </h5>
                     <div className="flex items-center gap-2 text-[11px] text-slate-400 font-mono mt-0.5">
-                      <span>${item.unitPriceUSD.toFixed(2)}</span>
+                      <span>{formatCurrency(item.unitPriceUSD, 'USD')}</span>
                       <span>&bull;</span>
-                      <span>{item.product.sellingPriceKHR.toLocaleString()} ៛</span>
+                      <span>{formatCurrency(item.product.sellingPriceKHR, 'KHR')}</span>
                       {item.discountUSD > 0 && (
                         <span className="text-rose-600 font-semibold font-sans">
-                          (-${item.discountUSD.toFixed(2)})
+                          (-{formatCurrency(item.discountUSD, 'USD')})
                         </span>
                       )}
                     </div>
@@ -181,10 +184,10 @@ export const CartArea: React.FC<CartAreaProps> = ({
                   {/* Line Total */}
                   <div className="text-right shrink-0">
                     <div className="font-extrabold text-xs sm:text-sm text-slate-900">
-                      ${item.totalUSD.toFixed(2)}
+                      {formatCurrency(item.totalUSD, 'USD')}
                     </div>
                     <div className="text-[10px] text-slate-400 font-medium">
-                      {item.totalKHR.toLocaleString()} ៛
+                      {formatCurrency(item.totalKHR, 'KHR')}
                     </div>
                   </div>
                 </div>
@@ -257,7 +260,11 @@ export const CartArea: React.FC<CartAreaProps> = ({
                         title="Add Item Discount"
                       >
                         <Percent className="w-3 h-3" />
-                        <span>{item.discountUSD > 0 ? `-$${item.discountUSD}` : 'Discount'}</span>
+                        <span>
+                          {item.discountUSD > 0
+                            ? `-${formatCurrency(item.discountUSD, 'USD')}`
+                            : 'Discount'}
+                        </span>
                       </button>
                     )}
 
@@ -285,17 +292,19 @@ export const CartArea: React.FC<CartAreaProps> = ({
         <div className="space-y-1 text-xs">
           <div className="flex justify-between text-slate-500">
             <span>Subtotal</span>
-            <span className="font-medium text-slate-800">${subtotalUSD.toFixed(2)}</span>
+            <span className="font-medium text-slate-800">{formatCurrency(subtotalUSD, 'USD')}</span>
           </div>
           {discountUSD > 0 && (
             <div className="flex justify-between text-rose-600 font-medium">
               <span>Order Discount</span>
-              <span>-${discountUSD.toFixed(2)}</span>
+              <span>-{formatCurrency(discountUSD, 'USD')}</span>
             </div>
           )}
           <div className="flex justify-between text-slate-400 text-[11px]">
-            <span>Tax (10% VAT inc.)</span>
-            <span>${taxUSD.toFixed(2)}</span>
+            <span>
+              Tax ({taxRatePercent}% VAT {settings.store?.tax?.isTaxInclusive ? 'inc.' : 'excl.'})
+            </span>
+            <span>{formatCurrency(taxUSD, 'USD')}</span>
           </div>
 
           {/* Grand Total */}
@@ -305,10 +314,10 @@ export const CartArea: React.FC<CartAreaProps> = ({
             </span>
             <div className="text-right">
               <div className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight leading-none">
-                ${finalTotalUSD.toFixed(2)}
+                {formatCurrency(finalTotalUSD, 'USD')}
               </div>
               <div className="text-xs font-bold text-indigo-700 mt-0.5">
-                {finalTotalKHR.toLocaleString()} ៛
+                {formatCurrency(finalTotalKHR, 'KHR')}
               </div>
             </div>
           </div>
@@ -325,7 +334,7 @@ export const CartArea: React.FC<CartAreaProps> = ({
             <span>PAY NOW (F8)</span>
           </div>
           <div className="text-right font-mono text-sm sm:text-base">
-            ${finalTotalUSD.toFixed(2)}
+            {formatCurrency(finalTotalUSD, 'USD')}
           </div>
         </button>
       </div>

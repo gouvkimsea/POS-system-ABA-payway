@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { prisma } from '../db/index.js';
-import { requireAuth, requirePermission } from '../middleware/auth.js';
+import { requireAuth, requirePermission, isUserAuthorizedForStore } from '../middleware/auth.js';
 import { PERMISSIONS } from '@pos/types';
 import {
   inventoryLocationSchema,
@@ -28,11 +28,25 @@ inventoryRouter.get(
       const user = req.user!;
       const storeId = (req.query.storeId as string) || user.storeId;
 
+      if (storeId && !isUserAuthorizedForStore(user, storeId)) {
+        res.status(403).json({
+          success: false,
+          error: {
+            code: 'FORBIDDEN_STORE_ACCESS',
+            message: 'You are not authorized for this store',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
       const where: any = {
         store: { businessId: user.businessId },
       };
       if (storeId) {
         where.storeId = storeId;
+      } else if (!user.roles.includes('ADMIN') && user.authorizedStoreIds) {
+        where.storeId = { in: user.authorizedStoreIds };
       }
 
       const locations = await prisma.inventoryLocation.findMany({
@@ -94,7 +108,10 @@ inventoryRouter.post(
       if (!parsed.success) {
         res.status(400).json({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message || 'Invalid location data' },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid location data',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -115,6 +132,18 @@ inventoryRouter.post(
         return;
       }
 
+      if (!isUserAuthorizedForStore(user, store.id)) {
+        res.status(403).json({
+          success: false,
+          error: {
+            code: 'FORBIDDEN_STORE_ACCESS',
+            message: 'You are not authorized to create locations for this store',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
       // Check code uniqueness within store
       const dup = await prisma.inventoryLocation.findFirst({
         where: { storeId: input.storeId, code: input.code },
@@ -122,7 +151,10 @@ inventoryRouter.post(
       if (dup) {
         res.status(409).json({
           success: false,
-          error: { code: 'DUPLICATE_CODE', message: `Location code "${input.code}" already exists for this store` },
+          error: {
+            code: 'DUPLICATE_CODE',
+            message: `Location code "${input.code}" already exists for this store`,
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -185,11 +217,26 @@ inventoryRouter.put(
         return;
       }
 
+      if (!isUserAuthorizedForStore(user, existing.storeId)) {
+        res.status(403).json({
+          success: false,
+          error: {
+            code: 'FORBIDDEN_STORE_ACCESS',
+            message: 'You are not authorized to modify locations in this store',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
       const parsed = inventoryLocationSchema.partial().safeParse(req.body);
       if (!parsed.success) {
         res.status(400).json({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message || 'Invalid location data' },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid location data',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -254,10 +301,25 @@ inventoryRouter.delete(
         return;
       }
 
+      if (!isUserAuthorizedForStore(user, existing.storeId)) {
+        res.status(403).json({
+          success: false,
+          error: {
+            code: 'FORBIDDEN_STORE_ACCESS',
+            message: 'You are not authorized to delete locations in this store',
+          },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
       if (existing.isDefault) {
         res.status(400).json({
           success: false,
-          error: { code: 'CANNOT_DELETE_DEFAULT', message: 'Default store location cannot be deleted' },
+          error: {
+            code: 'CANNOT_DELETE_DEFAULT',
+            message: 'Default store location cannot be deleted',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -475,7 +537,11 @@ inventoryRouter.get(
       });
 
       const lowStockItems = allInv
-        .filter((inv) => Number(inv.quantity) <= Number(inv.minStockLevel) || Number(inv.quantity) <= inv.product.reorderLevel)
+        .filter(
+          (inv) =>
+            Number(inv.quantity) <= Number(inv.minStockLevel) ||
+            Number(inv.quantity) <= inv.product.reorderLevel,
+        )
         .map((inv) => ({
           inventoryId: inv.id,
           productId: inv.productId,
@@ -528,7 +594,9 @@ inventoryRouter.post(
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
-            message: parsed.error.issues[0]?.message || 'Invalid adjustment data. A reason is strictly required.',
+            message:
+              parsed.error.issues[0]?.message ||
+              'Invalid adjustment data. A reason is strictly required.',
           },
           timestamp: new Date().toISOString(),
         });
@@ -546,6 +614,18 @@ inventoryRouter.post(
         res.status(404).json({
           success: false,
           error: { code: 'LOCATION_NOT_FOUND', message: 'Target inventory location not found' },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (!isUserAuthorizedForStore(user, location.storeId)) {
+        res.status(403).json({
+          success: false,
+          error: {
+            code: 'FORBIDDEN_STORE_ACCESS',
+            message: 'You are not authorized to adjust inventory in this store',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -712,7 +792,9 @@ inventoryRouter.post(
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
-            message: parsed.error.issues[0]?.message || 'Invalid transfer parameters. A reason is strictly required.',
+            message:
+              parsed.error.issues[0]?.message ||
+              'Invalid transfer parameters. A reason is strictly required.',
           },
           timestamp: new Date().toISOString(),
         });
@@ -738,7 +820,10 @@ inventoryRouter.post(
       if (!fromLoc || !toLoc) {
         res.status(404).json({
           success: false,
-          error: { code: 'LOCATION_NOT_FOUND', message: 'Source or destination location not found' },
+          error: {
+            code: 'LOCATION_NOT_FOUND',
+            message: 'Source or destination location not found',
+          },
           timestamp: new Date().toISOString(),
         });
         return;

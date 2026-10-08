@@ -23,7 +23,7 @@ ENV NODE_ENV=production
 ENV PORT=4000
 EXPOSE 4000
 
-COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/packages ./packages
 COPY --from=builder /app/prisma ./prisma

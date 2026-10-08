@@ -37,7 +37,9 @@ export class PrinterManager {
       if (platform === 'win32') {
         // Windows: PowerShell Get-Printer or wmic
         try {
-          const { stdout } = await execAsync('powershell -Command "Get-Printer | Select-Object Name, Type, Default | ConvertTo-Json"');
+          const { stdout } = await execAsync(
+            'powershell -Command "Get-Printer | Select-Object Name, Type, Default | ConvertTo-Json"',
+          );
           const parsed = JSON.parse(stdout);
           const list = Array.isArray(parsed) ? parsed : [parsed];
           for (const p of list) {
@@ -72,9 +74,7 @@ export class PrinterManager {
             }
           }
         } catch {
-          printers.push(
-            { name: 'Virtual ESC/POS 80mm', type: 'Virtual Thermal', isDefault: true },
-          );
+          printers.push({ name: 'Virtual ESC/POS 80mm', type: 'Virtual Thermal', isDefault: true });
         }
       }
     } catch {
@@ -83,9 +83,21 @@ export class PrinterManager {
 
     if (printers.length === 0) {
       printers.push(
-        { name: 'POS-80 Thermal ESC/POS (USB/COM)', type: 'ESC/POS Thermal (80mm)', isDefault: true },
-        { name: 'POS-58 Mobile Receipt (Bluetooth)', type: 'ESC/POS Thermal (58mm)', isDefault: false },
-        { name: 'Network Kitchen Printer (TCP 9100)', type: 'Network Raw Socket', isDefault: false },
+        {
+          name: 'POS-80 Thermal ESC/POS (USB/COM)',
+          type: 'ESC/POS Thermal (80mm)',
+          isDefault: true,
+        },
+        {
+          name: 'POS-58 Mobile Receipt (Bluetooth)',
+          type: 'ESC/POS Thermal (58mm)',
+          isDefault: false,
+        },
+        {
+          name: 'Network Kitchen Printer (TCP 9100)',
+          type: 'Network Raw Socket',
+          isDefault: false,
+        },
       );
     }
 

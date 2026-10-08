@@ -1,8 +1,4 @@
-import {
-  BridgeStatus,
-  HardwareSettingsProfile,
-  HardwareConnectionStatus,
-} from '@pos/types';
+import { BridgeStatus, HardwareSettingsProfile, HardwareConnectionStatus } from '@pos/types';
 
 const STORAGE_KEY = 'pos_hardware_profile';
 
@@ -140,7 +136,7 @@ export class HardwareManager {
 
       const res = await fetch(url, {
         method: 'GET',
-        headers: { 'Accept': 'application/json' },
+        headers: { Accept: 'application/json' },
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
@@ -164,7 +160,10 @@ export class HardwareManager {
     } catch (err: any) {
       this.bridgeDetails = {
         connected: false,
-        error: err.name === 'AbortError' ? 'Bridge connection timed out' : 'Companion service not reachable',
+        error:
+          err.name === 'AbortError'
+            ? 'Bridge connection timed out'
+            : 'Companion service not reachable',
         discoveredPrinters: [],
         discoveredPorts: [],
         lastCheckedAt: new Date().toISOString(),
@@ -182,8 +181,8 @@ export class HardwareManager {
     const bridgeStatus: HardwareConnectionStatus = !this.profile.bridge.enabled
       ? 'STANDALONE_FALLBACK'
       : isBridgeLive
-      ? 'CONNECTED'
-      : 'STANDALONE_FALLBACK';
+        ? 'CONNECTED'
+        : 'STANDALONE_FALLBACK';
 
     // Printer status
     let printerStatus: HardwareConnectionStatus = 'CONNECTED';
@@ -206,9 +205,7 @@ export class HardwareManager {
 
     // Customer display status
     const customerDisplayStatus: HardwareConnectionStatus =
-      this.profile.customerDisplay.driver === 'DISABLED'
-        ? 'DISCONNECTED'
-        : 'CONNECTED';
+      this.profile.customerDisplay.driver === 'DISABLED' ? 'DISCONNECTED' : 'CONNECTED';
 
     return {
       bridgeStatus,
@@ -259,7 +256,10 @@ export class HardwareManager {
           printer: { ...DEFAULT_HARDWARE_PROFILE.printer, ...parsed.printer },
           scanner: { ...DEFAULT_HARDWARE_PROFILE.scanner, ...parsed.scanner },
           cashDrawer: { ...DEFAULT_HARDWARE_PROFILE.cashDrawer, ...parsed.cashDrawer },
-          customerDisplay: { ...DEFAULT_HARDWARE_PROFILE.customerDisplay, ...parsed.customerDisplay },
+          customerDisplay: {
+            ...DEFAULT_HARDWARE_PROFILE.customerDisplay,
+            ...parsed.customerDisplay,
+          },
         };
       }
     } catch (e) {

@@ -86,7 +86,10 @@ async function runTests() {
     const statusData = await statusRes.json();
     assert(statusData.connected === true, 'Bridge reports connected: true');
     assert(Array.isArray(statusData.discoveredPrinters), 'Discovered printers is an array');
-    assert(statusData.discoveredPrinters.length > 0, `Discovered ${statusData.discoveredPrinters.length} available printer profiles`);
+    assert(
+      statusData.discoveredPrinters.length > 0,
+      `Discovered ${statusData.discoveredPrinters.length} available printer profiles`,
+    );
 
     // --------------------------------------------------------------------------
     // Test 2: ESC/POS Encoder Formatting & Width Calibration (58mm vs 80mm)
@@ -97,7 +100,10 @@ async function runTests() {
     encoder58.divider('=');
     const buf58 = encoder58.toBuffer();
     assert(buf58.length > 0, 'Generated valid ESC/POS binary buffer for 58mm');
-    assert(buf58[0] === 0x1b && buf58[1] === 0x40, 'Emitted ESC @ initialization sequence (0x1B 0x40)');
+    assert(
+      buf58[0] === 0x1b && buf58[1] === 0x40,
+      'Emitted ESC @ initialization sequence (0x1B 0x40)',
+    );
 
     const encoder80 = new EscPosEncoder('80mm');
     encoder80.align('center');
@@ -111,9 +117,18 @@ async function runTests() {
     encoder80.cut(false);
     const buf80 = encoder80.toBuffer();
 
-    assert(buf80.includes(0x1d) && buf80.includes(0x56), 'Contains GS V paper cut command (0x1D 0x56)');
-    assert(buf80.includes(0x1b) && buf80.includes(0x70), 'Contains ESC p cash drawer kick command (0x1B 0x70)');
-    assert(buf80.includes(0x1d) && buf80.includes(0x6b), 'Contains GS k CODE128 barcode command (0x1D 0x6B)');
+    assert(
+      buf80.includes(0x1d) && buf80.includes(0x56),
+      'Contains GS V paper cut command (0x1D 0x56)',
+    );
+    assert(
+      buf80.includes(0x1b) && buf80.includes(0x70),
+      'Contains ESC p cash drawer kick command (0x1B 0x70)',
+    );
+    assert(
+      buf80.includes(0x1d) && buf80.includes(0x6b),
+      'Contains GS k CODE128 barcode command (0x1D 0x6B)',
+    );
     assert(buf80.length > buf58.length, '80mm buffer accommodates multi-column table layout');
 
     // --------------------------------------------------------------------------
@@ -128,15 +143,15 @@ async function runTests() {
       orderNumber: 'ORD-20261007-TEST01',
       createdAt: new Date().toISOString(),
       items: [
-        { name: 'Angkor Premium Beer 330ml', quantity: 2, unitPriceUSD: 1.10, totalUSD: 2.20 },
-        { name: 'Kulene Mineral Water 500ml', quantity: 1, unitPriceUSD: 0.50, totalUSD: 0.50 },
+        { name: 'Angkor Premium Beer 330ml', quantity: 2, unitPriceUSD: 1.1, totalUSD: 2.2 },
+        { name: 'Kulene Mineral Water 500ml', quantity: 1, unitPriceUSD: 0.5, totalUSD: 0.5 },
       ],
-      subtotalUSD: 2.70,
+      subtotalUSD: 2.7,
       taxUSD: 0.27,
       totalUSD: 2.97,
       totalKHR: 12177,
       exchangeRateKHR: 4100,
-      payments: [{ method: 'CASH', amountUSD: 2.97, amountKHR: 12177, tenderUSD: 5.00 }],
+      payments: [{ method: 'CASH', amountUSD: 2.97, amountKHR: 12177, tenderUSD: 5.0 }],
       changeUSD: 2.03,
       changeKHR: 8323,
       qrPayload: 'https://verify.angkor-mart.com/receipt/RCP-20261007-TEST01',
@@ -239,23 +254,29 @@ async function runTests() {
     assert(vfdBuffer.includes(0x0c), 'Includes 0x0C formfeed/clear display code');
 
     // Test REST state update
-    const updateDisplayRes = await fetch(`http://127.0.0.1:${BRIDGE_TEST_PORT}/customer-display/state`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        status: 'PAYMENT',
-        paymentPrompt: {
-          method: 'KHQR / ABA PayWay',
-          amountUSD: 2.97,
-          amountKHR: 12177,
-          qrPayload: 'https://verify.angkor-mart.com/qr/12345',
-        },
-      }),
-    });
+    const updateDisplayRes = await fetch(
+      `http://127.0.0.1:${BRIDGE_TEST_PORT}/customer-display/state`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'PAYMENT',
+          paymentPrompt: {
+            method: 'KHQR / ABA PayWay',
+            amountUSD: 2.97,
+            amountKHR: 12177,
+            qrPayload: 'https://verify.angkor-mart.com/qr/12345',
+          },
+        }),
+      },
+    );
     assert(updateDisplayRes.status === 200, 'POST /customer-display/state returns 200 OK');
     const displayState = await updateDisplayRes.json();
     assert(displayState.state.status === 'PAYMENT', 'Customer display updated to PAYMENT state');
-    assert(displayState.state.paymentPrompt.qrPayload.includes('verify.angkor-mart.com'), 'Customer display holds active payment QR code');
+    assert(
+      displayState.state.paymentPrompt.qrPayload.includes('verify.angkor-mart.com'),
+      'Customer display holds active payment QR code',
+    );
 
     // --------------------------------------------------------------------------
     // Test 6: Network Printer Fault Tolerance (Never Crash POS)
@@ -281,7 +302,10 @@ async function runTests() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(deadNetworkJob),
     });
-    assert(deadNetRes.status === 200, 'Dead network printer does NOT crash server (200 OK handled)');
+    assert(
+      deadNetRes.status === 200,
+      'Dead network printer does NOT crash server (200 OK handled)',
+    );
     const deadNetResult = await deadNetRes.json();
     assert(deadNetResult.success === false, 'Safe failure indicated when device is unreachable');
     assert(deadNetResult.fallbackUsed === true, 'Flagged fallbackUsed: true for browser fallback');
@@ -320,29 +344,38 @@ async function runTests() {
     });
     assert(regRes.status === 201, 'POST /api/devices/register returns 201 Created');
     const regData = await regRes.json();
-    assert(regData.data.deviceIdentifier === 'POS-STATION-01', 'Device registered with correct identifier');
+    assert(
+      regData.data.deviceIdentifier === 'POS-STATION-01',
+      'Device registered with correct identifier',
+    );
 
     // Update hardware config
-    const updateConfigRes = await fetch(`http://127.0.0.1:${API_TEST_PORT}/api/devices/POS-STATION-01/hardware-config`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${adminAuthToken}`,
-      },
-      body: JSON.stringify({
-        hardwareConfig: {
-          printer: {
-            driver: 'LOCAL_BRIDGE',
-            name: 'POS-80C Thermal Printer',
-            paperSize: '80mm',
-            autoCut: true,
-          },
+    const updateConfigRes = await fetch(
+      `http://127.0.0.1:${API_TEST_PORT}/api/devices/POS-STATION-01/hardware-config`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminAuthToken}`,
         },
-      }),
-    });
+        body: JSON.stringify({
+          hardwareConfig: {
+            printer: {
+              driver: 'LOCAL_BRIDGE',
+              name: 'POS-80C Thermal Printer',
+              paperSize: '80mm',
+              autoCut: true,
+            },
+          },
+        }),
+      },
+    );
     assert(updateConfigRes.status === 200, 'PUT /api/devices/:id/hardware-config returns 200 OK');
     const updatedDev = await updateConfigRes.json();
-    assert(updatedDev.data.hardwareConfig.printer.name === 'POS-80C Thermal Printer', 'Hardware config successfully persisted in PostgreSQL');
+    assert(
+      updatedDev.data.hardwareConfig.printer.name === 'POS-80C Thermal Printer',
+      'Hardware config successfully persisted in PostgreSQL',
+    );
 
     console.log('\n================================================================');
     console.log('🎉 ALL HARDWARE INTEGRATION & DEVICE BRIDGE TESTS PASSED! ✨');

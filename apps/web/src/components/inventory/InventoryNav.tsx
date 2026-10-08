@@ -5,12 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '../../lib/auth-context';
 
 export type InventoryTab =
-  | 'products'
-  | 'stock'
-  | 'adjustments'
-  | 'movements'
-  | 'locations'
-  | 'classifications';
+  'products' | 'stock' | 'adjustments' | 'movements' | 'locations' | 'classifications';
 
 interface InventoryNavProps {
   activeTab: InventoryTab;
@@ -40,7 +35,12 @@ export function InventoryNav({
 
   const navItems: { id: InventoryTab; label: string; icon: string; badge?: number }[] = [
     { id: 'products', label: 'Products & Variants', icon: '📦', badge: totalProductsCount },
-    { id: 'stock', label: 'Stock Levels', icon: '📊', badge: lowStockCount > 0 ? lowStockCount : undefined },
+    {
+      id: 'stock',
+      label: 'Stock Levels',
+      icon: '📊',
+      badge: lowStockCount > 0 ? lowStockCount : undefined,
+    },
     { id: 'adjustments', label: 'Stock Adjustment & Transfer', icon: '⚡' },
     { id: 'movements', label: 'Movement Audit Log', icon: '📜' },
     { id: 'locations', label: 'Locations', icon: '📍' },
@@ -67,13 +67,18 @@ export function InventoryNav({
                     Inventory & Catalog
                   </span>
                 </div>
-                <p className="text-xs text-slate-400">Angkor Fresh Mart &bull; Multi-Store Management</p>
+                <p className="text-xs text-slate-400">
+                  Angkor Fresh Mart &bull; Multi-Store Management
+                </p>
               </div>
             </Link>
           </div>
 
           {/* Quick Barcode Scanner Input */}
-          <form onSubmit={handleBarcodeSubmit} className="hidden md:flex items-center flex-1 max-w-md mx-4">
+          <form
+            onSubmit={handleBarcodeSubmit}
+            className="hidden md:flex items-center flex-1 max-w-md mx-4"
+          >
             <div className="relative w-full">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                 🔍
@@ -95,13 +100,29 @@ export function InventoryNav({
           </form>
 
           {/* Right Navigation & User Actions */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <Link
+              href="/inventory/transfers"
+              className="hidden md:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-sky-600/20 hover:bg-sky-600/30 text-sky-300 border border-sky-500/30 text-xs font-semibold transition"
+            >
+              <span>🚚</span>
+              <span>Store Transfers</span>
+            </Link>
+
+            <Link
+              href="/settings/stores"
+              className="hidden lg:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition"
+            >
+              <span>🏢</span>
+              <span>Branches</span>
+            </Link>
+
             <Link
               href="/pos"
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition"
+              className="hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition"
             >
               <span>🛒</span>
-              <span>Open POS Terminal</span>
+              <span>POS Terminal</span>
             </Link>
 
             <Link
@@ -113,10 +134,12 @@ export function InventoryNav({
             </Link>
 
             {user && (
-              <div className="hidden lg:flex items-center pl-2 border-l border-slate-800 space-x-2">
-                <div className="text-right">
+              <div className="flex items-center pl-2 border-l border-slate-800 space-x-2">
+                <div className="text-right hidden sm:block">
                   <p className="text-xs font-semibold text-slate-200">{user.fullName}</p>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider">{user.roles.join(', ')}</p>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wider">
+                    {user.roles.join(', ')}
+                  </p>
                 </div>
                 <button
                   onClick={logout}
@@ -152,8 +175,8 @@ export function InventoryNav({
                       isActive
                         ? 'bg-indigo-800 text-indigo-100'
                         : item.id === 'stock' && lowStockCount > 0
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                        : 'bg-slate-800 text-slate-400'
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          : 'bg-slate-800 text-slate-400'
                     }`}
                   >
                     {item.badge}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { PosCustomer, PosPaymentMethod } from '@pos/types';
+import { PosCustomer, PosPaymentMethod, PaymentMethodConfig } from '@pos/types';
 import {
   X,
   CreditCard,
@@ -13,6 +13,7 @@ import {
   Landmark,
   Gift,
 } from 'lucide-react';
+import { useSettings } from '../../lib/settings-context';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -44,6 +45,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   onCompleteCheckout,
   isProcessing,
 }) => {
+  const { settings, formatCurrency } = useSettings();
   const [selectedMethodCode, setSelectedMethodCode] = useState<string>('CASH');
   const [tenderUSD, setTenderUSD] = useState<string>('');
   const [transactionRef, setTransactionRef] = useState<string>('');
@@ -76,6 +78,27 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     { label: '$50', value: 50 },
     { label: '$100', value: 100 },
   ];
+
+  const quickKhrPresets = [
+    { label: '10,000៛', value: Number((10000 / 4100).toFixed(2)) },
+    { label: '20,000៛', value: Number((20000 / 4100).toFixed(2)) },
+    { label: '50,000៛', value: Number((50000 / 4100).toFixed(2)) },
+    { label: '100,000៛', value: Number((100000 / 4100).toFixed(2)) },
+  ];
+
+  const handleNumpadKey = (key: string) => {
+    if (key === 'C') {
+      setTenderUSD('');
+      return;
+    }
+    if (key === '.') {
+      if (!tenderUSD.includes('.')) {
+        setTenderUSD(tenderUSD ? `${tenderUSD}.` : '0.');
+      }
+      return;
+    }
+    setTenderUSD((prev) => (prev === '0' ? key : prev + key));
+  };
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -156,30 +179,49 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     }
   };
 
-  const methodsList =
+  const activeSettingsMethods = (settings.payments || []).filter(
+    (p: PaymentMethodConfig) => p.isActive,
+  );
+  const methodsList: PosPaymentMethod[] =
     paymentMethods.length > 0
       ? paymentMethods
-      : [
-          { id: '1', code: 'CASH', name: 'Cash', type: 'CASH', isDefault: true },
-          { id: '2', code: 'KHQR_ABA', name: 'ABA KHQR', type: 'DIGITAL_QR', isDefault: false },
-          { id: '3', code: 'CARD', name: 'Card', type: 'CARD', isDefault: false },
-          { id: '4', code: 'BANK_TRANSFER', name: 'Bank Transfer', type: 'BANK_TRANSFER', isDefault: false },
-          { id: '5', code: 'OTHER', name: 'Voucher / Other', type: 'OTHER', isDefault: false },
-        ];
+      : activeSettingsMethods.length > 0
+        ? activeSettingsMethods.map((p: PaymentMethodConfig) => ({
+            id: p.id,
+            code: p.code,
+            name: p.name,
+            type: p.type as any,
+            isDefault: p.isDefault,
+          }))
+        : [
+            { id: '1', code: 'CASH', name: 'Cash', type: 'CASH', isDefault: true },
+            { id: '2', code: 'KHQR_ABA', name: 'ABA KHQR', type: 'DIGITAL_QR', isDefault: false },
+            { id: '3', code: 'CARD', name: 'Card', type: 'CARD', isDefault: false },
+            {
+              id: '4',
+              code: 'BANK_TRANSFER',
+              name: 'Bank Transfer',
+              type: 'BANK_TRANSFER',
+              isDefault: false,
+            },
+            { id: '5', code: 'OTHER', name: 'Voucher / Other', type: 'OTHER', isDefault: false },
+          ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4">
-      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-xs p-0 sm:p-4">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92dvh] animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-150">
         {/* Header with Amount Due */}
-        <div className="bg-slate-900 text-white p-5 flex items-center justify-between shrink-0">
+        <div className="bg-slate-900 text-white p-4 sm:p-5 flex items-center justify-between shrink-0">
           <div>
             <span className="text-xs font-semibold text-indigo-300 uppercase tracking-wider">
               Amount Due
             </span>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-3xl font-black text-white">${totalUSD.toFixed(2)}</span>
-              <span className="text-sm font-semibold text-slate-400">
-                {totalKHR.toLocaleString()} ៛
+              <span className="text-2xl sm:text-3xl font-black text-white">
+                {formatCurrency(totalUSD, 'USD')}
+              </span>
+              <span className="text-xs sm:text-sm font-semibold text-slate-400">
+                {formatCurrency(totalKHR, 'KHR')}
               </span>
             </div>
             {customer && (
@@ -198,14 +240,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           <button
             onClick={onClose}
             disabled={isProcessing || isSubmitting}
-            className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors disabled:opacity-50"
+            className="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors disabled:opacity-50"
+            aria-label="Close dialog"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Payment Methods Bar */}
-        <div className="p-3 bg-slate-100 border-b border-slate-200 flex gap-1.5 shrink-0 overflow-x-auto">
+        <div className="p-2.5 sm:p-3 bg-slate-100 border-b border-slate-200 flex gap-1.5 shrink-0 overflow-x-auto scrollbar-none">
           {methodsList.map((pm) => (
             <button
               key={pm.code}
@@ -214,7 +257,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 setSelectedMethodCode(pm.code);
                 setError(null);
               }}
-              className={`flex-1 py-2.5 px-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 whitespace-nowrap transition-all ${
+              className={`flex-1 py-2 px-2 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 whitespace-nowrap min-h-[44px] transition-all ${
                 selectedMethodCode === pm.code
                   ? 'bg-white text-indigo-700 shadow-xs border border-indigo-200 ring-2 ring-indigo-500/10'
                   : 'text-slate-600 hover:bg-white/60'
@@ -231,7 +274,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         </div>
 
         {/* Method Content */}
-        <div className="p-5 flex-1 overflow-y-auto space-y-4">
+        <div className="p-4 sm:p-5 flex-1 overflow-y-auto space-y-3.5 touch-scroll">
           {error && (
             <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -241,18 +284,19 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* CASH MODE */}
           {selectedMethodCode === 'CASH' && (
-            <div className="space-y-4">
+            <div className="space-y-3.5">
+              {/* USD Presets */}
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">
-                  Quick Tender Presets
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                  USD Quick Presets
                 </label>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-5 gap-1.5">
                   {quickPresets.map((preset) => (
                     <button
                       key={preset.label}
                       type="button"
                       onClick={() => setTenderUSD(preset.value.toFixed(2))}
-                      className="py-2.5 px-2 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 text-slate-800 border border-slate-200 rounded-xl text-xs font-bold transition-all"
+                      className="min-h-[42px] px-1 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 text-slate-800 border border-slate-200 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center"
                     >
                       {preset.label}
                     </button>
@@ -260,22 +304,63 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 </div>
               </div>
 
+              {/* KHR Presets */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                  KHR Quick Notes (៛)
+                </label>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {quickKhrPresets.map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => setTenderUSD(preset.value.toFixed(2))}
+                      className="min-h-[42px] px-1 bg-indigo-50/50 hover:bg-indigo-100 hover:text-indigo-800 text-indigo-900 border border-indigo-200/80 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center"
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Amount Display & Input */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Tendered Cash Amount (USD)
                 </label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 font-bold text-lg">
+                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 font-bold text-lg pointer-events-none">
                     $
                   </span>
                   <input
                     type="number"
                     step="0.01"
-                    autoFocus
+                    inputMode="decimal"
+                    enterKeyHint="done"
                     value={tenderUSD}
                     onChange={(e) => setTenderUSD(e.target.value)}
-                    className="w-full pl-8 pr-4 py-3 bg-slate-50 border-2 border-slate-200 focus:border-indigo-600 focus:bg-white rounded-xl text-xl font-black text-slate-900 focus:outline-none transition-all"
+                    className="w-full pl-8 pr-4 py-2.5 bg-slate-50 border-2 border-slate-200 focus:border-indigo-600 focus:bg-white rounded-xl text-xl font-black text-slate-900 focus:outline-none transition-all"
                   />
+                </div>
+              </div>
+
+              {/* On-Screen Touch Numpad for Touchscreens & Mobile Devices */}
+              <div className="bg-slate-50/80 p-2.5 rounded-2xl border border-slate-200/70">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', '.'].map((key) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => handleNumpadKey(key)}
+                      className={`h-11 sm:h-12 rounded-xl font-black text-lg transition-all select-none active:scale-95 flex items-center justify-center ${
+                        key === 'C'
+                          ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                          : 'bg-white hover:bg-slate-100 text-slate-900 border border-slate-200/80 shadow-2xs'
+                      }`}
+                    >
+                      {key}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -296,16 +381,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     </span>
                   ) : (
                     <span className="text-xs font-bold text-amber-700">
-                      Short by ${(totalUSD - tenderNum).toFixed(2)}
+                      Short by {formatCurrency(totalUSD - tenderNum, 'USD')}
                     </span>
                   )}
                 </div>
                 <div className="flex items-baseline justify-between">
                   <div className="text-2xl font-black text-emerald-700">
-                    ${changeUSD.toFixed(2)}
+                    {formatCurrency(changeUSD, 'USD')}
                   </div>
                   <div className="text-sm font-bold text-emerald-600 font-mono">
-                    {changeKHR.toLocaleString()} ៛
+                    {formatCurrency(changeKHR, 'KHR')}
                   </div>
                 </div>
               </div>
@@ -392,7 +477,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 <Gift className="w-6 h-6" />
               </div>
               <div className="text-center">
-                <h4 className="font-bold text-sm text-slate-800">Voucher / Gift Card / Other Tender</h4>
+                <h4 className="font-bold text-sm text-slate-800">
+                  Voucher / Gift Card / Other Tender
+                </h4>
                 <p className="text-xs text-slate-500">
                   Apply external voucher, promo coupon, or store gift card.
                 </p>
@@ -413,8 +500,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           )}
         </div>
 
-        {/* Footer Submit Button with Double-Click Protection */}
-        <div className="p-4 bg-white border-t border-slate-200 flex items-center justify-between gap-3 shrink-0">
+        {/* Footer Submit Button with Double-Click Protection & Safe Area Padding */}
+        <div className="p-3.5 sm:p-4 bg-white border-t border-slate-200 flex items-center justify-between gap-2.5 shrink-0 pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
           <button
             type="button"
             disabled={isProcessing || isSubmitting}
@@ -426,7 +513,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           <button
             type="button"
-            disabled={isProcessing || isSubmitting || (selectedMethodCode === 'CASH' && !isTenderSufficient)}
+            disabled={
+              isProcessing || isSubmitting || (selectedMethodCode === 'CASH' && !isTenderSufficient)
+            }
             onClick={() => handleSubmit()}
             className="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
           >

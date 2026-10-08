@@ -32,9 +32,11 @@ catalogRouter.get(
       const businessId = user.businessId;
 
       const search = typeof req.query.search === 'string' ? req.query.search.trim() : undefined;
-      const categoryId = typeof req.query.categoryId === 'string' ? req.query.categoryId : undefined;
+      const categoryId =
+        typeof req.query.categoryId === 'string' ? req.query.categoryId : undefined;
       const brandId = typeof req.query.brandId === 'string' ? req.query.brandId : undefined;
-      const supplierId = typeof req.query.supplierId === 'string' ? req.query.supplierId : undefined;
+      const supplierId =
+        typeof req.query.supplierId === 'string' ? req.query.supplierId : undefined;
       const isActive = req.query.isActive !== undefined ? req.query.isActive === 'true' : undefined;
       const lowStockOnly = req.query.lowStockOnly === 'true';
       const limit = Math.min(parseInt(req.query.limit as string, 10) || 50, 200);
@@ -214,7 +216,10 @@ catalogRouter.get(
       });
 
       if (product) {
-        const totalStock = product.inventory.reduce((sum: number, inv) => sum + Number(inv.quantity), 0);
+        const totalStock = product.inventory.reduce(
+          (sum: number, inv) => sum + Number(inv.quantity),
+          0,
+        );
         res.status(200).json({
           success: true,
           data: {
@@ -274,7 +279,10 @@ catalogRouter.get(
       });
 
       if (variant) {
-        const totalStock = variant.inventory.reduce((sum: number, inv) => sum + Number(inv.quantity), 0);
+        const totalStock = variant.inventory.reduce(
+          (sum: number, inv) => sum + Number(inv.quantity),
+          0,
+        );
         res.status(200).json({
           success: true,
           data: {
@@ -318,7 +326,10 @@ catalogRouter.get(
 
       res.status(404).json({
         success: false,
-        error: { code: 'NOT_FOUND', message: `No product or variant found for barcode/SKU: ${barcode}` },
+        error: {
+          code: 'NOT_FOUND',
+          message: `No product or variant found for barcode/SKU: ${barcode}`,
+        },
         timestamp: new Date().toISOString(),
       });
     } catch (error) {
@@ -368,7 +379,10 @@ catalogRouter.get(
         return;
       }
 
-      const totalStock = product.inventory.reduce((sum: number, inv) => sum + Number(inv.quantity), 0);
+      const totalStock = product.inventory.reduce(
+        (sum: number, inv) => sum + Number(inv.quantity),
+        0,
+      );
 
       res.status(200).json({
         success: true,
@@ -412,7 +426,10 @@ catalogRouter.post(
       if (!parsed.success) {
         res.status(400).json({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message || 'Invalid product data' },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid product data',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -427,7 +444,10 @@ catalogRouter.post(
       if (existingSku) {
         res.status(409).json({
           success: false,
-          error: { code: 'DUPLICATE_SKU', message: `Product with SKU "${input.sku}" already exists` },
+          error: {
+            code: 'DUPLICATE_SKU',
+            message: `Product with SKU "${input.sku}" already exists`,
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -441,7 +461,10 @@ catalogRouter.post(
         if (existingBarcode) {
           res.status(409).json({
             success: false,
-            error: { code: 'DUPLICATE_BARCODE', message: `Product with barcode "${input.barcode}" already exists` },
+            error: {
+              code: 'DUPLICATE_BARCODE',
+              message: `Product with barcode "${input.barcode}" already exists`,
+            },
             timestamp: new Date().toISOString(),
           });
           return;
@@ -565,7 +588,10 @@ catalogRouter.put(
       if (!parsed.success) {
         res.status(400).json({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message || 'Invalid product data' },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid product data',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -586,7 +612,10 @@ catalogRouter.put(
         if (dup) {
           res.status(409).json({
             success: false,
-            error: { code: 'DUPLICATE_SKU', message: `Product with SKU "${input.sku}" already exists` },
+            error: {
+              code: 'DUPLICATE_SKU',
+              message: `Product with SKU "${input.sku}" already exists`,
+            },
             timestamp: new Date().toISOString(),
           });
           return;
@@ -604,8 +633,10 @@ catalogRouter.put(
           brandId: input.brandId !== undefined ? input.brandId : existing.brandId,
           supplierId: input.supplierId !== undefined ? input.supplierId : existing.supplierId,
           description: input.description !== undefined ? input.description : existing.description,
-          costPriceUSD: input.costPriceUSD !== undefined ? input.costPriceUSD : existing.costPriceUSD,
-          sellingPriceUSD: input.sellingPriceUSD !== undefined ? input.sellingPriceUSD : existing.sellingPriceUSD,
+          costPriceUSD:
+            input.costPriceUSD !== undefined ? input.costPriceUSD : existing.costPriceUSD,
+          sellingPriceUSD:
+            input.sellingPriceUSD !== undefined ? input.sellingPriceUSD : existing.sellingPriceUSD,
           sellingPriceKHR:
             input.sellingPriceKHR !== undefined
               ? input.sellingPriceKHR
@@ -613,10 +644,14 @@ catalogRouter.put(
                 ? Math.round(input.sellingPriceUSD * 4100)
                 : existing.sellingPriceKHR,
           taxRate: input.taxRate !== undefined ? input.taxRate : existing.taxRate,
-          isTaxInclusive: input.isTaxInclusive !== undefined ? input.isTaxInclusive : existing.isTaxInclusive,
-          trackInventory: input.trackInventory !== undefined ? input.trackInventory : existing.trackInventory,
-          alertLowStock: input.alertLowStock !== undefined ? input.alertLowStock : existing.alertLowStock,
-          reorderLevel: input.reorderLevel !== undefined ? input.reorderLevel : existing.reorderLevel,
+          isTaxInclusive:
+            input.isTaxInclusive !== undefined ? input.isTaxInclusive : existing.isTaxInclusive,
+          trackInventory:
+            input.trackInventory !== undefined ? input.trackInventory : existing.trackInventory,
+          alertLowStock:
+            input.alertLowStock !== undefined ? input.alertLowStock : existing.alertLowStock,
+          reorderLevel:
+            input.reorderLevel !== undefined ? input.reorderLevel : existing.reorderLevel,
           unit: input.unit ?? existing.unit,
           imageUrl: input.imageUrl !== undefined ? input.imageUrl : existing.imageUrl,
           isActive: input.isActive !== undefined ? input.isActive : existing.isActive,
@@ -771,7 +806,10 @@ catalogRouter.post(
       if (!parsed.success) {
         res.status(400).json({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message || 'Invalid variant data' },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid variant data',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -786,7 +824,10 @@ catalogRouter.post(
       if (dup) {
         res.status(409).json({
           success: false,
-          error: { code: 'DUPLICATE_SKU', message: `Variant with SKU "${input.sku}" already exists` },
+          error: {
+            code: 'DUPLICATE_SKU',
+            message: `Variant with SKU "${input.sku}" already exists`,
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -902,7 +943,10 @@ catalogRouter.put(
       if (!parsed.success) {
         res.status(400).json({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message || 'Invalid variant data' },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid variant data',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -920,8 +964,10 @@ catalogRouter.put(
           color: input.color !== undefined ? input.color : existing.color,
           weight: input.weight !== undefined ? input.weight : existing.weight,
           model: input.model !== undefined ? input.model : existing.model,
-          costPriceUSD: input.costPriceUSD !== undefined ? input.costPriceUSD : existing.costPriceUSD,
-          sellingPriceUSD: input.sellingPriceUSD !== undefined ? input.sellingPriceUSD : existing.sellingPriceUSD,
+          costPriceUSD:
+            input.costPriceUSD !== undefined ? input.costPriceUSD : existing.costPriceUSD,
+          sellingPriceUSD:
+            input.sellingPriceUSD !== undefined ? input.sellingPriceUSD : existing.sellingPriceUSD,
           sellingPriceKHR:
             input.sellingPriceKHR !== undefined
               ? input.sellingPriceKHR
@@ -1044,7 +1090,10 @@ catalogRouter.post(
       if (!parsed.success) {
         res.status(400).json({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message || 'Invalid category' },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid category',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -1100,7 +1149,10 @@ catalogRouter.put(
       if (!parsed.success) {
         res.status(400).json({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message || 'Invalid category' },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid category',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -1211,7 +1263,10 @@ catalogRouter.post(
       if (!parsed.success) {
         res.status(400).json({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message || 'Invalid brand' },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid brand',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -1262,7 +1317,10 @@ catalogRouter.put(
       if (!parsed.success) {
         res.status(400).json({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message || 'Invalid brand' },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid brand',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -1377,7 +1435,10 @@ catalogRouter.post(
       if (!parsed.success) {
         res.status(400).json({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message || 'Invalid supplier' },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid supplier',
+          },
           timestamp: new Date().toISOString(),
         });
         return;
@@ -1433,7 +1494,10 @@ catalogRouter.put(
       if (!parsed.success) {
         res.status(400).json({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message || 'Invalid supplier' },
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parsed.error.issues[0]?.message || 'Invalid supplier',
+          },
           timestamp: new Date().toISOString(),
         });
         return;

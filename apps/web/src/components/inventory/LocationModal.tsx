@@ -61,7 +61,9 @@ export function LocationModal({
     try {
       setIsSubmitting(true);
       const token = localStorage.getItem('pos_access_token');
-      const url = isEditing ? `/api/inventory/locations/${location.id}` : '/api/inventory/locations';
+      const url = isEditing
+        ? `/api/inventory/locations/${location.id}`
+        : '/api/inventory/locations';
       const method = isEditing ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
@@ -134,7 +136,9 @@ export function LocationModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Location Code *</label>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">
+              Location Code *
+            </label>
             <input
               type="text"
               required
@@ -146,7 +150,9 @@ export function LocationModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Description / Notes</label>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">
+              Description / Notes
+            </label>
             <textarea
               rows={2}
               value={description}

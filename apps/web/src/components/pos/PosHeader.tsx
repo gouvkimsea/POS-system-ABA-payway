@@ -15,8 +15,22 @@ import {
   Store as StoreIcon,
   ShoppingBag,
   Package,
+  RefreshCw,
+  AlertTriangle,
+  Coins,
+  Lock,
+  FileBarChart,
+  RotateCcw,
+  Users,
+  Truck,
+  Building2,
+  Settings,
 } from 'lucide-react';
 import { HardwareStatusBadge } from './HardwareStatusBadge';
+import { PwaInstallPrompt } from '../PwaInstallPrompt';
+import { syncManager } from '../../lib/offline/SyncManager';
+import { SyncMonitorStats, RegisterSessionSummary } from '@pos/types';
+import { useSettings } from '../../lib/settings-context';
 
 interface PosHeaderProps {
   user: AuthUser | null;
@@ -24,6 +38,10 @@ interface PosHeaderProps {
   registerCode?: string;
   isOnline: boolean;
   heldCount: number;
+  currentSession?: RegisterSessionSummary | null;
+  onOpenRegisterModal?: () => void;
+  onOpenRegisterManagement?: () => void;
+  onOpenReturnModal?: () => void;
   onOpenHeldModal: () => void;
   onOpenShortcutsModal: () => void;
   onExitRegister: () => void;
@@ -31,28 +49,50 @@ interface PosHeaderProps {
 
 export const PosHeader: React.FC<PosHeaderProps> = ({
   user,
-  storeName = 'Monivong Central Branch',
+  storeName,
   registerCode = 'REG-01',
-  isOnline,
+  isOnline: isOnlineProp,
   heldCount,
+  currentSession,
+  onOpenRegisterModal,
+  onOpenRegisterManagement,
+  onOpenReturnModal,
   onOpenHeldModal,
   onOpenShortcutsModal,
   onExitRegister,
 }) => {
+  const { settings, formatTime } = useSettings();
   const [timeStr, setTimeStr] = useState<string>('');
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [syncStats, setSyncStats] = useState<SyncMonitorStats>({
+    totalQueued: 0,
+    pendingCount: 0,
+    syncingCount: 0,
+    synchronizedCount: 0,
+    conflictCount: 0,
+    failedCount: 0,
+    isOnline: true,
+  });
+  const [effectiveOnline, setEffectiveOnline] = useState<boolean>(isOnlineProp);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+
+  useEffect(() => {
+    const unsub = syncManager.subscribe((stats, online, syncing) => {
+      setSyncStats(stats);
+      setEffectiveOnline(online);
+      setIsSyncing(syncing);
+    });
+    return () => unsub();
+  }, []);
 
   useEffect(() => {
     const updateTime = () => {
-      const now = new Date();
-      setTimeStr(
-        now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-      );
+      setTimeStr(formatTime(new Date()));
     };
     updateTime();
     const timer = setInterval(updateTime, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [formatTime]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -64,21 +104,40 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
     }
   };
 
+  const handleManualSync = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (effectiveOnline && !isSyncing) {
+      syncManager.syncPendingTransactions().catch(() => {});
+    }
+  };
+
+  const pendingTotal = syncStats.pendingCount + syncStats.failedCount;
+
   return (
     <header className="h-14 bg-slate-900 text-white flex items-center justify-between px-3 sm:px-4 shrink-0 select-none border-b border-slate-800 z-30">
       {/* Left: Brand, Store & Register Badge */}
       <div className="flex items-center gap-2 sm:gap-3">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-black text-sm shadow-sm">
-            <ShoppingBag className="w-4 h-4" />
-          </div>
+          {settings.business.logoUrl ? (
+            <img
+              src={settings.business.logoUrl}
+              alt={settings.business.name}
+              className="w-8 h-8 rounded-lg object-contain bg-slate-800 border border-slate-700"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-black text-sm shadow-sm">
+              <ShoppingBag className="w-4 h-4" />
+            </div>
+          )}
           <div className="hidden sm:block">
             <h1 className="text-sm font-bold tracking-tight text-white leading-none">
-              Angkor Fresh Mart
+              {settings.business.name}
             </h1>
             <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-slate-400">
               <StoreIcon className="w-3 h-3 text-slate-400" />
-              <span className="truncate max-w-[140px] md:max-w-[200px]">{storeName}</span>
+              <span className="truncate max-w-[140px] md:max-w-[200px]">
+                {storeName || settings.store.storeName}
+              </span>
             </div>
           </div>
         </div>
@@ -88,36 +147,95 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
         </span>
       </div>
 
-      {/* Center: Live Clock & Network Status */}
+      {/* Center: Live Clock & Network / Sync Status */}
       <div className="flex items-center gap-3">
         <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-slate-800/80 rounded-md text-xs font-mono text-slate-300 border border-slate-700/60">
           <Clock className="w-3.5 h-3.5 text-indigo-400" />
           <span>{timeStr || '12:00:00 PM'}</span>
         </div>
 
-        <div
-          className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold border ${
-            isOnline
-              ? 'bg-emerald-950/70 text-emerald-400 border-emerald-800/80'
-              : 'bg-amber-950/70 text-amber-400 border-amber-800/80'
+        {/* Dynamic Online / Offline / Sync Status Pill */}
+        <Link
+          href="/settings/sync"
+          title="Open Sync Monitor & Offline Settings"
+          className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border transition-all hover:scale-105 ${
+            syncStats.conflictCount > 0
+              ? 'bg-rose-950/80 text-rose-300 border-rose-700 animate-pulse'
+              : isSyncing
+                ? 'bg-blue-950/80 text-blue-300 border-blue-700'
+                : effectiveOnline
+                  ? pendingTotal > 0
+                    ? 'bg-amber-950/70 text-amber-300 border-amber-700/80'
+                    : 'bg-emerald-950/70 text-emerald-400 border-emerald-800/80'
+                  : 'bg-amber-950/70 text-amber-400 border-amber-800/80'
           }`}
         >
-          {isOnline ? (
+          {syncStats.conflictCount > 0 ? (
             <>
-              <Wifi className="w-3 h-3 text-emerald-400" />
-              <span className="hidden sm:inline">Online</span>
+              <AlertTriangle className="w-3 h-3 text-rose-400" />
+              <span>{syncStats.conflictCount} Conflict</span>
             </>
+          ) : isSyncing ? (
+            <>
+              <RefreshCw className="w-3 h-3 text-blue-400 animate-spin" />
+              <span>Syncing...</span>
+            </>
+          ) : effectiveOnline ? (
+            pendingTotal > 0 ? (
+              <>
+                <button
+                  onClick={handleManualSync}
+                  className="hover:rotate-180 transition-transform"
+                  title="Click to sync now"
+                >
+                  <RefreshCw className="w-3 h-3 text-amber-400" />
+                </button>
+                <span>{pendingTotal} Queued (Online)</span>
+              </>
+            ) : (
+              <>
+                <Wifi className="w-3 h-3 text-emerald-400" />
+                <span className="hidden sm:inline">Online</span>
+              </>
+            )
           ) : (
             <>
               <WifiOff className="w-3 h-3 text-amber-400" />
-              <span>Offline Cache</span>
+              <span>Offline{pendingTotal > 0 ? ` (${pendingTotal})` : ''}</span>
             </>
           )}
-        </div>
+        </Link>
       </div>
 
       {/* Right: Cashier, Held Orders, Shortcuts, Fullscreen, Lock */}
       <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Register Session Status Button */}
+        {currentSession ? (
+          <button
+            onClick={onOpenRegisterManagement}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-600/60 hover:bg-emerald-900/80 hover:border-emerald-500 transition-all shadow-xs"
+            title={`Active Register Session #${currentSession.id.slice(-6).toUpperCase()} - Expected: $${currentSession.expectedCashUSD.toFixed(2)} / ${currentSession.expectedCashKHR.toLocaleString()} KHR. Click to manage cash movements & register closing.`}
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <Coins className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <span className="hidden sm:inline font-mono font-bold">
+              ${currentSession.expectedCashUSD.toFixed(2)}
+            </span>
+            <span className="text-[10px] text-emerald-400 font-medium hidden md:inline">
+              Session #{currentSession.id.slice(-6).toUpperCase()}
+            </span>
+          </button>
+        ) : (
+          <button
+            onClick={onOpenRegisterModal}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/60 hover:bg-amber-500/30 hover:border-amber-400 transition-all shadow-xs animate-pulse"
+            title="Cash register is closed. Click to open register session with opening float."
+          >
+            <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <span>Open Register</span>
+          </button>
+        )}
+
         {/* Hardware Status Badge & Quick Diagnostics */}
         <HardwareStatusBadge />
 
@@ -140,30 +258,103 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
           )}
         </button>
 
+        {/* Returns & Refunds Trigger */}
+        <button
+          onClick={onOpenReturnModal}
+          className="hidden sm:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 transition-colors items-center gap-1.5"
+          title="Process Item Returns & Order Refunds"
+        >
+          <RotateCcw className="w-4 h-4 text-rose-400" />
+          <span className="hidden md:inline">Refunds</span>
+        </button>
+
+        {/* Desktop / Large Screen Navigation Links (On mobile, accessible via BottomNav & More menu) */}
+        <Link
+          href="/customers"
+          className="hidden xl:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700/60 hover:bg-slate-700 hover:text-white transition-colors items-center gap-1.5"
+          title="Customer Profiles, History & Loyalty"
+        >
+          <Users className="w-4 h-4 text-emerald-400" />
+          <span>Customers</span>
+        </Link>
+
         {/* Inventory Management */}
         <Link
           href="/inventory"
-          className="p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/50 transition-colors flex items-center gap-1.5"
+          className="hidden lg:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/50 transition-colors items-center gap-1.5"
           title="Open Product & Inventory Management"
         >
           <Package className="w-4 h-4" />
-          <span className="hidden md:inline">Inventory</span>
+          <span>Inventory</span>
         </Link>
+
+        {/* Inter-Store Transfers */}
+        <Link
+          href="/inventory/transfers"
+          className="hidden xl:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-sky-600/30 text-sky-300 border border-sky-500/30 hover:bg-sky-600/50 transition-colors items-center gap-1.5"
+          title="Inter-Store Inventory Transfers & Reconciliation"
+        >
+          <Truck className="w-4 h-4 text-sky-400" />
+          <span>Transfers</span>
+        </Link>
+
+        {/* Branches / Stores */}
+        <Link
+          href="/settings/stores"
+          className="hidden xl:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700/60 hover:bg-slate-700 hover:text-white transition-colors items-center gap-1.5"
+          title="Branch Stores & Cash Registers Management"
+        >
+          <Building2 className="w-4 h-4 text-slate-400" />
+          <span>Stores</span>
+        </Link>
+
+        {/* Global Settings */}
+        <Link
+          href="/settings"
+          className="hidden lg:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/50 hover:text-white transition-colors items-center gap-1.5"
+          title="Global POS & Business Settings"
+        >
+          <Settings className="w-4 h-4 text-indigo-400" />
+          <span>Settings</span>
+        </Link>
+
+        {/* Reports & Analytics */}
+        <Link
+          href="/reports"
+          className="hidden xl:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 hover:bg-indigo-600/50 hover:text-white transition-colors items-center gap-1.5"
+          title="Executive Reporting & Business Analytics"
+        >
+          <FileBarChart className="w-4 h-4 text-indigo-400" />
+          <span>Reports</span>
+        </Link>
+
+        {/* Shift Reports Link */}
+        <Link
+          href="/reports/register-sessions"
+          className="hidden xl:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700/60 hover:bg-slate-700 hover:text-white transition-colors items-center gap-1.5"
+          title="Register Shift Reports & Reconciliation"
+        >
+          <Coins className="w-4 h-4 text-amber-400" />
+          <span>Shift Reports</span>
+        </Link>
+
+        {/* PWA Install Button */}
+        <PwaInstallPrompt />
 
         {/* Shortcuts Helper */}
         <button
           onClick={onOpenShortcutsModal}
-          className="p-1.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors flex items-center gap-1"
+          className="hidden 2xl:flex p-1.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors items-center gap-1"
           title="Keyboard Shortcuts (F1-F8)"
         >
           <HelpCircle className="w-4 h-4" />
-          <span className="hidden lg:inline">Shortcuts</span>
+          <span>Shortcuts</span>
         </button>
 
         {/* Fullscreen Toggle */}
         <button
           onClick={toggleFullscreen}
-          className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors hidden sm:block"
+          className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors hidden md:block"
           title="Toggle Fullscreen"
         >
           {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}

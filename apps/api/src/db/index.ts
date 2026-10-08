@@ -38,7 +38,7 @@ export async function checkDatabaseConnection(): Promise<DatabaseHealth> {
     logger.error({ err: error.message }, '[Database Health Check Failed]');
     return {
       status: 'error',
-      error: error.message || 'Failed to communicate with database',
+      error: 'Database connection failed',
     };
   }
 }

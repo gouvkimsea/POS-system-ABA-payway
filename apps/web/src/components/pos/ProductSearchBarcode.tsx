@@ -48,6 +48,8 @@ export const ProductSearchBarcode: React.FC<ProductSearchBarcodeProps> = ({
         <input
           ref={searchInputRef}
           type="text"
+          inputMode="search"
+          enterKeyHint="search"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search product name or SKU... (F1)"
@@ -72,6 +74,8 @@ export const ProductSearchBarcode: React.FC<ProductSearchBarcodeProps> = ({
           <input
             ref={barcodeInputRef}
             type="text"
+            inputMode="numeric"
+            enterKeyHint="go"
             value={barcodeQuery}
             onChange={(e) => onBarcodeChange(e.target.value)}
             onKeyDown={handleBarcodeKeyDown}
@@ -89,8 +93,9 @@ export const ProductSearchBarcode: React.FC<ProductSearchBarcodeProps> = ({
           <button
             type="button"
             onClick={onOpenCameraScanner}
-            className="p-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200 rounded-xl transition-colors shrink-0"
+            className="p-2 sm:p-2 min-h-[40px] min-w-[40px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200 rounded-xl transition-colors shrink-0 flex items-center justify-center active:scale-95"
             title="Open Camera Barcode Scanner"
+            aria-label="Scan barcode with camera"
           >
             <Camera className="w-4 h-4" />
           </button>

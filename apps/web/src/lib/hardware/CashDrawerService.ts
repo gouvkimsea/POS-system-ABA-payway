@@ -17,7 +17,9 @@ export class CashDrawerService {
   /**
    * Triggers the cash drawer to pop open
    */
-  public async openDrawer(reason: string = 'Cash sale transaction'): Promise<CashDrawerTriggerResult> {
+  public async openDrawer(
+    reason: string = 'Cash sale transaction',
+  ): Promise<CashDrawerTriggerResult> {
     const profile = hardwareManager.getProfile();
     const config = profile.cashDrawer;
     const timestamp = new Date().toISOString();

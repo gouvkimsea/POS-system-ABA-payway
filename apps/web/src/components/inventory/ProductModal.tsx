@@ -1,7 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { CategoryRecord, BrandRecord, SupplierRecord, InventoryLocationRecord, ProductRecord } from '@pos/types';
+import {
+  CategoryRecord,
+  BrandRecord,
+  SupplierRecord,
+  InventoryLocationRecord,
+  ProductRecord,
+} from '@pos/types';
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -159,7 +165,8 @@ export function ProductModal({
                 {isEditing ? `Edit Product: ${product?.name}` : 'Create New Product'}
               </h2>
               <p className="text-xs text-slate-400">
-                Configure item details, dual-language Khmer labels, barcode, pricing, and reorder levels
+                Configure item details, dual-language Khmer labels, barcode, pricing, and reorder
+                levels
               </p>
             </div>
           </div>
@@ -210,7 +217,9 @@ export function ProductModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">SKU (Stock Keeping Unit) *</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                SKU (Stock Keeping Unit) *
+              </label>
               <input
                 type="text"
                 required
@@ -222,7 +231,9 @@ export function ProductModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Barcode (EAN / UPC / Code128)</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Barcode (EAN / UPC / Code128)
+              </label>
               <input
                 type="text"
                 value={barcode}
@@ -287,7 +298,9 @@ export function ProductModal({
           {/* Pricing & Units */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-800/40 p-3.5 rounded-xl border border-slate-800">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Cost Price ($ USD)</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Cost Price ($ USD)
+              </label>
               <input
                 type="number"
                 step="0.01"
@@ -299,7 +312,9 @@ export function ProductModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Selling Price ($ USD)</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Selling Price ($ USD)
+              </label>
               <input
                 type="number"
                 step="0.01"
@@ -314,7 +329,9 @@ export function ProductModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Tax Rate (e.g. 0.10 = 10%)</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Tax Rate (e.g. 0.10 = 10%)
+              </label>
               <input
                 type="number"
                 step="0.01"
@@ -327,7 +344,9 @@ export function ProductModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Unit of Measure</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Unit of Measure
+              </label>
               <select
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
@@ -358,12 +377,16 @@ export function ProductModal({
                 onChange={(e) => setReorderLevel(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
               />
-              <p className="text-[10px] text-slate-400 mt-1">Triggers low-stock warnings when inventory ≤ this value</p>
+              <p className="text-[10px] text-slate-400 mt-1">
+                Triggers low-stock warnings when inventory ≤ this value
+              </p>
             </div>
 
             {!isEditing && (
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Initial Opening Stock</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Initial Opening Stock
+                </label>
                 <input
                   type="number"
                   min="0"
@@ -376,7 +399,9 @@ export function ProductModal({
 
             {!isEditing && (
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Stock Receiving Location</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Stock Receiving Location
+                </label>
                 <select
                   value={initialLocationId}
                   onChange={(e) => setInitialLocationId(e.target.value)}
@@ -395,7 +420,9 @@ export function ProductModal({
           {/* Image URL & Status */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Product Image URL</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Product Image URL
+              </label>
               <input
                 type="url"
                 value={imageUrl}
@@ -423,7 +450,9 @@ export function ProductModal({
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Product Notes / Description</label>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">
+              Product Notes / Description
+            </label>
             <textarea
               rows={2}
               value={description}
