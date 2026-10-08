@@ -34,6 +34,8 @@ import {
   Trash2,
   CheckCircle2,
   X,
+  Search,
+  Plus,
 } from 'lucide-react';
 
 export default function InventoryPage() {
@@ -381,7 +383,7 @@ function InventoryHubContent() {
               <div className="flex flex-wrap items-center gap-3 flex-1">
                 <div className="relative min-w-[240px] flex-1">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    🔍
+                    <Search className="w-4 h-4" />
                   </span>
                   <input
                     type="text"
@@ -451,9 +453,9 @@ function InventoryHubContent() {
                     setEditingProduct(null);
                     setIsProductModalOpen(true);
                   }}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition flex items-center space-x-2"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center space-x-2"
                 >
-                  <span>➕</span>
+                  <Plus className="w-4 h-4" />
                   <span>Add Product</span>
                 </button>
               </div>
@@ -477,8 +479,45 @@ function InventoryHubContent() {
                   <tbody className="divide-y divide-slate-800">
                     {products.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="py-12 text-center text-slate-400">
-                          No products found matching your search or filters.
+                        <td colSpan={7} className="py-12 px-4 text-center">
+                          <div className="max-w-sm mx-auto space-y-3">
+                            <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
+                              <Package className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-slate-200">No products found</p>
+                              <p className="text-xs text-slate-400 mt-1">
+                                {searchQuery || selectedCategory || selectedBrand || selectedSupplier || filterLowStockOnly
+                                  ? 'No items match the active search or classification filters.'
+                                  : 'The product catalog is currently empty.'}
+                              </p>
+                            </div>
+                            {searchQuery || selectedCategory || selectedBrand || selectedSupplier || filterLowStockOnly ? (
+                              <button
+                                onClick={() => {
+                                  setSearchQuery('');
+                                  setSelectedCategory('');
+                                  setSelectedBrand('');
+                                  setSelectedSupplier('');
+                                  setFilterLowStockOnly(false);
+                                }}
+                                className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition-colors"
+                              >
+                                Reset All Filters
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  setEditingProduct(null);
+                                  setIsProductModalOpen(true);
+                                }}
+                                className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-colors inline-flex items-center gap-1.5"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                                Add First Product
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ) : (

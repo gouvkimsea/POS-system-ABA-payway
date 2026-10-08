@@ -1183,7 +1183,7 @@ function SettingsContent() {
                   className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-sm shadow-lg shadow-amber-600/30 transition-all disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
-                  {isSaving ? 'Saving...' : 'Save POS Settings'}
+                  {isSaving ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>
@@ -1196,10 +1196,10 @@ function SettingsContent() {
                 <div>
                   <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
                     <Users className="w-5 h-5 text-purple-400" />
-                    Users, Roles & Store Access
+                    Users & Roles
                   </h2>
                   <p className="text-xs text-slate-400 mt-1">
-                    Manage operators, assign permissions, and restrict multi-branch store access.
+                    Manage user accounts, roles, and store access.
                   </p>
                 </div>
                 <button
@@ -1216,7 +1216,7 @@ function SettingsContent() {
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-900/80 text-slate-400 border-b border-slate-800 uppercase tracking-wider font-semibold">
                     <tr>
-                      <th className="px-4 py-3">Operator</th>
+                      <th className="px-4 py-3">User</th>
                       <th className="px-4 py-3">Role</th>
                       <th className="px-4 py-3">Store Access</th>
                       <th className="px-4 py-3">Status</th>
@@ -1238,7 +1238,7 @@ function SettingsContent() {
                         <td className="px-4 py-3">
                           {u.storeAccess.length === 0 ? (
                             <span className="text-emerald-400 font-medium">
-                              All Branches (Global)
+                              All Stores
                             </span>
                           ) : (
                             <div className="flex flex-wrap gap-1">
@@ -1287,8 +1287,7 @@ function SettingsContent() {
               <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-3">
                 <h3 className="text-xs font-bold text-purple-300 flex items-center gap-2">
                   <Shield className="w-4 h-4" />
-                  Configured Roles Matrix ({rolesList.length} Roles, {allPermissions.length}{' '}
-                  Granular Permissions)
+                  Roles ({rolesList.length})
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {rolesList.map((r) => (
@@ -1314,11 +1313,10 @@ function SettingsContent() {
                 <div>
                   <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
                     <CreditCard className="w-5 h-5 text-rose-400" />
-                    Available Payment Methods & Gateways
+                    Payment Methods
                   </h2>
                   <p className="text-xs text-slate-400 mt-1">
-                    Manage active payment options, default tender, and digital gateway API
-                    credentials.
+                    Manage active payment options, default method, and credentials.
                   </p>
                 </div>
                 <button
