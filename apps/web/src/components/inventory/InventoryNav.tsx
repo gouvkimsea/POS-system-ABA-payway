@@ -53,17 +53,17 @@ export function InventoryNav({
   };
 
   const navItems: { id: InventoryTab; label: string; icon: React.ComponentType<{ className?: string }>; badge?: number }[] = [
-    { id: 'products', label: 'Products & Variants', icon: Package, badge: totalProductsCount },
+    { id: 'products', label: 'Products', icon: Package, badge: totalProductsCount },
     {
       id: 'stock',
       label: 'Stock Levels',
       icon: BarChart2,
       badge: lowStockCount > 0 ? lowStockCount : undefined,
     },
-    { id: 'adjustments', label: 'Stock Adjustment & Transfer', icon: ArrowLeftRight },
-    { id: 'movements', label: 'Movement Audit Log', icon: ClipboardList },
+    { id: 'adjustments', label: 'Adjustments & Transfers', icon: ArrowLeftRight },
+    { id: 'movements', label: 'Stock Movements', icon: ClipboardList },
     { id: 'locations', label: 'Locations', icon: MapPin },
-    { id: 'classifications', label: 'Categories, Brands & Suppliers', icon: Tag },
+    { id: 'classifications', label: 'Categories & Suppliers', icon: Tag },
   ];
 
   return (
@@ -80,7 +80,7 @@ export function InventoryNav({
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="font-bold text-base tracking-tight text-white">
-                    Inventory &amp; Catalog
+                    Inventory
                   </span>
                   <span className="px-2 py-0.5 text-xs font-semibold rounded bg-slate-800 text-slate-300 border border-slate-700">
                     Back-Office
@@ -137,7 +137,7 @@ export function InventoryNav({
               className="hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition"
             >
               <ShoppingCart className="w-3.5 h-3.5" />
-              <span>Open POS</span>
+              <span>POS</span>
             </Link>
 
             <Link
@@ -145,7 +145,7 @@ export function InventoryNav({
               className="hidden sm:inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-slate-850 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-medium transition"
             >
               <Home className="w-3.5 h-3.5 text-slate-400" />
-              <span>Hub</span>
+              <span>Dashboard</span>
             </Link>
 
             {user && (
