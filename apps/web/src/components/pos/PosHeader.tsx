@@ -14,17 +14,11 @@ import {
   LogOut,
   Store as StoreIcon,
   ShoppingBag,
-  Package,
   RefreshCw,
   AlertTriangle,
   Coins,
   Lock,
-  FileBarChart,
   RotateCcw,
-  Users,
-  Truck,
-  Building2,
-  Settings,
 } from 'lucide-react';
 import { HardwareStatusBadge } from './HardwareStatusBadge';
 import { PwaInstallPrompt } from '../PwaInstallPrompt';
@@ -122,10 +116,10 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
             <img
               src={settings.business.logoUrl}
               alt={settings.business.name}
-              className="w-8 h-8 rounded-lg object-contain bg-slate-800 border border-slate-700"
+              className="w-8 h-8 rounded-lg object-contain bg-slate-850 border border-slate-800"
             />
           ) : (
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-black text-sm shadow-sm">
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm">
               <ShoppingBag className="w-4 h-4" />
             </div>
           )}
@@ -149,7 +143,7 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
 
       {/* Center: Live Clock & Network / Sync Status */}
       <div className="flex items-center gap-3">
-        <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-slate-800/80 rounded-md text-xs font-mono text-slate-300 border border-slate-700/60">
+        <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-slate-850 rounded-md text-xs font-mono text-slate-300 border border-slate-800">
           <Clock className="w-3.5 h-3.5 text-indigo-400" />
           <span>{timeStr || '12:00:00 PM'}</span>
         </div>
@@ -158,9 +152,9 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
         <Link
           href="/settings/sync"
           title="Open Sync Monitor & Offline Settings"
-          className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border transition-all hover:scale-105 ${
+          className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border transition-colors ${
             syncStats.conflictCount > 0
-              ? 'bg-rose-950/80 text-rose-300 border-rose-700 animate-pulse'
+              ? 'bg-rose-950/80 text-rose-300 border-rose-700'
               : isSyncing
                 ? 'bg-blue-950/80 text-blue-300 border-blue-700'
                 : effectiveOnline
@@ -207,16 +201,16 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
         </Link>
       </div>
 
-      {/* Right: Cashier, Held Orders, Shortcuts, Fullscreen, Lock */}
+      {/* Right: Register, Hardware, Held, Refunds, Shortcuts, Fullscreen, Cashier, Exit */}
       <div className="flex items-center gap-1.5 sm:gap-2">
         {/* Register Session Status Button */}
         {currentSession ? (
           <button
             onClick={onOpenRegisterManagement}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-600/60 hover:bg-emerald-900/80 hover:border-emerald-500 transition-all shadow-xs"
-            title={`Active Register Session #${currentSession.id.slice(-6).toUpperCase()} - Expected: $${currentSession.expectedCashUSD.toFixed(2)} / ${currentSession.expectedCashKHR.toLocaleString()} KHR. Click to manage cash movements & register closing.`}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 hover:bg-emerald-900/80 transition-colors"
+            title={`Active Register Session #${currentSession.id.slice(-6).toUpperCase()} - Expected: $${currentSession.expectedCashUSD.toFixed(2)} / ${currentSession.expectedCashKHR.toLocaleString()} KHR`}
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
             <Coins className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
             <span className="hidden sm:inline font-mono font-bold">
               ${currentSession.expectedCashUSD.toFixed(2)}
@@ -228,7 +222,7 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
         ) : (
           <button
             onClick={onOpenRegisterModal}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/60 hover:bg-amber-500/30 hover:border-amber-400 transition-all shadow-xs animate-pulse"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/60 hover:bg-amber-500/30 transition-colors"
             title="Cash register is closed. Click to open register session with opening float."
           >
             <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -242,7 +236,7 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
         {/* Held Orders Button */}
         <button
           onClick={onOpenHeldModal}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
             heldCount > 0
               ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
               : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
@@ -261,82 +255,12 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
         {/* Returns & Refunds Trigger */}
         <button
           onClick={onOpenReturnModal}
-          className="hidden sm:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 transition-colors items-center gap-1.5"
+          className="hidden sm:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-rose-950/40 text-rose-300 border border-rose-800 hover:bg-rose-900/50 transition-colors items-center gap-1.5"
           title="Process Item Returns & Order Refunds"
         >
           <RotateCcw className="w-4 h-4 text-rose-400" />
           <span className="hidden md:inline">Refunds</span>
         </button>
-
-        {/* Desktop / Large Screen Navigation Links (On mobile, accessible via BottomNav & More menu) */}
-        <Link
-          href="/customers"
-          className="hidden xl:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700/60 hover:bg-slate-700 hover:text-white transition-colors items-center gap-1.5"
-          title="Customer Profiles, History & Loyalty"
-        >
-          <Users className="w-4 h-4 text-emerald-400" />
-          <span>Customers</span>
-        </Link>
-
-        {/* Inventory Management */}
-        <Link
-          href="/inventory"
-          className="hidden lg:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/50 transition-colors items-center gap-1.5"
-          title="Open Product & Inventory Management"
-        >
-          <Package className="w-4 h-4" />
-          <span>Inventory</span>
-        </Link>
-
-        {/* Inter-Store Transfers */}
-        <Link
-          href="/inventory/transfers"
-          className="hidden xl:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-sky-600/30 text-sky-300 border border-sky-500/30 hover:bg-sky-600/50 transition-colors items-center gap-1.5"
-          title="Inter-Store Inventory Transfers & Reconciliation"
-        >
-          <Truck className="w-4 h-4 text-sky-400" />
-          <span>Transfers</span>
-        </Link>
-
-        {/* Branches / Stores */}
-        <Link
-          href="/settings/stores"
-          className="hidden xl:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700/60 hover:bg-slate-700 hover:text-white transition-colors items-center gap-1.5"
-          title="Branch Stores & Cash Registers Management"
-        >
-          <Building2 className="w-4 h-4 text-slate-400" />
-          <span>Stores</span>
-        </Link>
-
-        {/* Global Settings */}
-        <Link
-          href="/settings"
-          className="hidden lg:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/50 hover:text-white transition-colors items-center gap-1.5"
-          title="Global POS & Business Settings"
-        >
-          <Settings className="w-4 h-4 text-indigo-400" />
-          <span>Settings</span>
-        </Link>
-
-        {/* Reports & Analytics */}
-        <Link
-          href="/reports"
-          className="hidden xl:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 hover:bg-indigo-600/50 hover:text-white transition-colors items-center gap-1.5"
-          title="Executive Reporting & Business Analytics"
-        >
-          <FileBarChart className="w-4 h-4 text-indigo-400" />
-          <span>Reports</span>
-        </Link>
-
-        {/* Shift Reports Link */}
-        <Link
-          href="/reports/register-sessions"
-          className="hidden xl:flex p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700/60 hover:bg-slate-700 hover:text-white transition-colors items-center gap-1.5"
-          title="Register Shift Reports & Reconciliation"
-        >
-          <Coins className="w-4 h-4 text-amber-400" />
-          <span>Shift Reports</span>
-        </Link>
 
         {/* PWA Install Button */}
         <PwaInstallPrompt />
@@ -344,7 +268,7 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
         {/* Shortcuts Helper */}
         <button
           onClick={onOpenShortcutsModal}
-          className="hidden 2xl:flex p-1.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors items-center gap-1"
+          className="hidden lg:flex p-1.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors items-center gap-1"
           title="Keyboard Shortcuts (F1-F8)"
         >
           <HelpCircle className="w-4 h-4" />
@@ -375,7 +299,7 @@ export const PosHeader: React.FC<PosHeaderProps> = ({
         {/* Exit Register */}
         <button
           onClick={onExitRegister}
-          className="p-1.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium text-rose-400 hover:text-rose-200 hover:bg-rose-950/50 transition-colors flex items-center gap-1 border border-rose-900/40"
+          className="p-1.5 sm:px-2.5 sm:py-1 rounded-md text-xs font-medium text-rose-300 hover:text-white hover:bg-rose-950/60 transition-colors flex items-center gap-1.5 border border-rose-800/80"
           title="Exit POS Terminal"
         >
           <LogOut className="w-4 h-4" />

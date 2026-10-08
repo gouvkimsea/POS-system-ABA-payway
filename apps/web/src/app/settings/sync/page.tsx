@@ -591,7 +591,7 @@ function SyncMonitorContent() {
                                 item.status === 'synchronized'
                                   ? 'bg-emerald-950 text-emerald-300 border border-emerald-700'
                                   : item.status === 'conflict'
-                                    ? 'bg-rose-950 text-rose-300 border border-rose-700 animate-pulse'
+                                    ? 'bg-rose-950 text-rose-300 border border-rose-700'
                                     : item.status === 'syncing'
                                       ? 'bg-blue-950 text-blue-300 border border-blue-700'
                                       : item.status === 'failed'
@@ -724,8 +724,8 @@ function SyncMonitorContent() {
 
       {/* Transaction Details Modal */}
       {selectedItem && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-slate-950/80 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div>
                 <h3 className="font-bold text-base text-white">
@@ -822,8 +822,8 @@ function SyncMonitorContent() {
 
       {/* Conflict Resolution Modal */}
       {conflictItem && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
-          <div className="bg-slate-900 border border-rose-700/80 rounded-2xl max-w-xl w-full p-6 space-y-4">
+        <div className="fixed inset-0 bg-slate-950/80 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-900 border border-rose-700/80 rounded-xl max-w-xl w-full p-6 space-y-4">
             <div className="flex items-center gap-3 text-rose-400 border-b border-slate-800 pb-3">
               <ShieldAlert className="w-6 h-6" />
               <div>

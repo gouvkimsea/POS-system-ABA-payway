@@ -22,6 +22,19 @@ import {
   ClassificationType,
 } from '../../components/inventory/CategoryBrandSupplierModal';
 import { LocationModal } from '../../components/inventory/LocationModal';
+import {
+  RefreshCw,
+  Package,
+  ArrowLeftRight,
+  AlertTriangle,
+  MapPin,
+  Tag,
+  Building2,
+  Pencil,
+  Trash2,
+  CheckCircle2,
+  X,
+} from 'lucide-react';
 
 export default function InventoryPage() {
   return (
@@ -331,13 +344,10 @@ function InventoryHubContent() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 lg:pb-8 space-y-6">
         {/* Loading Indicator */}
         {isLoading && (
-          <div className="w-full bg-slate-900 border border-indigo-500/30 rounded-xl p-3 flex items-center justify-between text-xs text-indigo-300 animate-pulse">
+          <div className="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 flex items-center justify-between text-xs text-slate-300">
             <span className="flex items-center space-x-2">
-              <span className="animate-spin inline-block">⏳</span>
-              <span>Syncing real-time catalog &amp; inventory balances with PostgreSQL...</span>
-            </span>
-            <span className="font-mono text-[10px] text-slate-400">
-              PostgreSQL Transaction Active
+              <RefreshCw className="w-4 h-4 animate-spin text-indigo-400" />
+              <span>Updating catalog and inventory records...</span>
             </span>
           </div>
         )}
@@ -345,13 +355,17 @@ function InventoryHubContent() {
         {/* Toast Alert */}
         {toastMessage && (
           <div
-            className={`fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-50 px-4 py-3 rounded-xl shadow-2xl border text-sm flex items-center space-x-2 animate-in slide-in-from-bottom-5 duration-200 ${
+            className={`fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-50 px-4 py-3 rounded-xl shadow-xl border text-sm flex items-center space-x-2 ${
               toastMessage.type === 'success'
                 ? 'bg-emerald-950/90 text-emerald-200 border-emerald-500/40'
                 : 'bg-rose-950/90 text-rose-200 border-rose-500/40'
             }`}
           >
-            <span>{toastMessage.type === 'success' ? '✅' : '⚠️'}</span>
+            {toastMessage.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+            ) : (
+              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />
+            )}
             <span className="font-medium">{toastMessage.text}</span>
           </div>
         )}
@@ -362,7 +376,7 @@ function InventoryHubContent() {
         {activeTab === 'products' && (
           <section className="space-y-5">
             {/* Action Bar & Filtering */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-lg flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
               {/* Search & Selectors */}
               <div className="flex flex-wrap items-center gap-3 flex-1">
                 <div className="relative min-w-[240px] flex-1">
@@ -419,13 +433,13 @@ function InventoryHubContent() {
 
                 <button
                   onClick={() => setFilterLowStockOnly(!filterLowStockOnly)}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition ${
+                  className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-colors ${
                     filterLowStockOnly
-                      ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/30'
+                      ? 'bg-amber-500 text-slate-950 font-bold'
                       : 'bg-slate-800 text-amber-300 border border-amber-500/30 hover:bg-slate-700'
                   }`}
                 >
-                  <span>⚠️</span>
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                   <span>Low Stock Only</span>
                 </button>
               </div>
@@ -446,7 +460,7 @@ function InventoryHubContent() {
             </div>
 
             {/* Products Table */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead className="bg-slate-800/80 text-slate-300 uppercase tracking-wider text-[11px] border-b border-slate-700">
@@ -481,8 +495,8 @@ function InventoryHubContent() {
                                     className="w-10 h-10 rounded-lg object-cover bg-slate-800 border border-slate-700"
                                   />
                                 ) : (
-                                  <div className="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-base">
-                                    📦
+                                  <div className="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500">
+                                    <Package className="w-5 h-5" />
                                   </div>
                                 )}
                                 <div>
@@ -542,8 +556,8 @@ function InventoryHubContent() {
                                 <span
                                   className={`px-2.5 py-1 rounded-full font-bold text-xs ${
                                     product.isLowStock
-                                      ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse'
-                                      : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                      ? 'bg-rose-950/80 text-rose-300 border border-rose-800'
+                                      : 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/80'
                                   }`}
                                 >
                                   {product.stockQuantity} {product.unit}
@@ -552,9 +566,8 @@ function InventoryHubContent() {
                                   Reorder at &le; {product.reorderLevel}
                                 </span>
                                 {product.isLowStock && (
-                                  <span className="text-[10px] font-bold text-rose-400 flex items-center space-x-1 mt-0.5">
-                                    <span>⚠️</span>
-                                    <span>LOW STOCK</span>
+                                  <span className="text-[10px] font-semibold text-rose-400 mt-0.5">
+                                    Low Stock
                                   </span>
                                 )}
                               </div>
@@ -595,14 +608,14 @@ function InventoryHubContent() {
                                   title="Edit Product"
                                   className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition"
                                 >
-                                  ✏️
+                                  <Pencil className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteProduct(product)}
                                   title="Delete Product"
-                                  className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition"
+                                  className="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800 transition"
                                 >
-                                  🗑️
+                                  <Trash2 className="w-3.5 h-3.5" />
                                 </button>
                               </div>
                             </td>
@@ -700,36 +713,36 @@ function InventoryHubContent() {
           <section className="space-y-5">
             {/* Stock Metric Highlights */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-md">
+              <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-md">
                 <p className="text-xs font-semibold text-slate-400">Total Tracked Items</p>
                 <p className="text-2xl font-extrabold text-white mt-1">{stockLevels.length}</p>
               </div>
-              <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-md">
+              <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-md">
                 <p className="text-xs font-semibold text-slate-400">Physical Units in Stock</p>
                 <p className="text-2xl font-extrabold text-emerald-400 mt-1">
                   {stockLevels.reduce((acc, s) => acc + s.quantity, 0).toLocaleString()}
                 </p>
               </div>
-              <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-md">
+              <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-md">
                 <p className="text-xs font-semibold text-slate-400">Low Stock Items</p>
                 <p className="text-2xl font-extrabold text-amber-400 mt-1">{lowStockCount}</p>
               </div>
-              <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-md flex items-center justify-between">
+              <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-md flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold text-slate-400">Inventory Locations</p>
                   <p className="text-2xl font-extrabold text-indigo-400 mt-1">{locations.length}</p>
                 </div>
                 <button
                   onClick={() => setIsAdjustmentModalOpen(true)}
-                  className="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition shadow-md shadow-indigo-600/30"
+                  className="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition"
                 >
-                  ⚡ Adjust Stock
+                  Adjust Stock
                 </button>
               </div>
             </div>
 
             {/* Filter Controls */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-wrap items-center gap-3 justify-between">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-wrap items-center gap-3 justify-between">
               <div className="flex flex-wrap items-center gap-3 flex-1">
                 <select
                   value={selectedLocation}
@@ -754,13 +767,13 @@ function InventoryHubContent() {
 
                 <button
                   onClick={() => setFilterLowStockOnly(!filterLowStockOnly)}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition ${
+                  className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-colors ${
                     filterLowStockOnly
                       ? 'bg-amber-500 text-slate-950 font-bold'
                       : 'bg-slate-800 text-amber-300 border border-amber-500/30'
                   }`}
                 >
-                  <span>⚠️</span>
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                   <span>Low Stock Alert ({lowStockCount})</span>
                 </button>
               </div>
@@ -768,16 +781,16 @@ function InventoryHubContent() {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setIsTransferModalOpen(true)}
-                  className="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold shadow-md shadow-teal-600/30 transition flex items-center space-x-1"
+                  className="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-xs font-semibold transition-colors flex items-center space-x-1.5"
                 >
-                  <span>🔁</span>
+                  <ArrowLeftRight className="w-3.5 h-3.5 shrink-0" />
                   <span>Transfer Stock</span>
                 </button>
               </div>
             </div>
 
             {/* Granular Stock Balances Table */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead className="bg-slate-800/80 text-slate-300 uppercase tracking-wider text-[11px] border-b border-slate-700">
@@ -802,8 +815,9 @@ function InventoryHubContent() {
                       stockLevels.map((item) => (
                         <tr key={item.id} className="hover:bg-slate-800/40 transition-colors">
                           <td className="py-3.5 px-4 font-medium text-slate-200">
-                            <span className="px-2 py-0.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300">
-                              📍 {item.locationName}
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300">
+                              <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                              <span>{item.locationName}</span>
                             </span>
                           </td>
                           <td className="py-3.5 px-4">
@@ -837,12 +851,12 @@ function InventoryHubContent() {
                           </td>
                           <td className="py-3.5 px-4 text-center">
                             {item.isLowStock ? (
-                              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">
-                                ⚠️ LOW (Short {Math.max(0, item.reorderLevel - item.quantity)})
+                              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-950/80 text-rose-300 border border-rose-800">
+                                Low (Short {Math.max(0, item.reorderLevel - item.quantity)})
                               </span>
                             ) : (
-                              <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                                ✓ Optimal
+                              <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/80">
+                                Optimal
                               </span>
                             )}
                           </td>
@@ -852,9 +866,9 @@ function InventoryHubContent() {
                                 setAdjustmentStockItem(item);
                                 setIsAdjustmentModalOpen(true);
                               }}
-                              className="px-3 py-1.5 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/30 rounded-lg text-xs font-semibold transition"
+                              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium transition"
                             >
-                              ⚡ Adjust
+                              Adjust
                             </button>
                           </td>
                         </tr>
@@ -872,72 +886,64 @@ function InventoryHubContent() {
            ========================================================================= */}
         {activeTab === 'adjustments' && (
           <section className="space-y-6">
-            <div className="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-6 shadow-xl">
-              <h2 className="text-xl font-bold text-white mb-2">
-                ⚡ Transactional Stock Operations Center
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+              <h2 className="text-lg font-bold text-white mb-2">
+                Stock Operations
               </h2>
-              <p className="text-slate-300 text-sm max-w-3xl leading-relaxed">
-                Stock changes in our enterprise POS are protected by PostgreSQL ACID transactions.
-                <strong>
-                  {' '}
-                  Rule: Stock is never updated without recording an explicit reason and creating an
-                  immutable audit trail entry.
-                </strong>
+              <p className="text-slate-400 text-xs max-w-3xl leading-relaxed">
+                Record audited inventory adjustments, supplier deliveries, damaged write-offs, and inter-location transfers.
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-4">
+              <div className="mt-5 flex flex-wrap gap-3">
                 <button
                   onClick={() => setIsAdjustmentModalOpen(true)}
-                  className="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition flex items-center space-x-2"
+                  className="px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition flex items-center space-x-2"
                 >
-                  <span>⚡</span>
-                  <span>Record Stock Adjustment (Purchase, Return, Damage, Expired)</span>
+                  <Package className="w-4 h-4" />
+                  <span>Record Stock Adjustment</span>
                 </button>
 
                 <button
                   onClick={() => setIsTransferModalOpen(true)}
-                  className="px-5 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm shadow-lg shadow-teal-600/30 transition flex items-center space-x-2"
+                  className="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs transition flex items-center space-x-2"
                 >
-                  <span>🔁</span>
-                  <span>Execute Location Transfer (Warehouse &harr; Sales Floor)</span>
+                  <ArrowLeftRight className="w-4 h-4 text-slate-400" />
+                  <span>Location Transfer</span>
                 </button>
               </div>
             </div>
 
             {/* Quick Adjustment Shortcuts */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
-                  📦
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
+                <div className="w-9 h-9 rounded-lg bg-emerald-950/80 border border-emerald-800/80 text-emerald-400 flex items-center justify-center">
+                  <Package className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-white text-base">Purchase Receiving</h3>
-                <p className="text-xs text-slate-400">
-                  Receive inbound supplier deliveries directly into the central warehouse or floor
-                  displays with supplier invoice references.
+                <h3 className="font-semibold text-white text-sm">Purchase Receiving</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Receive inbound supplier deliveries directly into the central warehouse or floor displays with supplier invoice references.
                 </p>
               </div>
 
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
-                <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl">
-                  💥
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
+                <div className="w-9 h-9 rounded-lg bg-rose-950/80 border border-rose-800/80 text-rose-400 flex items-center justify-center">
+                  <AlertTriangle className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-white text-base">
+                <h3 className="font-semibold text-white text-sm">
                   Damage &amp; Expiration Write-offs
                 </h3>
-                <p className="text-xs text-slate-400">
-                  Deduct broken cans, damaged packaging, or date-expired goods with strict reason
-                  documentation.
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Deduct broken, damaged packaging, or date-expired goods with reason documentation.
                 </p>
               </div>
 
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
-                <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center text-xl">
-                  🔁
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
+                <div className="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center">
+                  <ArrowLeftRight className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-white text-base">Store Location Transfers</h3>
-                <p className="text-xs text-slate-400">
-                  Move inventory between storage rooms and counter shelves atomically: debit source
-                  and credit destination in one transaction.
+                <h3 className="font-semibold text-white text-sm">Store Location Transfers</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Move inventory between storage rooms and counter shelves atomically.
                 </p>
               </div>
             </div>
@@ -950,7 +956,7 @@ function InventoryHubContent() {
         {activeTab === 'movements' && (
           <section className="space-y-5">
             {/* Filter Bar */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-wrap items-center gap-3 justify-between">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-wrap items-center gap-3 justify-between">
               <div className="flex flex-wrap items-center gap-3 flex-1">
                 <select
                   value={selectedMovementType}
@@ -1000,7 +1006,7 @@ function InventoryHubContent() {
             </div>
 
             {/* Movement Audit Table */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead className="bg-slate-800/80 text-slate-300 uppercase tracking-wider text-[11px] border-b border-slate-700">
@@ -1120,7 +1126,7 @@ function InventoryHubContent() {
               {locations.map((loc) => (
                 <div
                   key={loc.id}
-                  className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-3 relative overflow-hidden"
+                  className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-3 relative overflow-hidden"
                 >
                   {loc.isDefault && (
                     <div className="absolute top-0 right-0 bg-indigo-600 text-[10px] font-bold text-white px-3 py-1 rounded-bl-xl uppercase tracking-wider">
@@ -1129,8 +1135,8 @@ function InventoryHubContent() {
                   )}
 
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-lg">
-                      📍
+                    <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-indigo-400">
+                      <MapPin className="w-5 h-5" />
                     </div>
                     <div>
                       <h3 className="font-bold text-white text-base">{loc.name}</h3>
@@ -1180,7 +1186,7 @@ function InventoryHubContent() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center space-x-2">
-                    <span>🏷️</span>
+                    <Tag className="w-4 h-4 text-indigo-400" />
                     <span>Product Categories ({categories.length})</span>
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1193,7 +1199,7 @@ function InventoryHubContent() {
                     setEditingClassItem(null);
                     setIsClassModalOpen(true);
                   }}
-                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition"
+                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition"
                 >
                   + Add Category
                 </button>
@@ -1211,7 +1217,7 @@ function InventoryHubContent() {
                         style={{ backgroundColor: c.color || '#4f46e5' }}
                       />
                       <div>
-                        <p className="font-bold text-white text-xs">{c.name}</p>
+                        <p className="font-semibold text-white text-xs">{c.name}</p>
                         <p className="text-[10px] text-slate-400">{c.productCount || 0} Products</p>
                       </div>
                     </div>
@@ -1221,9 +1227,10 @@ function InventoryHubContent() {
                         setEditingClassItem(c);
                         setIsClassModalOpen(true);
                       }}
-                      className="text-slate-400 hover:text-white p-1 text-xs"
+                      className="text-slate-400 hover:text-white p-1 text-xs rounded hover:bg-slate-800"
+                      title="Edit Category"
                     >
-                      ✏️
+                      <Pencil className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 ))}
@@ -1235,7 +1242,7 @@ function InventoryHubContent() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center space-x-2">
-                    <span>✨</span>
+                    <Tag className="w-4 h-4 text-purple-400" />
                     <span>Brands ({brands.length})</span>
                   </h3>
                   <p className="text-xs text-slate-400">Manufacturers and trademarks</p>
@@ -1246,7 +1253,7 @@ function InventoryHubContent() {
                     setEditingClassItem(null);
                     setIsClassModalOpen(true);
                   }}
-                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition"
+                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition"
                 >
                   + Add Brand
                 </button>
@@ -1259,7 +1266,7 @@ function InventoryHubContent() {
                     className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between"
                   >
                     <div>
-                      <p className="font-bold text-white text-xs">{b.name}</p>
+                      <p className="font-semibold text-white text-xs">{b.name}</p>
                       <p className="text-[10px] text-slate-400">{b.productCount || 0} Products</p>
                     </div>
                     <button
@@ -1268,9 +1275,10 @@ function InventoryHubContent() {
                         setEditingClassItem(b);
                         setIsClassModalOpen(true);
                       }}
-                      className="text-slate-400 hover:text-white p-1 text-xs"
+                      className="text-slate-400 hover:text-white p-1 text-xs rounded hover:bg-slate-800"
+                      title="Edit Brand"
                     >
-                      ✏️
+                      <Pencil className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 ))}
@@ -1282,7 +1290,7 @@ function InventoryHubContent() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center space-x-2">
-                    <span>🏭</span>
+                    <Building2 className="w-4 h-4 text-emerald-400" />
                     <span>Suppliers &amp; Distributors ({suppliers.length})</span>
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1295,7 +1303,7 @@ function InventoryHubContent() {
                     setEditingClassItem(null);
                     setIsClassModalOpen(true);
                   }}
-                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition"
+                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition"
                 >
                   + Add Supplier
                 </button>
@@ -1305,19 +1313,20 @@ function InventoryHubContent() {
                 {suppliers.map((s) => (
                   <div
                     key={s.id}
-                    className="p-4 bg-slate-900 border border-slate-800 rounded-2xl space-y-2"
+                    className="p-4 bg-slate-900 border border-slate-800 rounded-xl space-y-2"
                   >
                     <div className="flex items-center justify-between">
-                      <h4 className="font-bold text-white text-sm">{s.name}</h4>
+                      <h4 className="font-semibold text-white text-sm">{s.name}</h4>
                       <button
                         onClick={() => {
                           setClassModalType('supplier');
                           setEditingClassItem(s);
                           setIsClassModalOpen(true);
                         }}
-                        className="text-slate-400 hover:text-white p-1 text-xs"
+                        className="text-slate-400 hover:text-white p-1 text-xs rounded hover:bg-slate-800"
+                        title="Edit Supplier"
                       >
-                        ✏️
+                        <Pencil className="w-3.5 h-3.5" />
                       </button>
                     </div>
                     <div className="text-xs text-slate-300 space-y-0.5">
@@ -1337,18 +1346,19 @@ function InventoryHubContent() {
           FAST BARCODE LOOKUP RESULT POPUP MODAL
          ========================================================================= */}
       {barcodeMatchResult && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-6 space-y-4 text-slate-100 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/75 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg overflow-hidden p-6 space-y-4 text-slate-100 shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center space-x-2">
-                <span className="text-xl">⚡</span>
+                <Package className="w-5 h-5 text-indigo-400" />
                 <h3 className="font-bold text-white text-base">Barcode Match Resolved</h3>
               </div>
               <button
                 onClick={() => setBarcodeMatchResult(null)}
-                className="text-slate-400 hover:text-white p-1 text-sm"
+                className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800 transition-colors"
+                aria-label="Close"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
@@ -1423,7 +1433,10 @@ function InventoryHubContent() {
                     key={idx}
                     className="flex items-center justify-between text-xs px-3 py-1.5 bg-slate-800/40 rounded-lg border border-slate-800"
                   >
-                    <span className="text-slate-300">📍 {inv.locationName}</span>
+                    <span className="inline-flex items-center gap-1 text-slate-300">
+                      <MapPin className="w-3 h-3 text-slate-400" />
+                      <span>{inv.locationName}</span>
+                    </span>
                     <span className="font-bold text-white">{inv.quantity} pcs</span>
                   </div>
                 ))}
@@ -1436,9 +1449,9 @@ function InventoryHubContent() {
                   setBarcodeMatchResult(null);
                   setIsAdjustmentModalOpen(true);
                 }}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition shadow-md shadow-indigo-600/30"
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition"
               >
-                ⚡ Adjust Stock for this Item
+                Adjust Stock for this Item
               </button>
             </div>
           </div>

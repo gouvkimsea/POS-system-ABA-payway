@@ -22,8 +22,8 @@ export const ShiftReportModal: React.FC<ShiftReportModalProps> = ({ isOpen, onCl
   const isOver = diffUSD > 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-150 print:p-0 print:bg-white">
-      <div className="w-full max-w-md bg-white text-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92dvh] border border-slate-200 print:border-none print:shadow-none print:max-w-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 print:p-0 print:bg-white">
+      <div className="w-full max-w-md bg-white text-slate-900 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[92dvh] border border-slate-200 print:border-none print:shadow-none print:max-w-none">
         {/* Top Header (Hidden on print) */}
         <div className="px-5 py-3.5 bg-slate-100 border-b border-slate-200 flex items-center justify-between shrink-0 print:hidden">
           <div className="flex items-center gap-2">

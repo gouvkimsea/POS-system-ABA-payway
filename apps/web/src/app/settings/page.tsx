@@ -24,15 +24,11 @@ import {
   Shield,
   Clock,
   DollarSign,
-  AlertCircle,
-  ToggleLeft,
-  ToggleRight,
   Sliders,
   Smartphone,
-  Eye,
-  Lock,
+  AlertCircle,
 } from 'lucide-react';
-import { PaymentMethodConfig, UserDetailExtended, RoleDetailExtended } from '@pos/types';
+import { UserDetailExtended, RoleDetailExtended } from '@pos/types';
 
 export default function SettingsPage() {
   return (
@@ -45,7 +41,7 @@ export default function SettingsPage() {
 type SettingsTab = 'business' | 'store' | 'pos' | 'users' | 'payments' | 'localization';
 
 function SettingsContent() {
-  const { token, user } = useAuth();
+  const { token } = useAuth();
   const {
     business,
     store,
@@ -81,7 +77,7 @@ function SettingsContent() {
   const [usersList, setUsersList] = useState<UserDetailExtended[]>([]);
   const [rolesList, setRolesList] = useState<RoleDetailExtended[]>([]);
   const [allPermissions, setAllPermissions] = useState<any[]>([]);
-  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [, setIsLoadingUsers] = useState(false);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showAddPaymentModal, setShowAddPaymentModal] = useState(false);
 
@@ -362,17 +358,17 @@ function SettingsContent() {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col font-sans pb-16">
       {/* Top Header */}
-      <header className="bg-slate-950/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <header className="bg-slate-950 border-b border-slate-800 sticky top-0 z-40 px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
             title="Back to POS"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
               <Sliders className="w-6 h-6 text-indigo-400" />
               System Settings Center
             </h1>
@@ -386,12 +382,12 @@ function SettingsContent() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => refreshSettings()}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 transition-colors"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Reload Sync
           </button>
-          <div className="px-3 py-1.5 rounded-xl bg-indigo-950/60 border border-indigo-700/50 text-indigo-300 text-xs font-bold font-mono">
+          <div className="px-3 py-1.5 rounded-lg bg-indigo-950/60 border border-indigo-700/50 text-indigo-300 text-xs font-bold font-mono">
             {business.code}
           </div>
         </div>
@@ -399,13 +395,13 @@ function SettingsContent() {
 
       {/* Feedback Toast */}
       {saveSuccess && (
-        <div className="fixed top-20 right-6 z-50 bg-emerald-600 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs sm:text-sm font-bold border border-emerald-400 animate-in slide-in-from-top-4 duration-200">
+        <div className="fixed top-20 right-6 z-50 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs sm:text-sm font-bold border border-emerald-400">
           <CheckCircle2 className="w-5 h-5" />
           {saveSuccess}
         </div>
       )}
       {saveError && (
-        <div className="fixed top-20 right-6 z-50 bg-rose-600 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs sm:text-sm font-bold border border-rose-400 animate-in slide-in-from-top-4 duration-200">
+        <div className="fixed top-20 right-6 z-50 bg-rose-600 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs sm:text-sm font-bold border border-rose-400">
           <AlertCircle className="w-5 h-5" />
           {saveError}
         </div>
@@ -417,9 +413,9 @@ function SettingsContent() {
         <aside className="w-full md:w-64 shrink-0 flex md:flex-col gap-1.5 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
           <button
             onClick={() => setActiveTab('business')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-left ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap text-left ${
               activeTab === 'business'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-indigo-600 text-white'
                 : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/40'
             }`}
           >
@@ -429,9 +425,9 @@ function SettingsContent() {
 
           <button
             onClick={() => setActiveTab('store')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-left ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap text-left ${
               activeTab === 'store'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-indigo-600 text-white'
                 : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/40'
             }`}
           >
@@ -441,9 +437,9 @@ function SettingsContent() {
 
           <button
             onClick={() => setActiveTab('pos')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-left ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap text-left ${
               activeTab === 'pos'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-indigo-600 text-white'
                 : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/40'
             }`}
           >
@@ -453,9 +449,9 @@ function SettingsContent() {
 
           <button
             onClick={() => setActiveTab('users')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-left ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap text-left ${
               activeTab === 'users'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-indigo-600 text-white'
                 : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/40'
             }`}
           >
@@ -465,9 +461,9 @@ function SettingsContent() {
 
           <button
             onClick={() => setActiveTab('payments')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-left ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap text-left ${
               activeTab === 'payments'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-indigo-600 text-white'
                 : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/40'
             }`}
           >
@@ -477,9 +473,9 @@ function SettingsContent() {
 
           <button
             onClick={() => setActiveTab('localization')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-left ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap text-left ${
               activeTab === 'localization'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-indigo-600 text-white'
                 : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/40'
             }`}
           >
@@ -489,7 +485,7 @@ function SettingsContent() {
         </aside>
 
         {/* Right Active Panel Content */}
-        <main className="flex-1 min-w-0 bg-slate-950/70 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-xl">
+        <main className="flex-1 min-w-0 bg-slate-900 border border-slate-800 rounded-xl p-5 sm:p-7">
           {/* TAB 1: BUSINESS */}
           {activeTab === 'business' && (
             <form onSubmit={handleSaveBusiness} className="space-y-6">
@@ -669,7 +665,7 @@ function SettingsContent() {
               </div>
 
               {/* Receipt Layout Section */}
-              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl space-y-4">
+              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-4">
                 <h3 className="text-sm font-bold text-emerald-300 flex items-center gap-2">
                   <Printer className="w-4 h-4" />
                   Thermal Receipt Layout
@@ -743,7 +739,7 @@ function SettingsContent() {
               </div>
 
               {/* Tax Settings Section */}
-              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl space-y-4">
+              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-4">
                 <h3 className="text-sm font-bold text-amber-300 flex items-center gap-2">
                   <DollarSign className="w-4 h-4" />
                   Tax Configuration
@@ -793,7 +789,7 @@ function SettingsContent() {
               </div>
 
               {/* Inventory Settings Section */}
-              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl space-y-4">
+              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-4">
                 <h3 className="text-sm font-bold text-indigo-300 flex items-center gap-2">
                   <Sliders className="w-4 h-4" />
                   Inventory Rules
@@ -875,7 +871,7 @@ function SettingsContent() {
 
               {/* Receipt Size & Barcode Behavior */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl space-y-3">
+                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-3">
                   <h3 className="text-xs font-bold text-amber-300 flex items-center gap-2">
                     <Printer className="w-4 h-4" />
                     Thermal Receipt Paper Size
@@ -906,7 +902,7 @@ function SettingsContent() {
                   </div>
                 </div>
 
-                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl space-y-3">
+                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-3">
                   <h3 className="text-xs font-bold text-amber-300 flex items-center gap-2">
                     <Barcode className="w-4 h-4" />
                     Barcode Scanner Behavior
@@ -949,7 +945,7 @@ function SettingsContent() {
               </div>
 
               {/* Sound & Audio Effects */}
-              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl space-y-4">
+              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-amber-300 flex items-center gap-2">
                     <Volume2 className="w-4 h-4" />
@@ -1026,7 +1022,7 @@ function SettingsContent() {
               </div>
 
               {/* Keyboard Shortcuts Mapping */}
-              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl space-y-3">
+              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-3">
                 <h3 className="text-xs font-bold text-amber-300 flex items-center gap-2">
                   <Keyboard className="w-4 h-4" />
                   Keyboard Shortcuts Mapping
@@ -1120,7 +1116,7 @@ function SettingsContent() {
 
               {/* Customer Display & Cash Drawer */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl space-y-2">
+                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-2">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
                       <Smartphone className="w-4 h-4" />
@@ -1158,7 +1154,7 @@ function SettingsContent() {
                   />
                 </div>
 
-                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl space-y-2">
+                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-2">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
                       <DollarSign className="w-4 h-4" />
@@ -1218,7 +1214,7 @@ function SettingsContent() {
               </div>
 
               {/* Users Table */}
-              <div className="overflow-x-auto rounded-2xl border border-slate-800">
+              <div className="overflow-x-auto rounded-xl border border-slate-800">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-900/80 text-slate-400 border-b border-slate-800 uppercase tracking-wider font-semibold">
                     <tr>
@@ -1290,7 +1286,7 @@ function SettingsContent() {
               </div>
 
               {/* Roles & Permissions Summary */}
-              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl space-y-3">
+              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-3">
                 <h3 className="text-xs font-bold text-purple-300 flex items-center gap-2">
                   <Shield className="w-4 h-4" />
                   Configured Roles Matrix ({rolesList.length} Roles, {allPermissions.length}{' '}
@@ -1340,7 +1336,7 @@ function SettingsContent() {
                 {paymentMethods.map((pm) => (
                   <div
                     key={pm.id}
-                    className={`p-4 rounded-2xl border transition-all ${
+                    className={`p-4 rounded-xl border transition-all ${
                       pm.isActive
                         ? 'bg-slate-900/80 border-slate-700/80'
                         : 'bg-slate-900/30 border-slate-800 opacity-60'
@@ -1400,12 +1396,12 @@ function SettingsContent() {
               </div>
 
               {/* Live Preview Card */}
-              <div className="bg-gradient-to-r from-indigo-950/60 to-purple-950/60 border border-indigo-700/50 p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <div className="text-xs font-bold text-indigo-300 uppercase tracking-wider">
+                  <div className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">
                     Dynamic Preview
                   </div>
-                  <div className="text-xl font-extrabold text-white mt-1">
+                  <div className="text-xl font-bold text-white mt-1">
                     {formatCurrency(1250.5)}{' '}
                     <span className="text-slate-400 text-sm">
                       / {formatCurrency(1250.5, 'KHR')}
@@ -1416,7 +1412,7 @@ function SettingsContent() {
                     {formatDateTime(new Date())}
                   </div>
                 </div>
-                <div className="px-3 py-1.5 rounded-xl bg-slate-900 text-xs font-mono font-bold text-indigo-300 border border-indigo-800/50">
+                <div className="px-3 py-1.5 rounded-lg bg-slate-900 text-xs font-mono font-semibold text-slate-300 border border-slate-800">
                   Locale: {locForm.language.toUpperCase()} | {locForm.defaultCurrency}
                 </div>
               </div>
@@ -1561,9 +1557,9 @@ function SettingsContent() {
 
       {/* Modal: Add User */}
       {showAddUserModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl">
-            <h3 className="text-lg font-black text-white flex items-center gap-2">
+        <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full p-6">
+            <h3 className="text-base font-bold text-white flex items-center gap-2">
               <Users className="w-5 h-5 text-purple-400" />
               Add Operator / Cashier
             </h3>
@@ -1644,7 +1640,7 @@ function SettingsContent() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-500 shadow-md shadow-purple-600/30"
+                  className="px-5 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-500"
                 >
                   Create User
                 </button>
@@ -1656,9 +1652,9 @@ function SettingsContent() {
 
       {/* Modal: Add Payment Method */}
       {showAddPaymentModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl">
-            <h3 className="text-lg font-black text-white flex items-center gap-2">
+        <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full p-6">
+            <h3 className="text-base font-bold text-white flex items-center gap-2">
               <CreditCard className="w-5 h-5 text-rose-400" />
               Add Payment Method
             </h3>

@@ -439,7 +439,7 @@ function TransfersContent() {
         );
       case 'IN_TRANSIT':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/30 animate-pulse">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/30">
             <Truck className="w-3.5 h-3.5" />
             <span>IN TRANSIT</span>
           </span>
@@ -466,19 +466,16 @@ function TransfersContent() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
       {/* 1. Header Navigation */}
-      <header className="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+      <header className="sticky top-0 z-30 bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 via-indigo-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-sky-500/20 ring-1 ring-white/20">
-            <Truck className="w-5 h-5 text-white" />
+          <div className="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0">
+            <Truck className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold tracking-tight text-white">
                 Inter-Store Inventory Transfers
               </h1>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-sky-500/10 text-sky-400 border border-sky-500/30">
-                STORE A &rarr; STORE B
-              </span>
             </div>
             <p className="text-xs text-slate-400 flex items-center gap-2">
               <span>
@@ -554,7 +551,7 @@ function TransfersContent() {
               <h3 className="text-2xl font-black text-sky-300 mt-1">{inTransitCount}</h3>
             </div>
             <div className="w-10 h-10 rounded-lg bg-sky-500/10 flex items-center justify-center text-sky-400">
-              <Truck className="w-5 h-5 animate-pulse" />
+              <Truck className="w-5 h-5" />
             </div>
           </div>
 
@@ -860,8 +857,8 @@ function TransfersContent() {
           5. DETAILS & AUDIT TIMELINE DRAWER / MODAL
       ============================================================================== */}
       {selectedTransfer && !showSendModal && !showReceiveModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex justify-end">
-          <div className="w-full max-w-2xl bg-slate-900 border-l border-slate-800 h-full overflow-y-auto p-6 flex flex-col shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/75 flex justify-end">
+          <div className="w-full max-w-2xl bg-slate-900 border-l border-slate-800 h-full overflow-y-auto p-6 flex flex-col shadow-xl">
             {/* Header */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div className="flex items-center gap-3">
@@ -1114,8 +1111,8 @@ function TransfersContent() {
           6. CREATE TRANSFER REQUEST MODAL
       ============================================================================== */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 shadow-xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center">
@@ -1330,8 +1327,8 @@ function TransfersContent() {
           7. SEND / DISPATCH MODAL
       ============================================================================== */}
       {showSendModal && selectedTransfer && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 shadow-xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center">
@@ -1458,8 +1455,8 @@ function TransfersContent() {
           8. RECEIVE / RECEIPT MODAL
       ============================================================================== */}
       {showReceiveModal && selectedTransfer && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 shadow-xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">

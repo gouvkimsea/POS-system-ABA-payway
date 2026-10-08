@@ -79,12 +79,12 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
   const isOffline = receiptData.orderNumber?.startsWith('OFF-ORD-');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-3 sm:p-4">
+      <div className="bg-white rounded-xl max-w-md w-full shadow-xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Success Header */}
         <div
           className={`p-4 flex items-center justify-between shrink-0 text-white ${
-            isOffline ? 'bg-gradient-to-r from-amber-600 to-amber-700' : 'bg-emerald-600'
+            isOffline ? 'bg-amber-600' : 'bg-emerald-600'
           }`}
         >
           <div className="flex items-center gap-2">

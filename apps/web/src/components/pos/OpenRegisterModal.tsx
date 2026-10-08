@@ -62,8 +62,8 @@ export const OpenRegisterModal: React.FC<OpenRegisterModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92dvh] animate-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80">
+      <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[92dvh]">
         {/* Header */}
         <div className="px-6 py-4 bg-slate-800/60 border-b border-slate-700/60 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -225,7 +225,7 @@ export const OpenRegisterModal: React.FC<OpenRegisterModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs shadow-lg shadow-emerald-950/50 transition-all disabled:opacity-50"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors disabled:opacity-50"
             >
               <LockOpen className="w-4 h-4" />
               <span>{isSubmitting ? 'Opening Register...' : 'Open Register & Start Shift'}</span>

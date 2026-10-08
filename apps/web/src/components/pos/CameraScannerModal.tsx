@@ -159,8 +159,8 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in duration-150">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-3 sm:p-4">
+      <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full overflow-hidden shadow-xl flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-4 bg-slate-850 border-b border-slate-800 flex items-center justify-between text-white">
           <div className="flex items-center gap-2.5">
@@ -193,15 +193,15 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({
           {/* Aiming Reticle Overlay */}
           {hasCameraPermission && !errorMessage && (
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center p-6">
-              <div className="relative w-64 h-40 rounded-xl border-2 border-indigo-500/80 shadow-[0_0_20px_rgba(99,102,241,0.3)] flex items-center justify-center">
+              <div className="relative w-64 h-40 rounded-xl border-2 border-indigo-500/80 flex items-center justify-center">
                 {/* Corner indicators */}
                 <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-indigo-400 rounded-tl" />
                 <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-indigo-400 rounded-tr" />
                 <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-indigo-400 rounded-bl" />
                 <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-indigo-400 rounded-br" />
 
-                {/* Animated Scanning Laser Line */}
-                <div className="w-full h-0.5 bg-rose-500 shadow-[0_0_8px_#f43f5e] animate-pulse" />
+                {/* Scanning Laser Line */}
+                <div className="w-full h-0.5 bg-rose-500" />
               </div>
             </div>
           )}
@@ -210,10 +210,10 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({
           {hasTorch && (
             <button
               onClick={toggleTorch}
-              className={`absolute top-3 right-3 p-2.5 rounded-full backdrop-blur-md transition-colors ${
+              className={`absolute top-3 right-3 p-2.5 rounded-full transition-colors ${
                 isTorchOn
-                  ? 'bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/30'
-                  : 'bg-slate-900/70 text-white hover:bg-slate-800'
+                  ? 'bg-amber-500 text-slate-900 shadow-xs'
+                  : 'bg-slate-900 text-white hover:bg-slate-800'
               }`}
               title="Toggle Flashlight"
             >

@@ -3,9 +3,28 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../lib/auth-context';
+import {
+  Package,
+  BarChart2,
+  ArrowLeftRight,
+  ClipboardList,
+  MapPin,
+  Tag,
+  Search,
+  Truck,
+  Building2,
+  ShoppingCart,
+  Home,
+  LogOut,
+} from 'lucide-react';
 
 export type InventoryTab =
-  'products' | 'stock' | 'adjustments' | 'movements' | 'locations' | 'classifications';
+  | 'products'
+  | 'stock'
+  | 'adjustments'
+  | 'movements'
+  | 'locations'
+  | 'classifications';
 
 interface InventoryNavProps {
   activeTab: InventoryTab;
@@ -33,43 +52,41 @@ export function InventoryNav({
     }
   };
 
-  const navItems: { id: InventoryTab; label: string; icon: string; badge?: number }[] = [
-    { id: 'products', label: 'Products & Variants', icon: '📦', badge: totalProductsCount },
+  const navItems: { id: InventoryTab; label: string; icon: React.ComponentType<{ className?: string }>; badge?: number }[] = [
+    { id: 'products', label: 'Products & Variants', icon: Package, badge: totalProductsCount },
     {
       id: 'stock',
       label: 'Stock Levels',
-      icon: '📊',
+      icon: BarChart2,
       badge: lowStockCount > 0 ? lowStockCount : undefined,
     },
-    { id: 'adjustments', label: 'Stock Adjustment & Transfer', icon: '⚡' },
-    { id: 'movements', label: 'Movement Audit Log', icon: '📜' },
-    { id: 'locations', label: 'Locations', icon: '📍' },
-    { id: 'classifications', label: 'Categories, Brands & Suppliers', icon: '🏷️' },
+    { id: 'adjustments', label: 'Stock Adjustment & Transfer', icon: ArrowLeftRight },
+    { id: 'movements', label: 'Movement Audit Log', icon: ClipboardList },
+    { id: 'locations', label: 'Locations', icon: MapPin },
+    { id: 'classifications', label: 'Categories, Brands & Suppliers', icon: Tag },
   ];
 
   return (
-    <header className="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-30 shadow-md">
+    <header className="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-30">
       {/* Top Utility Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo & System Title */}
           <div className="flex items-center space-x-3">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-amber-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-                P
+            <Link href="/" className="flex items-center space-x-3">
+              <div className="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-base">
+                <Package className="w-5 h-5" />
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent">
-                    POS Enterprise
+                  <span className="font-bold text-base tracking-tight text-white">
+                    Inventory &amp; Catalog
                   </span>
-                  <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                    Inventory & Catalog
+                  <span className="px-2 py-0.5 text-xs font-semibold rounded bg-slate-800 text-slate-300 border border-slate-700">
+                    Back-Office
                   </span>
                 </div>
-                <p className="text-xs text-slate-400">
-                  Angkor Fresh Mart &bull; Multi-Store Management
-                </p>
+                <p className="text-xs text-slate-400">Angkor Fresh Mart</p>
               </div>
             </Link>
           </div>
@@ -80,102 +97,101 @@ export function InventoryNav({
             className="hidden md:flex items-center flex-1 max-w-md mx-4"
           >
             <div className="relative w-full">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                🔍
-              </span>
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
               <input
                 type="text"
                 value={quickBarcode}
                 onChange={(e) => setQuickBarcode(e.target.value)}
-                placeholder="Quick barcode lookup or scan (e.g. 8840001001)..."
-                className="w-full pl-9 pr-20 py-2 bg-slate-800/80 hover:bg-slate-800 focus:bg-slate-800 text-sm rounded-lg border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-white placeholder-slate-400 transition"
+                placeholder="Scan or enter barcode (e.g. 8840001001)..."
+                className="w-full pl-9 pr-16 py-1.5 bg-slate-950 text-sm rounded-lg border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-white placeholder-slate-500 transition"
               />
               <button
                 type="submit"
-                className="absolute right-1 top-1 bottom-1 px-3 bg-indigo-600 hover:bg-indigo-500 text-xs font-medium rounded text-white transition flex items-center space-x-1"
+                className="absolute right-1 top-1 bottom-1 px-3 bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold rounded text-white transition flex items-center"
               >
-                <span>Find</span>
+                Find
               </button>
             </div>
           </form>
 
           {/* Right Navigation & User Actions */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-2">
             <Link
               href="/inventory/transfers"
-              className="hidden md:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-sky-600/20 hover:bg-sky-600/30 text-sky-300 border border-sky-500/30 text-xs font-semibold transition"
+              className="hidden md:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-850 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-medium transition"
             >
-              <span>🚚</span>
-              <span>Store Transfers</span>
+              <Truck className="w-3.5 h-3.5 text-slate-400" />
+              <span>Transfers</span>
             </Link>
 
             <Link
               href="/settings/stores"
-              className="hidden lg:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition"
+              className="hidden lg:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-850 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-medium transition"
             >
-              <span>🏢</span>
+              <Building2 className="w-3.5 h-3.5 text-slate-400" />
               <span>Branches</span>
             </Link>
 
             <Link
               href="/pos"
-              className="hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition"
+              className="hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition"
             >
-              <span>🛒</span>
-              <span>POS Terminal</span>
+              <ShoppingCart className="w-3.5 h-3.5" />
+              <span>Open POS</span>
             </Link>
 
             <Link
               href="/"
-              className="hidden sm:inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition"
+              className="hidden sm:inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-slate-850 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-medium transition"
             >
-              <span>🏠</span>
-              <span>Dashboard</span>
+              <Home className="w-3.5 h-3.5 text-slate-400" />
+              <span>Hub</span>
             </Link>
 
             {user && (
               <div className="flex items-center pl-2 border-l border-slate-800 space-x-2">
                 <div className="text-right hidden sm:block">
-                  <p className="text-xs font-semibold text-slate-200">{user.fullName}</p>
+                  <p className="text-xs font-medium text-slate-200">{user.fullName}</p>
                   <p className="text-[10px] text-slate-400 uppercase tracking-wider">
                     {user.roles.join(', ')}
                   </p>
                 </div>
                 <button
                   onClick={logout}
-                  title="Logout"
-                  className="p-1.5 rounded-md hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition"
+                  title="Sign Out"
+                  className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition"
                 >
-                  🚪
+                  <LogOut className="w-4 h-4" />
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Tab Navigation Navigation Bar */}
-        <nav className="flex space-x-1 sm:space-x-2 overflow-x-auto py-2 scrollbar-none border-t border-slate-800/60">
+        {/* Tab Navigation Bar */}
+        <nav className="flex space-x-1 sm:space-x-2 overflow-x-auto py-2 scrollbar-none border-t border-slate-800">
           {navItems.map((item) => {
+            const Icon = item.icon;
             const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => onTabChange(item.id)}
-                className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
                   isActive
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20 font-semibold'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
+                    ? 'bg-indigo-600 text-white font-semibold'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
-                <span>{item.icon}</span>
+                <Icon className="w-3.5 h-3.5" />
                 <span>{item.label}</span>
                 {item.badge !== undefined && (
                   <span
-                    className={`ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                    className={`ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold ${
                       isActive
-                        ? 'bg-indigo-800 text-indigo-100'
+                        ? 'bg-indigo-900 text-indigo-100'
                         : item.id === 'stock' && lowStockCount > 0
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          ? 'bg-amber-950/80 text-amber-300 border border-amber-800'
                           : 'bg-slate-800 text-slate-400'
                     }`}
                   >

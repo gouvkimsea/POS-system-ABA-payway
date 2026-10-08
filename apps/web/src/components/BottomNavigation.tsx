@@ -18,6 +18,7 @@ import {
   LogOut,
   Home,
   Sliders,
+  Users,
 } from 'lucide-react';
 import { PwaInstallPrompt } from './PwaInstallPrompt';
 
@@ -30,6 +31,11 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState<boolean>(false);
+
+  // Do not render bottom nav on login, customer display, or when unauthenticated
+  if (!user || pathname === '/login' || pathname === '/customer-display') {
+    return null;
+  }
 
   // Define primary navigation items
   const navItems = [
@@ -64,7 +70,7 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
       {/* 1. Mobile Bottom Navigation Bar (< 1024px) */}
       <nav
         aria-label="Mobile Navigation Bar"
-        className="lg:hidden fixed bottom-0 inset-x-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 z-30 shadow-2xl pb-[env(safe-area-inset-bottom,0px)]"
+        className="lg:hidden fixed bottom-0 inset-x-0 bg-slate-900 border-t border-slate-800 z-30 pb-[env(safe-area-inset-bottom,0px)]"
       >
         <div className="flex items-center justify-around h-14 px-1 max-w-lg mx-auto">
           {navItems.map((item) => {
@@ -75,13 +81,13 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
                 href={item.href}
                 className={`flex-1 flex flex-col items-center justify-center h-full min-h-[48px] py-1 transition-colors ${
                   item.isActive
-                    ? 'text-indigo-400 font-bold'
+                    ? 'text-indigo-400 font-semibold'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
                 <div
-                  className={`p-1 rounded-xl transition-all ${
-                    item.isActive ? 'bg-indigo-600/20 text-indigo-400 scale-105' : ''
+                  className={`p-1 rounded-lg ${
+                    item.isActive ? 'bg-indigo-600/20 text-indigo-400' : ''
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -97,7 +103,7 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
             onClick={() => setIsMoreMenuOpen(true)}
             className="flex-1 flex flex-col items-center justify-center h-full min-h-[48px] py-1 text-slate-400 hover:text-slate-200 transition-colors"
           >
-            <div className="p-1 rounded-xl">
+            <div className="p-1 rounded-lg">
               <Menu className="w-4 h-4" />
             </div>
             <span className="text-[10px] mt-0.5 tracking-tight font-medium">More</span>
@@ -107,15 +113,18 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
 
       {/* 2. Slide-up "More" Drawer for Secondary Actions */}
       {isMoreMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-end animate-in fade-in duration-150">
+        <div
+          className="lg:hidden fixed inset-0 z-50 bg-black/70 flex flex-col justify-end"
+          onClick={() => setIsMoreMenuOpen(false)}
+        >
           <div
-            className="bg-slate-900 border-t border-slate-800 rounded-t-3xl p-5 max-h-[85dvh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom duration-200 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]"
+            className="bg-slate-900 border-t border-slate-800 rounded-t-2xl p-5 max-h-[85dvh] overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <div>
-                <h3 className="text-sm font-bold text-white">System Menu &amp; Quick Access</h3>
+                <h3 className="text-sm font-semibold text-white">Operations Menu</h3>
                 <p className="text-[11px] text-slate-400">
                   {user?.fullName || 'Cashier'} &bull; {user?.roles?.join(', ')}
                 </p>
@@ -134,7 +143,7 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
               <Link
                 href="/"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center gap-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition"
+                className="p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
               >
                 <Home className="w-4 h-4 text-indigo-400" />
                 <span>Dashboard</span>
@@ -143,16 +152,16 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
               <Link
                 href="/settings/stores"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center gap-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition"
+                className="p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
               >
-                <Building2 className="w-4 h-4 text-emerald-400" />
-                <span>Manage Stores</span>
+                <Building2 className="w-4 h-4 text-slate-400" />
+                <span>Branches</span>
               </Link>
 
               <Link
                 href="/reports/register-sessions"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center gap-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition"
+                className="p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
               >
                 <Coins className="w-4 h-4 text-amber-400" />
                 <span>Shift Reports</span>
@@ -161,7 +170,7 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
               <Link
                 href="/settings/sync"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center gap-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition"
+                className="p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
               >
                 <RefreshCw className="w-4 h-4 text-sky-400" />
                 <span>Offline Sync</span>
@@ -170,27 +179,28 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
               <Link
                 href="/settings/hardware"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center gap-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition"
+                className="p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
               >
                 <Cpu className="w-4 h-4 text-purple-400" />
                 <span>Hardware</span>
               </Link>
 
               <Link
-                href="/settings"
+                href="/customers"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center gap-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition"
+                className="p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
               >
-                <Sliders className="w-4 h-4 text-indigo-400" />
-                <span>All Settings</span>
+                <Users className="w-4 h-4 text-slate-400" />
+                <span>Customers</span>
               </Link>
 
               <Link
-                href="/customers"
+                href="/settings"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center gap-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition"
+                className="col-span-2 p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
               >
-                <span>👥 Customers</span>
+                <Sliders className="w-4 h-4 text-indigo-400" />
+                <span>All Settings</span>
               </Link>
             </div>
 
@@ -203,10 +213,10 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
                   setIsMoreMenuOpen(false);
                   logout();
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 text-xs font-semibold hover:bg-rose-500/20 transition"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-950/40 text-rose-300 border border-rose-800 text-xs font-medium hover:bg-rose-900/50 transition"
               >
                 <LogOut className="w-3.5 h-3.5" />
-                <span>Logout</span>
+                <span>Sign Out</span>
               </button>
             </div>
           </div>

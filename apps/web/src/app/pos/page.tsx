@@ -88,7 +88,7 @@ const HELD_CACHE_KEY = 'pos_held_orders_cache_v1';
 
 function PosTerminalContent() {
   const { user, token } = useAuth();
-  const { settings, formatCurrency } = useSettings();
+  const { settings } = useSettings();
   const router = useRouter();
 
   // Initialization State

@@ -215,8 +215,8 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
   const diffKHR = closeInputKHR - expectedKHR;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80">
+      <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Top Header */}
         <div className="px-6 py-4 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
@@ -300,11 +300,11 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
             <div className="space-y-6 animate-in fade-in-50 duration-150">
               {/* Prominent Expected Cash Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-950/50 to-slate-900 border border-indigo-800/40 relative overflow-hidden">
-                  <div className="text-xs font-bold uppercase tracking-wider text-indigo-400">
+                <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 relative">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
                     Current Expected Cash (USD)
                   </div>
-                  <div className="text-3xl font-black font-mono text-white mt-1">
+                  <div className="text-3xl font-bold font-mono text-white mt-1">
                     ${session.expectedCashUSD.toFixed(2)}
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1">
@@ -312,11 +312,11 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                   </p>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-950/50 to-slate-900 border border-emerald-800/40 relative overflow-hidden">
-                  <div className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 relative">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
                     Current Expected Cash (KHR)
                   </div>
-                  <div className="text-3xl font-black font-mono text-white mt-1">
+                  <div className="text-3xl font-bold font-mono text-white mt-1">
                     {session.expectedCashKHR.toLocaleString()} ៛
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1">Riel currency drawer balance</p>
@@ -567,10 +567,10 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                   handleCashMovementSubmit(activeTab === 'cash_in' ? 'CASH_IN' : 'CASH_OUT')
                 }
                 disabled={isSubmitting}
-                className={`w-full py-2.5 rounded-xl font-bold text-xs text-white shadow-lg transition-all active:scale-95 disabled:opacity-50 ${
+                className={`w-full py-2.5 rounded-xl font-bold text-xs text-white shadow-xs transition-colors disabled:opacity-50 ${
                   activeTab === 'cash_in'
-                    ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-950/50'
-                    : 'bg-amber-600 hover:bg-amber-500 shadow-amber-950/50'
+                    ? 'bg-emerald-600 hover:bg-emerald-500'
+                    : 'bg-amber-600 hover:bg-amber-500'
                 }`}
               >
                 {isSubmitting
@@ -674,7 +674,7 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                 type="button"
                 onClick={() => handleCashMovementSubmit('EXPENSE')}
                 disabled={isSubmitting}
-                className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-rose-600 hover:bg-rose-500 shadow-lg shadow-rose-950/50 transition-all active:scale-95 disabled:opacity-50"
+                className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-rose-600 hover:bg-rose-500 shadow-xs transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? 'Recording Expense...' : 'Record Store Expense'}
               </button>
@@ -826,7 +826,7 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                 <button
                   type="button"
                   onClick={handleApplyCountToClose}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold text-xs shadow-lg transition-all"
+                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xs transition-colors"
                 >
                   Apply Denomination Totals to Shift Close &rarr;
                 </button>
@@ -951,7 +951,7 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-bold text-xs shadow-xl shadow-rose-950/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <Lock className="w-4 h-4" />
                 <span>

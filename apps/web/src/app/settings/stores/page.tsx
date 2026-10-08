@@ -18,6 +18,8 @@ import {
   MapPin,
   Phone,
   Mail,
+  X,
+  AlertCircle,
 } from 'lucide-react';
 
 export default function StoresManagementPage() {
@@ -339,7 +341,7 @@ function StoresManagementContent() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
       {/* Top Header */}
-      <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-xl px-4 sm:px-6 py-3.5 flex items-center justify-between sticky top-0 z-30">
+      <header className="border-b border-slate-800 bg-slate-900 px-4 sm:px-6 py-3.5 flex items-center justify-between sticky top-0 z-30">
         <div className="flex items-center gap-3">
           <Link
             href="/"
@@ -377,7 +379,7 @@ function StoresManagementContent() {
           </Link>
           <button
             onClick={() => setShowCreateStoreModal(true)}
-            className="px-3 sm:px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition text-xs font-semibold shadow-lg shadow-indigo-600/20 flex items-center gap-1.5"
+            className="px-3 sm:px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition text-xs font-semibold shadow-xs flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Create New Branch</span>
@@ -389,7 +391,7 @@ function StoresManagementContent() {
       {/* Error banner */}
       {error && (
         <div className="bg-rose-500/10 border-b border-rose-500/20 px-6 py-2.5 flex items-center gap-2 text-xs font-medium text-rose-400">
-          <span>⚠️</span>
+          <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
@@ -586,7 +588,7 @@ function StoresManagementContent() {
             {/* Sub-tab loading indicator */}
             {subLoading && (
               <div className="h-0.5 w-full bg-indigo-950 overflow-hidden">
-                <div className="h-full bg-indigo-500 w-1/3 animate-pulse" />
+                <div className="h-full bg-indigo-500 w-1/3" />
               </div>
             )}
 
@@ -632,7 +634,7 @@ function StoresManagementContent() {
                   </div>
                 </div>
 
-                <div className="bg-slate-900/40 p-6 rounded-2xl border border-slate-800/80 space-y-4">
+                <div className="bg-slate-900/40 p-6 rounded-xl border border-slate-800/80 space-y-4">
                   <h3 className="text-sm font-bold text-white">Branch Profile Details</h3>
                   <div className="grid grid-cols-2 gap-4 text-xs">
                     <div>
@@ -672,7 +674,7 @@ function StoresManagementContent() {
             {activeTab === 'settings' && (
               <div className="p-6 max-w-3xl space-y-6">
                 <form onSubmit={handleSaveSettings} className="space-y-5">
-                  <div className="bg-slate-900/40 p-6 rounded-2xl border border-slate-800/80 space-y-4">
+                  <div className="bg-slate-900/40 p-6 rounded-xl border border-slate-800/80 space-y-4">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                       <Sliders className="w-4 h-4 text-indigo-400" />
                       Branch Financial & Operational Settings
@@ -752,7 +754,7 @@ function StoresManagementContent() {
                   </div>
 
                   {/* Receipt Customization */}
-                  <div className="bg-slate-900/40 p-6 rounded-2xl border border-slate-800/80 space-y-4">
+                  <div className="bg-slate-900/40 p-6 rounded-xl border border-slate-800/80 space-y-4">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                       <Printer className="w-4 h-4 text-emerald-400" />
                       Branch Receipt Header & Footer Customization
@@ -794,7 +796,7 @@ function StoresManagementContent() {
                   <button
                     type="submit"
                     disabled={savingSettings}
-                    className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+                    className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition shadow-xs disabled:opacity-50"
                   >
                     {savingSettings ? 'Saving Settings...' : 'Save Branch Settings'}
                   </button>
@@ -816,7 +818,7 @@ function StoresManagementContent() {
                   </button>
                 </div>
 
-                <div className="bg-slate-900/40 rounded-2xl border border-slate-800/80 overflow-hidden">
+                <div className="bg-slate-900/40 rounded-xl border border-slate-800/80 overflow-hidden">
                   <table className="w-full text-left text-xs">
                     <thead>
                       <tr className="border-b border-slate-800/80 text-slate-400 bg-slate-950/60 font-medium">
@@ -847,7 +849,7 @@ function StoresManagementContent() {
                           <td className="py-3 px-4 text-slate-300">
                             {r.activeSession ? (
                               <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                                 {r.activeSession.cashierName}
                               </span>
                             ) : (
@@ -883,7 +885,7 @@ function StoresManagementContent() {
                   </button>
                 </div>
 
-                <div className="bg-slate-900/40 rounded-2xl border border-slate-800/80 overflow-hidden">
+                <div className="bg-slate-900/40 rounded-xl border border-slate-800/80 overflow-hidden">
                   <table className="w-full text-left text-xs">
                     <thead>
                       <tr className="border-b border-slate-800/80 text-slate-400 bg-slate-950/60 font-medium">
@@ -975,7 +977,7 @@ function StoresManagementContent() {
                   </div>
                 </div>
 
-                <div className="bg-slate-900/40 rounded-2xl border border-slate-800/80 overflow-hidden">
+                <div className="bg-slate-900/40 rounded-xl border border-slate-800/80 overflow-hidden">
                   <table className="w-full text-left text-xs">
                     <thead>
                       <tr className="border-b border-slate-800/80 text-slate-400 bg-slate-950/60 font-medium">
@@ -1074,8 +1076,8 @@ function StoresManagementContent() {
 
       {/* Modal: Create Store */}
       {showCreateStoreModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
+        <div className="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-md p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-indigo-400" />
@@ -1085,7 +1087,7 @@ function StoresManagementContent() {
                 onClick={() => setShowCreateStoreModal(false)}
                 className="text-slate-400 hover:text-white"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
@@ -1162,7 +1164,7 @@ function StoresManagementContent() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition shadow-lg shadow-indigo-600/20"
+                  className="flex-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition shadow-xs"
                 >
                   Create Branch
                 </button>
@@ -1174,15 +1176,15 @@ function StoresManagementContent() {
 
       {/* Modal: Create Register */}
       {showCreateRegisterModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl">
+        <div className="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-sm p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="text-base font-bold text-white">Add Cash Register</h3>
               <button
                 onClick={() => setShowCreateRegisterModal(false)}
                 className="text-slate-400 hover:text-white"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
             <form onSubmit={handleAddRegister} className="space-y-3 text-xs">
@@ -1232,15 +1234,15 @@ function StoresManagementContent() {
 
       {/* Modal: Assign User */}
       {showAssignUserModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl">
+        <div className="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-sm p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="text-base font-bold text-white">Assign User to Branch</h3>
               <button
                 onClick={() => setShowAssignUserModal(false)}
                 className="text-slate-400 hover:text-white"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
             <form onSubmit={handleAssignUser} className="space-y-3 text-xs">

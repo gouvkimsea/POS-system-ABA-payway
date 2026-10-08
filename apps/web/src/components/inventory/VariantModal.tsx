@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Layers, X, AlertCircle } from 'lucide-react';
 import { ProductVariantRecord, ProductRecord, InventoryLocationRecord } from '@pos/types';
 
 interface VariantModalProps {
@@ -120,16 +121,16 @@ export function VariantModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl text-slate-100 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 flex items-center justify-center p-4">
+      <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-xl overflow-hidden shadow-xl text-slate-100">
         <div className="px-6 py-4 bg-slate-800/80 border-b border-slate-700/60 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-lg bg-amber-600/30 text-amber-400 border border-amber-500/30 flex items-center justify-center text-lg">
-              ✨
+            <div className="w-9 h-9 rounded-lg bg-amber-600/20 text-amber-400 border border-amber-500/30 flex items-center justify-center">
+              <Layers className="w-4 h-4" />
             </div>
             <div>
               <h2 className="text-base font-bold text-white">
-                {isEditing ? `Edit Variant: ${variant?.name}` : `Add Variant to ${product.name}`}
+                {isEditing ? `Edit Variant: ${variant?.name}` : `Add Variant to ${product?.name}`}
               </h2>
               <p className="text-xs text-slate-400">
                 Configure size, color, weight, model, and barcode
@@ -138,16 +139,17 @@ export function VariantModal({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-700 transition"
+            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+            aria-label="Close"
           >
-            ✕
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
           {error && (
             <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-rose-300 text-xs flex items-center space-x-2">
-              <span>⚠️</span>
+              <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -345,7 +347,7 @@ export function VariantModal({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm font-semibold shadow-md shadow-amber-600/30 transition disabled:opacity-50"
+                className="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm font-semibold shadow-xs transition disabled:opacity-50"
               >
                 {isSubmitting ? 'Saving...' : isEditing ? 'Update Variant' : 'Create Variant'}
               </button>

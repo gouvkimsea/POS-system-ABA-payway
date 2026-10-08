@@ -75,29 +75,29 @@ export const MobileCartDrawer: React.FC<MobileCartDrawerProps> = ({
       <div className="lg:hidden fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] inset-x-0 p-2.5 z-30 pointer-events-none">
         <button
           onClick={onOpen}
-          className="pointer-events-auto w-full max-w-lg mx-auto py-3 px-4 bg-slate-900/95 backdrop-blur-md text-white rounded-2xl flex items-center justify-between shadow-2xl border border-slate-700/80 active:scale-[0.99] transition-all ring-1 ring-white/10"
+          className="pointer-events-auto w-full max-w-lg mx-auto py-2.5 px-4 bg-slate-900 text-white rounded-xl flex items-center justify-between border border-slate-800 transition-colors"
         >
           <div className="flex items-center gap-2.5">
             <div className="relative">
-              <div className="w-8 h-8 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+              <div className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
                 <ShoppingBag className="w-4 h-4" />
               </div>
               {totalItemsCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-indigo-600 text-white font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                <span className="absolute -top-1 -right-1 bg-indigo-600 text-white font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
                   {totalItemsCount}
                 </span>
               )}
             </div>
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-200">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-200">
               {cart.length === 0 ? 'View Cart' : `Order (${totalItemsCount})`}
             </span>
           </div>
 
           <div className="flex items-center gap-2.5">
-            <span className="font-extrabold text-sm sm:text-base text-emerald-400 font-mono">
+            <span className="font-bold text-sm sm:text-base text-emerald-400 font-mono">
               ${Math.max(0, totalUSD).toFixed(2)}
             </span>
-            <div className="flex items-center gap-1 text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-xl font-bold shadow-xs">
+            <div className="flex items-center gap-1 text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-lg font-semibold">
               <span>Checkout</span>
               <ArrowUp className="w-3.5 h-3.5" />
             </div>
@@ -108,11 +108,11 @@ export const MobileCartDrawer: React.FC<MobileCartDrawerProps> = ({
       {/* 2. Slide-up Modal Drawer for Mobile with Touch Gesture */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+          className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end bg-black/70 animate-in fade-in duration-150"
           onClick={onClose}
         >
           <div
-            className="bg-white rounded-t-3xl max-h-[92dvh] h-[92dvh] flex flex-col shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-200 border-t border-slate-700"
+            className="bg-white rounded-t-2xl max-h-[92dvh] h-[92dvh] flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-200 border-t border-slate-700"
             style={{ transform: touchDelta > 0 ? `translateY(${touchDelta}px)` : undefined }}
             onClick={(e) => e.stopPropagation()}
           >

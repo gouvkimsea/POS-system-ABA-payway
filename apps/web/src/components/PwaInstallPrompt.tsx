@@ -72,7 +72,7 @@ export function PwaInstallPrompt() {
       {(deferredPrompt || isIos) && (
         <button
           onClick={handleInstallClick}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 text-xs font-semibold transition active:scale-95"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 text-xs font-semibold transition-colors"
           title="Install Angkor POS App to home screen / desktop"
         >
           <Download className="w-3.5 h-3.5 text-indigo-400" />
@@ -82,8 +82,8 @@ export function PwaInstallPrompt() {
 
       {/* iOS Instructions Sheet */}
       {showIosTip && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 max-w-sm w-full text-slate-100 shadow-2xl animate-in slide-in-from-bottom-4">
+        <div className="fixed inset-0 z-50 bg-black/75 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 max-w-sm w-full text-slate-100 shadow-xl">
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <h3 className="text-sm font-bold flex items-center gap-2">
                 <Share className="w-4 h-4 text-indigo-400" />
@@ -91,7 +91,8 @@ export function PwaInstallPrompt() {
               </h3>
               <button
                 onClick={() => setShowIosTip(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-white transition-colors"
+                aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -114,7 +115,7 @@ export function PwaInstallPrompt() {
             </div>
             <button
               onClick={() => setShowIosTip(false)}
-              className="mt-4 w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition"
+              className="mt-4 w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition-colors"
             >
               Got it
             </button>

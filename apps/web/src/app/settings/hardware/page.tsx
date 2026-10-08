@@ -17,6 +17,7 @@ import {
   Volume2,
   Eye,
   Zap,
+  X,
 } from 'lucide-react';
 import { hardwareManager, HardwareStatusReport } from '../../../lib/hardware/HardwareManager';
 import { printerService } from '../../../lib/hardware/PrinterService';
@@ -195,9 +196,9 @@ export default function HardwareSettingsPage() {
         <div className="lg:w-64 shrink-0 space-y-1.5">
           <button
             onClick={() => setActiveTab('printer')}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-semibold transition-all ${
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-xs font-semibold transition-colors ${
               activeTab === 'printer'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                ? 'bg-indigo-600 text-white'
                 : 'bg-slate-900/60 text-slate-300 hover:bg-slate-850 hover:text-white border border-slate-800/80'
             }`}
           >
@@ -210,9 +211,9 @@ export default function HardwareSettingsPage() {
 
           <button
             onClick={() => setActiveTab('scanner')}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-semibold transition-all ${
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-xs font-semibold transition-colors ${
               activeTab === 'scanner'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                ? 'bg-indigo-600 text-white'
                 : 'bg-slate-900/60 text-slate-300 hover:bg-slate-850 hover:text-white border border-slate-800/80'
             }`}
           >
@@ -225,9 +226,9 @@ export default function HardwareSettingsPage() {
 
           <button
             onClick={() => setActiveTab('drawer')}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-semibold transition-all ${
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-xs font-semibold transition-colors ${
               activeTab === 'drawer'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                ? 'bg-indigo-600 text-white'
                 : 'bg-slate-900/60 text-slate-300 hover:bg-slate-850 hover:text-white border border-slate-800/80'
             }`}
           >
@@ -242,9 +243,9 @@ export default function HardwareSettingsPage() {
 
           <button
             onClick={() => setActiveTab('display')}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-semibold transition-all ${
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-xs font-semibold transition-colors ${
               activeTab === 'display'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                ? 'bg-indigo-600 text-white'
                 : 'bg-slate-900/60 text-slate-300 hover:bg-slate-850 hover:text-white border border-slate-800/80'
             }`}
           >
@@ -257,9 +258,9 @@ export default function HardwareSettingsPage() {
 
           <button
             onClick={() => setActiveTab('bridge')}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-semibold transition-all ${
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-xs font-semibold transition-colors ${
               activeTab === 'bridge'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                ? 'bg-indigo-600 text-white'
                 : 'bg-slate-900/60 text-slate-300 hover:bg-slate-850 hover:text-white border border-slate-800/80'
             }`}
           >
@@ -275,7 +276,7 @@ export default function HardwareSettingsPage() {
           </button>
 
           {/* Quick Hardware Diagnostic Card */}
-          <div className="mt-6 p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs space-y-2.5">
+          <div className="mt-6 p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-2.5">
             <div className="font-bold text-slate-300 flex items-center justify-between">
               <span>Bridge Status</span>
               <span
@@ -296,7 +297,7 @@ export default function HardwareSettingsPage() {
         </div>
 
         {/* Right Active Tab Content */}
-        <div className="flex-1 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xl">
+        <div className="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-6 sm:p-8 flex flex-col justify-between">
           <div>
             {/* TAB 1: RECEIPT PRINTER */}
             {activeTab === 'printer' && (
@@ -659,7 +660,7 @@ export default function HardwareSettingsPage() {
                   </div>
 
                   {/* Interactive Live Scanner Debugger */}
-                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                  <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                         <Zap className="w-3.5 h-3.5 text-amber-400" />
@@ -937,7 +938,7 @@ export default function HardwareSettingsPage() {
                       <div className="flex items-center gap-2">
                         <span
                           className={`w-2.5 h-2.5 rounded-full ${
-                            isBridgeConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+                            isBridgeConnected ? 'bg-emerald-400' : 'bg-amber-400'
                           }`}
                         />
                         <span className="text-xs font-bold text-white">
@@ -988,10 +989,14 @@ export default function HardwareSettingsPage() {
 
           {/* Test Log Status Bar */}
           {testLog && (
-            <div className="mt-6 p-3 bg-slate-950 rounded-xl border border-indigo-900/60 text-xs font-mono text-indigo-300 flex items-center justify-between animate-in fade-in">
+            <div className="mt-6 p-3 bg-slate-950 rounded-xl border border-indigo-900/60 text-xs font-mono text-indigo-300 flex items-center justify-between">
               <span>{testLog}</span>
-              <button onClick={() => setTestLog('')} className="text-slate-500 hover:text-white">
-                ✕
+              <button
+                onClick={() => setTestLog('')}
+                className="text-slate-500 hover:text-white transition-colors"
+                aria-label="Clear test log"
+              >
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
           )}
@@ -1000,15 +1005,16 @@ export default function HardwareSettingsPage() {
 
       {/* 58mm vs 80mm Preview Modal */}
       {showPreviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-5 text-slate-800 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4">
+          <div className="bg-white rounded-xl max-w-sm w-full p-5 text-slate-800 shadow-xl space-y-4">
             <div className="flex justify-between items-center border-b pb-2">
               <h3 className="font-bold text-sm">Receipt Preview ({profile.printer.paperSize})</h3>
               <button
                 onClick={() => setShowPreviewModal(false)}
-                className="text-slate-400 hover:text-slate-700"
+                className="text-slate-400 hover:text-slate-700 transition-colors"
+                aria-label="Close"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 

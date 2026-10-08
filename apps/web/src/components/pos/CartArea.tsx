@@ -240,9 +240,10 @@ export const CartArea: React.FC<CartAreaProps> = ({
                         </button>
                         <button
                           onClick={() => setEditingDiscountId(null)}
-                          className="text-slate-400 hover:text-slate-600 text-xs px-1"
+                          className="text-slate-400 hover:text-slate-600 p-0.5"
+                          aria-label="Cancel discount"
                         >
-                          ✕
+                          <X className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     ) : (
@@ -327,7 +328,7 @@ export const CartArea: React.FC<CartAreaProps> = ({
         <button
           disabled={cart.length === 0}
           onClick={onOpenPaymentModal}
-          className="w-full py-3.5 sm:py-4 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-black text-sm sm:text-base rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-between cursor-pointer disabled:cursor-not-allowed active:scale-[0.99]"
+          className="w-full py-3.5 sm:py-4 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-800 disabled:text-slate-500 text-white font-black text-sm sm:text-base rounded-xl shadow-xs transition-colors flex items-center justify-between cursor-pointer disabled:cursor-not-allowed"
         >
           <div className="flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-emerald-100" />

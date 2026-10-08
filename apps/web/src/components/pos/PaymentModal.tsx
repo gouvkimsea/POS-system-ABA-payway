@@ -9,7 +9,6 @@ import {
   QrCode,
   Check,
   AlertCircle,
-  Sparkles,
   Landmark,
   Gift,
 } from 'lucide-react';
@@ -208,8 +207,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-xs p-0 sm:p-4">
-      <div className="bg-white rounded-t-3xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92dvh] animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/80 p-0 sm:p-4">
+      <div className="bg-white rounded-t-xl sm:rounded-xl max-w-lg w-full shadow-xl border border-slate-200 overflow-hidden flex flex-col max-h-[92dvh]">
         {/* Header with Amount Due */}
         <div className="bg-slate-900 text-white p-4 sm:p-5 flex items-center justify-between shrink-0">
           <div>
@@ -345,7 +344,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </div>
 
               {/* On-Screen Touch Numpad for Touchscreens & Mobile Devices */}
-              <div className="bg-slate-50/80 p-2.5 rounded-2xl border border-slate-200/70">
+              <div className="bg-slate-50/80 p-2.5 rounded-xl border border-slate-200/70">
                 <div className="grid grid-cols-3 gap-1.5">
                   {['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', '.'].map((key) => (
                     <button
@@ -399,7 +398,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* ABA KHQR MODE */}
           {selectedMethodCode === 'KHQR_ABA' && (
-            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col items-center text-center space-y-3">
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col items-center text-center space-y-3">
               <div className="w-10 h-10 rounded-full bg-cyan-100 text-cyan-800 flex items-center justify-center font-black text-sm">
                 ABA
               </div>
@@ -410,7 +409,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 </p>
               </div>
 
-              <div className="p-3 bg-white border-2 border-dashed border-cyan-400 rounded-2xl shadow-sm">
+              <div className="p-3 bg-white border border-dashed border-cyan-400 rounded-xl">
                 <div className="w-44 h-44 bg-slate-900 rounded-xl p-3 flex flex-col items-center justify-center text-white text-center">
                   <QrCode className="w-28 h-28 text-white" />
                   <span className="text-[10px] font-mono font-bold tracking-widest text-cyan-300 mt-1">
@@ -428,7 +427,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* CARD MODE */}
           {selectedMethodCode === 'CARD' && (
-            <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl text-center space-y-3">
+            <div className="p-5 bg-slate-50 border border-slate-200 rounded-xl text-center space-y-3">
               <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto">
                 <CreditCard className="w-6 h-6" />
               </div>
@@ -445,7 +444,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* BANK TRANSFER MODE */}
           {selectedMethodCode === 'BANK_TRANSFER' && (
-            <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+            <div className="p-5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
               <div className="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mx-auto">
                 <Landmark className="w-6 h-6" />
               </div>
@@ -472,7 +471,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* VOUCHER / OTHER MODE */}
           {selectedMethodCode === 'OTHER' && (
-            <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+            <div className="p-5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
               <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto">
                 <Gift className="w-6 h-6" />
               </div>
@@ -517,7 +516,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               isProcessing || isSubmitting || (selectedMethodCode === 'CASH' && !isTenderSufficient)
             }
             onClick={() => handleSubmit()}
-            className="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
+            className="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-xs transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
           >
             {isProcessing || isSubmitting ? (
               <>
@@ -526,7 +525,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4" />
+                <Check className="w-4 h-4" />
                 <span>Complete Payment (Enter)</span>
               </>
             )}

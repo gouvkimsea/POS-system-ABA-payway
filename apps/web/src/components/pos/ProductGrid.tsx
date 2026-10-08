@@ -40,8 +40,8 @@ const ProductCard = memo<ProductCardProps>(
     return (
       <div
         onClick={() => !isOutOfStock && onAddToCart(product)}
-        className={`group bg-white rounded-2xl border border-slate-200/90 hover:border-indigo-400 p-2.5 sm:p-3 flex flex-col justify-between transition-all duration-150 shadow-xs hover:shadow-md cursor-pointer select-none relative overflow-hidden ${
-          isOutOfStock ? 'opacity-55 cursor-not-allowed bg-slate-50' : 'active:scale-[0.98]'
+        className={`group bg-white rounded-xl border border-slate-200/90 hover:border-indigo-400 p-2.5 sm:p-3 flex flex-col justify-between transition-colors cursor-pointer select-none relative overflow-hidden ${
+          isOutOfStock ? 'opacity-55 cursor-not-allowed bg-slate-50' : ''
         }`}
       >
         {/* Top Area: Image & Stock Badge */}
@@ -53,7 +53,7 @@ const ProductCard = memo<ProductCardProps>(
               loading="lazy"
               decoding="async"
               onError={() => onImageError(product.id)}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+              className="w-full h-full object-cover"
             />
           ) : (
             <ShoppingBag className="w-8 h-8 text-slate-300" />
@@ -144,7 +144,7 @@ export const ProductGrid: React.FC<ProductGridProps> = memo(
           {Array.from({ length: 10 }).map((_, idx) => (
             <div
               key={idx}
-              className="bg-white rounded-2xl border border-slate-200 p-3 flex flex-col justify-between animate-pulse h-48"
+              className="bg-white rounded-xl border border-slate-200 p-3 flex flex-col justify-between animate-pulse h-48"
             >
               <div className="w-full h-24 bg-slate-100 rounded-xl mb-2" />
               <div className="space-y-1.5">
