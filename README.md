@@ -1,40 +1,76 @@
-# Enterprise Point of Sale (POS) Platform - Foundation
+# Enterprise Point of Sale (POS) Platform
 
-A modern, production-ready Point of Sale (POS) architecture engineered as a high-performance TypeScript monorepo with **pnpm**, **Next.js 14**, **Node.js / Express**, **Prisma ORM**, **PostgreSQL**, and **Redis**.
+A modern, production-ready, touch-first Enterprise Point of Sale (POS) platform engineered as a high-performance TypeScript monorepo with **pnpm**, **Next.js 14**, **Node.js / Express**, **Prisma ORM**, **PostgreSQL**, **Redis**, and a dedicated **Hardware Device Bridge**.
 
-This foundation is designed to scale across diverse form factors (mobile, tablets, desktop, commercial touchscreen terminals) and integrate with retail hardware (USB/Bluetooth barcode scanners, ESC/POS thermal printers, cash drawers, customer-facing displays).
+Built specifically for high-throughput retail operations with full **dual-currency (USD & KHR)** financial precision, multi-store inventory transfers, offline-first resilient checkout, cash register session reconciliation (X/Z reports), returns & refunds, and hardware peripherals (ESC/POS thermal printers, barcode scanners, customer-facing secondary displays, and cash drawers).
 
 ---
 
-## 🏗️ Architecture Overview
+## 🏗️ Monorepo Architecture Overview
 
-The codebase is organized as a clean, modular monorepo:
+The codebase is organized into modular workspaces and shared packages:
 
 ```
 /
 ├── apps/
-│   ├── web/                     # Next.js 14 touch-first web application (App Router)
-│   └── api/                     # Node.js + Express REST API server with Pino logger
+│   ├── web/                     # Next.js 14 touch-first POS application (App Router, Tailwind CSS)
+│   ├── api/                     # Node.js + Express REST API server with Pino logger & JWT/RBAC
+│   └── bridge/                  # Standalone local device bridge daemon (WebSocket + HTTP on port 5050)
 ├── packages/
-│   ├── types/                   # Shared TypeScript models, contracts, DTOs
+│   ├── types/                   # Shared TypeScript models, contracts, DTOs, and state enums
 │   ├── config/                  # Environment variable schema (Zod) & system defaults
-│   ├── validation/              # Shared Zod validation schemas
-│   └── ui/                      # Reusable accessible UI primitives (StatusBadge, Card, Button)
-├── prisma/                      # PostgreSQL schema & migration history
-│   └── migrations/              # Verifiable database migrations
-├── docs/                        # Architecture documentation & developer guides
-├── scripts/                     # Automation, database runner, connection diagnostics
-├── docker/                      # Production multi-stage Dockerfiles (Dockerfile.api, Dockerfile.web)
-├── .env.example                 # Development environment variable template
-├── .env.production.example      # Production environment variable template
-├── docker-compose.yml           # Local multi-service orchestration (Postgres, Redis, API, Web)
-├── package.json                 # Monorepo root workspace configuration
+│   ├── validation/              # Shared Zod validation schemas for forms and API requests
+│   └── ui/                      # Reusable accessible dark-mode UI components & design system
+├── prisma/                      # PostgreSQL schema, migrations & seed scripts
+├── docs/                        # Architecture guides (Deployment, Backup, Migrations, Monitoring)
+├── scripts/                     # Automation, database runner, and 15+ comprehensive test suites
+├── docker/                      # Production multi-stage Dockerfiles (Dockerfile.api, web, bridge)
+├── docker-compose.yml           # Local development orchestration
+├── docker-compose.prod.yml      # Production stack orchestration
+├── package.json                 # Monorepo root configuration & test orchestration scripts
 └── pnpm-workspace.yaml          # pnpm workspace definition
 ```
 
 ---
 
-## 📋 Requirements
+## 🚀 Key Modules & Capabilities
+
+### 1. Touch-First POS Checkout Workstation (`apps/web/src/app/pos`)
+- **Fast Product Discovery**: Instant fuzzy search by barcode, SKU, or name with real-time category filtering.
+- **Scanning Modalities**: USB/Bluetooth barcode scanner wedge support with fast input debouncing and camera-based barcode scanning.
+- **Flexible Cart Actions**: Item discounts, transaction-level discounts, custom line notes, quantity increment/decrement, and order hold/resume.
+- **Dual-Currency Tender**: Native support for USD and Cambodian Riel (KHR) with fixed exchange rates, dual subtotal displays, and split payment handling.
+- **Customer Loyalty**: Link registered customers to orders to earn points and apply member tiers.
+
+### 2. Hardware Device Bridge (`apps/bridge`)
+- **Local Micro-Daemon**: Runs as a lightweight local service on `http://localhost:5050` to bridge browser sandboxes to physical POS hardware.
+- **ESC/POS Thermal Printing**: Raw byte buffer generation, 58mm/80mm receipt printing, QR code rendering, and automatic paper cutting.
+- **Cash Drawer Interface**: Kick drawer pulses sent through printer RJ11 connectors upon cash transactions.
+- **Customer Facing Display**: Real-time dual-screen live order mirroring with dynamic item breakdown and total displays.
+
+### 3. Register Session Management & Auditing (`apps/web/src/app/reports/register-sessions`)
+- **Session Lifecycle**: Structured register open float, mid-shift pay-ins and pay-outs, safe drops, and closing blind reconciliation.
+- **Cash Discrepancy Auditing**: Real-time variance tracking between expected and actual drawer cash.
+- **X and Z Reports**: Generate mid-shift inspection (X-Report) and permanent end-of-day closing audit (Z-Report) with detailed tender breakdowns.
+
+### 4. Multi-Store Inventory & Transfers (`apps/web/src/app/inventory/transfers`)
+- **Multi-Location Inventory**: Separate stock levels tracked across central warehouses and retail branch stores.
+- **Stock Transfer Workflow**: Three-phase lifecycle: `REQUESTED` &rarr; `IN_TRANSIT` (source stock deducted) &rarr; `RECEIVED` (target stock incremented) with audit trail.
+- **Discrepancy Logging**: Reconcile damaged or missing quantities during receiving.
+
+### 5. Offline-First PWA Checkout & Sync Engine (`apps/web/src/app/settings/sync`)
+- **Resilient Offline Sales**: IndexedDB / LocalStorage queue for continuing checkouts during network interruptions.
+- **Idempotent Synchronization**: UUID-based idempotency keys prevent duplicate transaction processing on network reconnection.
+- **Conflict Management**: Visual conflict inspector with administrator override or retry mechanisms when stock or prices collide.
+
+### 6. Returns & Refunds Engine (`apps/web/src/components/pos/ReturnRefundModal.tsx`)
+- **Line-Item Returns**: Partial and full order returns linked directly to original sales receipts.
+- **Restocking Inspection**: Condition grading (`RESTOCKABLE`, `DAMAGED`, `DEFECTIVE`) to automatically restock or write off items.
+- **Refund Reconciliation**: Return to original payment method or store credit with full accounting logging.
+
+---
+
+## 📋 System Requirements
 
 - **Node.js**: `v20.x` or higher (Active LTS)
 - **pnpm**: `v9.x` or higher (`npm install -g pnpm`)
@@ -43,7 +79,7 @@ The codebase is organized as a clean, modular monorepo:
 
 ---
 
-## 🚀 Installation & Setup
+## 🛠️ Quick Start & Setup
 
 ### 1. Clone & Install Dependencies
 
@@ -51,7 +87,7 @@ The codebase is organized as a clean, modular monorepo:
 git clone https://github.com/gouvkimsea/POS-system-ABA-payway.git
 cd POS-system-ABA-payway
 
-# Install all workspace dependencies and link internal packages
+# Install all workspace dependencies
 pnpm install
 ```
 
@@ -63,47 +99,33 @@ Copy the development environment template:
 cp .env.example .env
 ```
 
-Review and adjust variables in `.env` as required:
+Key environment configurations:
 
 | Variable                    | Default Value                                                        | Description                                               |
 | :-------------------------- | :------------------------------------------------------------------- | :-------------------------------------------------------- |
 | `NODE_ENV`                  | `development`                                                        | Runtime environment (`development`, `production`, `test`) |
-| `API_PORT`                  | `4000`                                                               | Port for the backend Express API server                   |
-| `WEB_PORT`                  | `3000`                                                               | Port for the Next.js web application                      |
+| `API_PORT`                  | `4000`                                                               | Port for backend Express API server                       |
+| `WEB_PORT`                  | `3000`                                                               | Port for Next.js web application                          |
+| `BRIDGE_PORT`               | `5050`                                                               | Port for Local Hardware Bridge daemon                     |
 | `DATABASE_URL`              | `postgresql://postgres:postgres@localhost:5432/pos_db?schema=public` | PostgreSQL connection string                              |
-| `REDIS_URL`                 | `redis://localhost:6379`                                             | Redis connection URL                                      |
+| `REDIS_URL`                 | `redis://localhost:6379`                                             | Redis connection URL (fallback to in-memory)              |
 | `DEFAULT_TIMEZONE`          | `Asia/Phnom_Penh`                                                    | Default system timezone                                   |
 | `DEFAULT_CURRENCY`          | `USD`                                                                | Base store currency                                       |
-| `DEFAULT_EXCHANGE_RATE_KHR` | `4100`                                                               | Exchange rate (1 USD = 4,100 KHR)                         |
-| `NEXT_PUBLIC_API_URL`       | `http://localhost:4000/api`                                          | API URL consumed by the web client                        |
+| `DEFAULT_EXCHANGE_RATE_KHR` | `4100`                                                               | Fixed exchange rate (1 USD = 4,100 KHR)                   |
+| `NEXT_PUBLIC_API_URL`       | `http://localhost:4000/api`                                          | API URL consumed by web client                            |
 
----
-
-## 🗄️ Database Setup & Migrations
-
-### Start Local PostgreSQL
-
-If running without external PostgreSQL or Docker, start the embedded PostgreSQL engine:
+### 3. Database Initialization & Seeding
 
 ```bash
+# Start embedded PostgreSQL database (if running locally without Docker)
 pnpm db:start
-```
 
-### Apply Migrations & Generate Client
-
-```bash
-# Generate Prisma Client
+# Generate Prisma Client and apply migrations
 pnpm db:generate
-
-# Apply migrations
 pnpm db:migrate
-```
 
-### Database Management Tools
-
-```bash
-# Launch Prisma Studio web GUI
-pnpm db:studio
+# Seed sample store data, categories, products, and administrative accounts
+pnpm db:seed
 ```
 
 ---
@@ -113,56 +135,59 @@ pnpm db:studio
 | Command               | Description                                                                             |
 | :-------------------- | :-------------------------------------------------------------------------------------- |
 | `pnpm dev`            | Start both Backend API and Web Frontend concurrently in development mode                |
-| `pnpm dev:api`        | Start only the Backend API server with live reload (`http://localhost:4000`)            |
+| `pnpm dev:api`        | Start only the Backend API server (`http://localhost:4000`)                             |
 | `pnpm dev:web`        | Start only the Web Frontend (`http://localhost:3000`)                                   |
+| `pnpm dev:bridge`     | Start the Local Hardware Bridge daemon (`http://localhost:5050`)                        |
 | `pnpm build:packages` | Compile all shared packages (`@pos/types`, `@pos/config`, `@pos/validation`, `@pos/ui`) |
-| `pnpm build`          | Full production build of all packages and applications                                  |
-| `pnpm typecheck`      | Run TypeScript type checks across all workspaces                                        |
+| `pnpm build`          | Full production build of all packages, bridge, API, and web application                 |
+| `pnpm typecheck`      | Run TypeScript type checks across all workspaces with zero errors                       |
 | `pnpm lint`           | Run ESLint across all TypeScript and JavaScript files                                   |
-| `pnpm format`         | Format the entire codebase with Prettier                                                |
-| `pnpm format:check`   | Verify formatting consistency with Prettier                                             |
+| `pnpm db:studio`      | Launch Prisma Studio visual database editor                                             |
 
 ---
 
-## 🧪 Testing & Verification Commands
+## 🧪 Comprehensive Verification & Test Suites
 
-### Infrastructure Connectivity Diagnostics
-
-Run the automated diagnostic suite to verify connections to PostgreSQL and Redis:
+The repository contains an enterprise testing harness covering all mission-critical workflows:
 
 ```bash
-pnpm test:connections
+# Run all automated test suites
+pnpm test:all
+
+# Domain-specific test suites
+pnpm test:unit           # Core calculations & financial rounding logic
+pnpm test:db             # Prisma database schema constraints and relations
+pnpm test:e2e            # End-to-end checkout, payment, and inventory deduction
+pnpm test:edge-cases     # Split tender, zero-stock, network drops, concurrent sales
+pnpm test:auth           # JWT security, PIN authentication, and RBAC permissions
+pnpm test:pos            # POS workstation cart actions and discounts
+pnpm test:inventory      # SKU management, adjustments, and low stock thresholds
+pnpm test:transactions   # Transaction engine validation and state transitions
+pnpm test:register       # Register session float, pay-in/out, and X/Z reporting
+pnpm test:returns        # Customer line-item returns and restocking validation
+pnpm test:hardware       # Hardware bridge ESC/POS buffer generator & status
+pnpm test:offline        # Offline sync queue, idempotency, and reconciliation
+pnpm test:reporting      # Financial reporting, margin calculations, and exports
+pnpm test:settings       # Business, store, and payment configuration services
 ```
-
-### Verify Endpoints
-
-- **API Health Check**: `GET http://localhost:4000/api/health`
-- **API Metadata**: `GET http://localhost:4000/api`
-- **Frontend Foundation Dashboard**: `http://localhost:3000`
 
 ---
 
 ## 🐳 Docker Deployment
 
-To launch the full stack (PostgreSQL, Redis, API, and Web) using Docker Compose:
+Run the complete multi-service production stack with Docker Compose:
 
 ```bash
-docker-compose up -d --build
+# Build and start PostgreSQL, Redis, API, Bridge, and Web frontend
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 ---
 
-## 📜 Stage 1 Foundation Checklist
+## 📄 License & Documentation
 
-- [x] Monorepo workspace configuration with `pnpm`
-- [x] Clean directory layout (`apps/web`, `apps/api`, `packages/types`, `packages/config`, `packages/validation`, `packages/ui`)
-- [x] Strict TypeScript configuration with project references
-- [x] ESLint and Prettier rules configured and passing with zero errors
-- [x] PostgreSQL database connection layer with Prisma ORM
-- [x] Initial migration created (`20261007000000_init_foundation`)
-- [x] Redis connection layer with graceful in-memory fallback
-- [x] Backend structured logging using Pino
-- [x] Backend `/api/health` diagnostic endpoint
-- [x] Initial Next.js foundation page verifying full-stack connectivity
-- [x] Development (`.env.example`) and Production (`.env.production.example`) templates
-- [x] Production multi-stage Dockerfiles and `docker-compose.yml`
+Refer to the [`docs/`](./docs) folder for detailed guides:
+- [Deployment Guide](./docs/DEPLOYMENT.md)
+- [Backup & Disaster Recovery](./docs/BACKUP_AND_RECOVERY.md)
+- [Database Migrations](./docs/MIGRATIONS.md)
+- [Monitoring & Logging](./docs/MONITORING_AND_LOGGING.md)
