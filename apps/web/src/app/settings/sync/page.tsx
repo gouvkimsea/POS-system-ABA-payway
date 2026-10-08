@@ -239,10 +239,10 @@ function SyncMonitorContent() {
             </div>
             <div>
               <h1 className="text-sm font-bold text-white leading-tight">
-                Offline Synchronization Monitor
+                Offline Sync
               </h1>
               <p className="text-[11px] text-slate-400">
-                IndexedDB Local Queue &amp; Server Reconciliation
+                View queued offline sales and sync status.
               </p>
             </div>
           </div>
@@ -258,7 +258,7 @@ function SyncMonitorContent() {
                 ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 hover:bg-amber-500/30'
                 : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-slate-200'
             }`}
-            title="Force the client to simulate offline network loss"
+            title="Simulate offline mode"
           >
             <Sliders className="w-3.5 h-3.5" />
             <span>{isSimulatedOffline ? 'Simulating Offline' : 'Simulate Offline'}</span>
@@ -275,12 +275,12 @@ function SyncMonitorContent() {
             {isOnline ? (
               <>
                 <Wifi className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Online &amp; Connected</span>
+                <span>Online</span>
               </>
             ) : (
               <>
                 <WifiOff className="w-3.5 h-3.5 text-amber-400" />
-                <span>Offline Mode</span>
+                <span>Offline</span>
               </>
             )}
           </div>
@@ -316,33 +316,33 @@ function SyncMonitorContent() {
           {/* Card 1: Total Queued */}
           <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3.5 flex flex-col justify-between">
             <div className="flex items-center justify-between text-slate-400 text-xs">
-              <span>Total Transactions</span>
+              <span>Total Queued</span>
               <Layers className="w-4 h-4 text-indigo-400" />
             </div>
             <div className="text-2xl font-black text-white mt-2">{stats.totalQueued}</div>
-            <div className="text-[10px] text-slate-400 mt-1">In local IndexedDB</div>
+            <div className="text-[10px] text-slate-400 mt-1">Local queue</div>
           </div>
 
           {/* Card 2: Pending */}
           <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3.5 flex flex-col justify-between">
             <div className="flex items-center justify-between text-slate-400 text-xs">
-              <span>Pending Sync</span>
+              <span>Pending</span>
               <Clock className="w-4 h-4 text-amber-400" />
             </div>
             <div className="text-2xl font-black text-amber-400 mt-2">{stats.pendingCount}</div>
-            <div className="text-[10px] text-amber-500/80 mt-1">Awaiting network upload</div>
+            <div className="text-[10px] text-amber-500/80 mt-1">Waiting to sync</div>
           </div>
 
           {/* Card 3: Syncing */}
           <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3.5 flex flex-col justify-between">
             <div className="flex items-center justify-between text-slate-400 text-xs">
-              <span>Syncing Now</span>
+              <span>Syncing</span>
               <RefreshCw className={`w-4 h-4 text-blue-400 ${isSyncing ? 'animate-spin' : ''}`} />
             </div>
             <div className="text-2xl font-black text-blue-400 mt-2">
               {isSyncing ? 'In Progress' : stats.syncingCount}
             </div>
-            <div className="text-[10px] text-blue-400/80 mt-1">Active data transfer</div>
+            <div className="text-[10px] text-blue-400/80 mt-1">In progress</div>
           </div>
 
           {/* Card 4: Synchronized */}
@@ -354,7 +354,7 @@ function SyncMonitorContent() {
             <div className="text-2xl font-black text-emerald-400 mt-2">
               {stats.synchronizedCount}
             </div>
-            <div className="text-[10px] text-emerald-500/80 mt-1">Stored in PostgreSQL</div>
+            <div className="text-[10px] text-emerald-500/80 mt-1">Synced to server</div>
           </div>
 
           {/* Card 5: Conflicts */}
@@ -378,17 +378,17 @@ function SyncMonitorContent() {
             >
               {stats.conflictCount}
             </div>
-            <div className="text-[10px] text-rose-400/80 mt-1">Requires human review</div>
+            <div className="text-[10px] text-rose-400/80 mt-1">Needs review</div>
           </div>
 
           {/* Card 6: Failed */}
           <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3.5 flex flex-col justify-between">
             <div className="flex items-center justify-between text-slate-400 text-xs">
-              <span>Failed / Retry</span>
+              <span>Failed</span>
               <XCircle className="w-4 h-4 text-rose-400" />
             </div>
             <div className="text-2xl font-black text-rose-400 mt-2">{stats.failedCount}</div>
-            <div className="text-[10px] text-rose-400/80 mt-1">Network/Server rejected</div>
+            <div className="text-[10px] text-rose-400/80 mt-1">Sync error</div>
           </div>
         </div>
 
@@ -410,7 +410,7 @@ function SyncMonitorContent() {
               className="flex items-center gap-2 px-3.5 py-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-slate-200 rounded-lg text-xs font-semibold transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Refresh Catalog Cache</span>
+              <span>Update Catalog Cache</span>
             </button>
 
             <button
@@ -424,7 +424,7 @@ function SyncMonitorContent() {
           </div>
 
           <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span>Last catalog cache:</span>
+            <span>Last cached:</span>
             <span className="font-mono text-slate-300 font-semibold">
               {stats.lastSyncTimestamp
                 ? new Date(stats.lastSyncTimestamp).toLocaleTimeString()
@@ -453,7 +453,7 @@ function SyncMonitorContent() {
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
-              All Local Items ({clientQueue.length})
+              All Items ({clientQueue.length})
             </button>
 
             <button
@@ -514,7 +514,7 @@ function SyncMonitorContent() {
               }`}
             >
               <Server className="w-3.5 h-3.5" />
-              <span>Server DB Queue ({serverRecords.length})</span>
+              <span>Server Queue ({serverRecords.length})</span>
             </button>
           </div>
         </div>
@@ -525,9 +525,9 @@ function SyncMonitorContent() {
             {filteredItems.length === 0 ? (
               <div className="p-12 text-center text-slate-400 space-y-2">
                 <CheckCircle2 className="w-10 h-10 text-slate-600 mx-auto" />
-                <p className="text-sm font-semibold">No transactions in this view</p>
+                <p className="text-sm font-semibold">No transactions queued</p>
                 <p className="text-xs text-slate-500">
-                  Transactions created while offline will automatically be enqueued here.
+                  Offline sales will appear here until synced.
                 </p>
               </div>
             ) : (
@@ -642,7 +642,7 @@ function SyncMonitorContent() {
                               <button
                                 onClick={() => setSelectedItem(item)}
                                 className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-md transition-colors"
-                                title="View transaction details"
+                                title="View details"
                               >
                                 <Eye className="w-3.5 h-3.5" />
                               </button>
@@ -664,9 +664,9 @@ function SyncMonitorContent() {
             {serverRecords.length === 0 ? (
               <div className="p-12 text-center text-slate-400 space-y-2">
                 <Server className="w-10 h-10 text-slate-600 mx-auto" />
-                <p className="text-sm font-semibold">No records in server sync queue</p>
+                <p className="text-sm font-semibold">No records in server queue</p>
                 <p className="text-xs text-slate-500">
-                  Transactions synced to the backend database appear here.
+                  Synced transactions appear here.
                 </p>
               </div>
             ) : (
@@ -828,16 +828,16 @@ function SyncMonitorContent() {
               <ShieldAlert className="w-6 h-6" />
               <div>
                 <h3 className="font-bold text-base text-white">
-                  Reconciliation Conflict Inspector
+                  Resolve Sync Conflict
                 </h3>
                 <p className="text-xs text-rose-300">
-                  Never silently overwrites server state. Explicit administrator action required.
+                  Choose how to resolve this conflict.
                 </p>
               </div>
             </div>
 
             <div className="p-3 bg-rose-950/40 border border-rose-800/80 rounded-xl text-xs space-y-1 text-rose-200">
-              <div className="font-bold">Conflict Reason:</div>
+              <div className="font-bold">Reason:</div>
               <p>{conflictItem.conflict?.message || conflictItem.errorMessage}</p>
             </div>
 
@@ -875,13 +875,13 @@ function SyncMonitorContent() {
                 onClick={() => handleResolveConflict(conflictItem, 'OVERRIDE_ACCEPT')}
                 className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors"
               >
-                Override &amp; Accept Sale
+                Accept Local Sale
               </button>
               <button
                 onClick={() => handleResolveConflict(conflictItem, 'RETRY')}
                 className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition-colors"
               >
-                Retry Synchronization
+                Retry Sync
               </button>
               <button
                 onClick={() => handleResolveConflict(conflictItem, 'DISCARD')}

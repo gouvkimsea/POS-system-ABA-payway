@@ -474,12 +474,12 @@ function TransfersContent() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold tracking-tight text-white">
-                Inter-Store Inventory Transfers
+                Stock Transfers
               </h1>
             </div>
             <p className="text-xs text-slate-400 flex items-center gap-2">
               <span>
-                Track requested, sent, and received quantities with end-to-end audit trails
+                Move stock between store locations.
               </span>
             </p>
           </div>
@@ -492,7 +492,7 @@ function TransfersContent() {
             className="hidden md:flex px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors items-center gap-1.5"
           >
             <Layers className="w-3.5 h-3.5 text-slate-400" />
-            <span>Catalog &amp; Stock</span>
+            <span>Inventory</span>
           </Link>
 
           <Link
@@ -500,14 +500,14 @@ function TransfersContent() {
             className="hidden lg:flex px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors items-center gap-1.5"
           >
             <Building2 className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Manage Stores</span>
+            <span>Stores</span>
           </Link>
 
           <Link
             href="/pos"
             className="hidden sm:flex px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors items-center gap-1.5"
           >
-            <span>POS Register</span>
+            <span>POS</span>
           </Link>
 
           <button
@@ -557,7 +557,7 @@ function TransfersContent() {
 
           <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-amber-400">Pending Requests</p>
+              <p className="text-xs font-medium text-amber-400">Requested</p>
               <h3 className="text-2xl font-black text-amber-300 mt-1">{requestedCount}</h3>
             </div>
             <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400">
@@ -567,7 +567,7 @@ function TransfersContent() {
 
           <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-emerald-400">Completed Transfers</p>
+              <p className="text-xs font-medium text-emerald-400">Completed</p>
               <h3 className="text-2xl font-black text-emerald-300 mt-1">{completedCount}</h3>
             </div>
             <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
@@ -607,7 +607,7 @@ function TransfersContent() {
                 className="bg-transparent text-slate-200 border-none outline-hidden text-xs font-medium cursor-pointer"
               >
                 <option value="ALL" className="bg-slate-900 text-slate-200">
-                  All Branch Transits
+                  All Stores
                 </option>
                 {stores.map((s) => (
                   <option key={s.id} value={s.id} className="bg-slate-900 text-slate-200">
@@ -622,7 +622,7 @@ function TransfersContent() {
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search TRF #, product, sender, receiver..."
+                placeholder="Search by transfer #, product, or staff..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 bg-slate-950/80 border border-slate-800/80 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-sky-500"
@@ -647,11 +647,11 @@ function TransfersContent() {
               <thead>
                 <tr className="bg-slate-950/80 border-b border-slate-800/80 text-slate-400 uppercase tracking-wider text-[11px] font-semibold">
                   <th className="py-3 px-4">Transfer #</th>
-                  <th className="py-3 px-4">Route (Store A &rarr; Store B)</th>
+                  <th className="py-3 px-4">Route</th>
                   <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4">Items &amp; Quantities</th>
-                  <th className="py-3 px-4">Personnel (Sender / Receiver)</th>
-                  <th className="py-3 px-4">Timestamps</th>
+                  <th className="py-3 px-4">Items</th>
+                  <th className="py-3 px-4">Staff</th>
+                  <th className="py-3 px-4">Date</th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -660,14 +660,14 @@ function TransfersContent() {
                   <tr>
                     <td colSpan={7} className="text-center py-12 text-slate-400">
                       <RefreshCw className="w-6 h-6 animate-spin mx-auto text-sky-400 mb-2" />
-                      Loading inventory transfers...
+                      Loading transfers...
                     </td>
                   </tr>
                 ) : filteredTransfers.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-12 text-slate-400">
                       <Truck className="w-8 h-8 mx-auto text-slate-600 mb-2" />
-                      No inventory transfers found matching your filters.
+                      No transfers found.
                     </td>
                   </tr>
                 ) : (
@@ -803,7 +803,7 @@ function TransfersContent() {
                               <button
                                 onClick={() => openSendModal(t)}
                                 className="px-2.5 py-1 rounded bg-sky-600/20 hover:bg-sky-600/40 text-sky-300 border border-sky-500/40 font-semibold text-xs transition flex items-center gap-1"
-                                title="Dispatch transfer items from Store A"
+                                title="Send transfer"
                               >
                                 <Truck className="w-3.5 h-3.5" />
                                 <span>Send</span>
@@ -815,7 +815,7 @@ function TransfersContent() {
                               <button
                                 onClick={() => openReceiveModal(t)}
                                 className="px-2.5 py-1 rounded bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/40 font-semibold text-xs transition flex items-center gap-1"
-                                title="Confirm delivery and add stock to Store B"
+                                title="Receive transfer"
                               >
                                 <Check className="w-3.5 h-3.5" />
                                 <span>Receive</span>
@@ -837,7 +837,7 @@ function TransfersContent() {
                             <button
                               onClick={() => setSelectedTransfer(t)}
                               className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
-                              title="View details & audit timeline"
+                              title="View details"
                             >
                               <ChevronRight className="w-4 h-4" />
                             </button>
@@ -893,21 +893,21 @@ function TransfersContent() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <span className="text-[10px] text-slate-400 uppercase font-semibold">
-                      Origin Store (A)
+                      Origin Store
                     </span>
                     <p className="text-sm font-bold text-white mt-0.5">
                       {selectedTransfer.sourceStoreName}
                     </p>
-                    <p className="text-xs text-slate-400">Deduction of physical stock</p>
+                    <p className="text-xs text-slate-400">Stock deducted</p>
                   </div>
                   <div>
                     <span className="text-[10px] text-slate-400 uppercase font-semibold">
-                      Destination Store (B)
+                      Destination Store
                     </span>
                     <p className="text-sm font-bold text-white mt-0.5">
                       {selectedTransfer.targetStoreName}
                     </p>
-                    <p className="text-xs text-slate-400">Increment of physical stock</p>
+                    <p className="text-xs text-slate-400">Stock added</p>
                   </div>
                 </div>
                 {selectedTransfer.notes && (
@@ -922,7 +922,7 @@ function TransfersContent() {
               <div className="space-y-3">
                 <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-sky-400" />
-                  <span>Transfer Lifecycle Timeline</span>
+                  <span>Timeline</span>
                 </h3>
 
                 <div className="relative pl-6 space-y-4 border-l-2 border-slate-800 text-xs">
@@ -942,25 +942,24 @@ function TransfersContent() {
                     <div
                       className={`absolute -left-[31px] top-0 w-4 h-4 rounded-full ${
                         selectedTransfer.sentAt
-                          ? 'bg-sky-500/20 border-2 border-sky-500'
+                           ? 'bg-sky-500/20 border-2 border-sky-500'
                           : 'bg-slate-800 border-2 border-slate-700'
                       }`}
                     />
                     <p
                       className={`font-semibold ${selectedTransfer.sentAt ? 'text-white' : 'text-slate-500'}`}
                     >
-                      Dispatched / In Transit
+                      Dispatched
                     </p>
                     {selectedTransfer.sentAt ? (
                       <p className="text-slate-400 text-[11px]">
                         Dispatched by{' '}
                         <strong className="text-sky-300">{selectedTransfer.sentByName}</strong> on{' '}
-                        {new Date(selectedTransfer.sentAt).toLocaleString()} (Stock deducted from{' '}
-                        {selectedTransfer.sourceStoreName})
+                        {new Date(selectedTransfer.sentAt).toLocaleString()}
                       </p>
                     ) : (
                       <p className="text-slate-500 text-[11px]">
-                        Awaiting dispatch from source store
+                        Awaiting dispatch
                       </p>
                     )}
                   </div>
@@ -977,7 +976,7 @@ function TransfersContent() {
                     <p
                       className={`font-semibold ${selectedTransfer.receivedAt ? 'text-white' : 'text-slate-500'}`}
                     >
-                      Received &amp; Stocked
+                      Received
                     </p>
                     {selectedTransfer.receivedAt ? (
                       <p className="text-slate-400 text-[11px]">
@@ -985,12 +984,11 @@ function TransfersContent() {
                         <strong className="text-emerald-300">
                           {selectedTransfer.receivedByName}
                         </strong>{' '}
-                        on {new Date(selectedTransfer.receivedAt).toLocaleString()} (Stock credited
-                        to {selectedTransfer.targetStoreName})
+                        on {new Date(selectedTransfer.receivedAt).toLocaleString()}
                       </p>
                     ) : (
                       <p className="text-slate-500 text-[11px]">
-                        Awaiting destination receipt and reconciliation
+                        Awaiting receipt
                       </p>
                     )}
                   </div>
@@ -1012,7 +1010,7 @@ function TransfersContent() {
               <div className="space-y-2">
                 <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                   <Package className="w-3.5 h-3.5 text-sky-400" />
-                  <span>Items &amp; Quantities Reconciled</span>
+                  <span>Items</span>
                 </h3>
 
                 <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden">
@@ -1081,7 +1079,7 @@ function TransfersContent() {
                   className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5"
                 >
                   <Truck className="w-3.5 h-3.5" />
-                  <span>Dispatch / Send Items</span>
+                  <span>Send Transfer</span>
                 </button>
               )}
               {selectedTransfer.status === 'IN_TRANSIT' && (
@@ -1090,7 +1088,7 @@ function TransfersContent() {
                   className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5"
                 >
                   <Check className="w-3.5 h-3.5" />
-                  <span>Confirm Receipt &amp; Restock</span>
+                  <span>Receive Transfer</span>
                 </button>
               )}
               {(selectedTransfer.status === 'REQUESTED' ||
@@ -1119,7 +1117,7 @@ function TransfersContent() {
                   <Plus className="w-4 h-4" />
                 </div>
                 <h3 className="text-base font-bold text-white">
-                  Create Inter-Store Transfer Request
+                  Create Transfer
                 </h3>
               </div>
               <button
@@ -1142,7 +1140,7 @@ function TransfersContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-300 mb-1">
-                    Origin Store (Store A - Source) *
+                    Origin Store *
                   </label>
                   <select
                     value={createForm.sourceStoreId}
@@ -1152,7 +1150,7 @@ function TransfersContent() {
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-hidden focus:border-sky-500"
                     required
                   >
-                    <option value="">Select Origin Branch...</option>
+                    <option value="">Select origin store...</option>
                     {stores.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.name} ({s.code})
@@ -1163,7 +1161,7 @@ function TransfersContent() {
 
                 <div>
                   <label className="block text-xs font-medium text-slate-300 mb-1">
-                    Destination Store (Store B - Target) *
+                    Destination Store *
                   </label>
                   <select
                     value={createForm.targetStoreId}
@@ -1173,7 +1171,7 @@ function TransfersContent() {
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-hidden focus:border-sky-500"
                     required
                   >
-                    <option value="">Select Destination Branch...</option>
+                    <option value="">Select destination store...</option>
                     {stores.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.name} ({s.code})
@@ -1186,11 +1184,11 @@ function TransfersContent() {
               {/* Notes */}
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-1">
-                  Transfer Notes / Reason
+                  Notes
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Replenishment for weekend rush or emergency stock transfer"
+                  placeholder="e.g. Stock replenishment"
                   value={createForm.notes}
                   onChange={(e) => setCreateForm({ ...createForm, notes: e.target.value })}
                   className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-hidden focus:border-sky-500"
@@ -1201,7 +1199,7 @@ function TransfersContent() {
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                    Requested Items
+                    Items
                   </span>
                   <button
                     type="button"
@@ -1238,7 +1236,7 @@ function TransfersContent() {
                           className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-hidden focus:border-sky-500"
                           required
                         >
-                          <option value="">Select Product...</option>
+                          <option value="">Select product...</option>
                           {products.map((p) => (
                             <option key={p.id} value={p.id}>
                               {p.name} ({p.sku})
@@ -1251,7 +1249,7 @@ function TransfersContent() {
                         <input
                           type="number"
                           min="1"
-                          placeholder="Req Qty"
+                          placeholder="Qty"
                           value={item.requestedQuantity}
                           onChange={(e) => {
                             const newItems = [...createForm.items];
@@ -1315,7 +1313,7 @@ function TransfersContent() {
                   ) : (
                     <Plus className="w-3.5 h-3.5" />
                   )}
-                  <span>Create Request</span>
+                  <span>Create Transfer</span>
                 </button>
               </div>
             </form>
@@ -1336,7 +1334,7 @@ function TransfersContent() {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">
-                    Dispatch Transfer {selectedTransfer.transferNumber}
+                    Send Transfer {selectedTransfer.transferNumber}
                   </h3>
                   <p className="text-xs text-slate-400">
                     From <strong>{selectedTransfer.sourceStoreName}</strong> &rarr; To{' '}
@@ -1355,9 +1353,7 @@ function TransfersContent() {
             <div className="mt-3 p-3 bg-sky-500/10 border border-sky-500/30 rounded-xl text-xs text-sky-300 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>
-                Dispatching will atomically deduct stock from{' '}
-                <strong>{selectedTransfer.sourceStoreName}</strong>, record audit movement{' '}
-                <code>TRANSFER_OUT</code>, and mark status as <strong>IN_TRANSIT</strong>.
+                This will deduct stock from <strong>{selectedTransfer.sourceStoreName}</strong> and mark the transfer as <strong>IN_TRANSIT</strong>.
               </span>
             </div>
 
@@ -1371,11 +1367,11 @@ function TransfersContent() {
             <form onSubmit={handleSendSubmit} className="mt-4 space-y-4">
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-1">
-                  Dispatch Notes / Tracking Ref
+                  Notes
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Driver John, Van #1, Packed in bin #4"
+                  placeholder="e.g. Driver name, vehicle info"
                   value={sendForm.notes}
                   onChange={(e) => setSendForm({ ...sendForm, notes: e.target.value })}
                   className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-hidden focus:border-sky-500"
@@ -1385,7 +1381,7 @@ function TransfersContent() {
               {/* Items Sent Quantities */}
               <div className="space-y-2">
                 <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                  Confirm Sent Quantities
+                  Quantities to Send
                 </span>
                 <div className="space-y-2">
                   {selectedTransfer.items.map((item, idx) => (
@@ -1443,7 +1439,7 @@ function TransfersContent() {
                   ) : (
                     <Truck className="w-3.5 h-3.5" />
                   )}
-                  <span>Confirm Dispatch &amp; Send</span>
+                  <span>Send Transfer</span>
                 </button>
               </div>
             </form>
@@ -1482,9 +1478,7 @@ function TransfersContent() {
             <div className="mt-3 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs text-emerald-300 flex items-start gap-2">
               <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
               <span>
-                Confirming receipt will atomically increment inventory stock in{' '}
-                <strong>{selectedTransfer.targetStoreName}</strong>, record audit movement{' '}
-                <code>TRANSFER_IN</code>, and mark status as <strong>COMPLETED</strong>.
+                This will add stock to <strong>{selectedTransfer.targetStoreName}</strong> and mark the transfer as <strong>COMPLETED</strong>.
               </span>
             </div>
 
@@ -1498,11 +1492,11 @@ function TransfersContent() {
             <form onSubmit={handleReceiveSubmit} className="mt-4 space-y-4">
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-1">
-                  Receipt Notes / Verification Comments
+                  Notes
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Verified by Store Manager, all boxes in good condition"
+                  placeholder="e.g. Received in good condition"
                   value={receiveForm.notes}
                   onChange={(e) => setReceiveForm({ ...receiveForm, notes: e.target.value })}
                   className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-hidden focus:border-emerald-500"
@@ -1512,7 +1506,7 @@ function TransfersContent() {
               {/* Items Received Quantities */}
               <div className="space-y-2">
                 <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                  Verify Physically Received Quantities
+                  Quantities Received
                 </span>
                 <div className="space-y-2">
                   {selectedTransfer.items.map((item, idx) => {
@@ -1583,7 +1577,7 @@ function TransfersContent() {
                   ) : (
                     <Check className="w-3.5 h-3.5" />
                   )}
-                  <span>Confirm Receipt &amp; Restock</span>
+                  <span>Receive Transfer</span>
                 </button>
               </div>
             </form>
