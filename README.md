@@ -188,6 +188,31 @@ docker compose -f docker-compose.prod.yml up -d --build
 
 ---
 
+## 🔐 Security
+
+The platform applies defence-in-depth across authentication, authorisation, and data access layers.
+
+### Recent Patches
+
+| Severity | CVE-Class | Description | File |
+|:---:|:---|:---|:---|
+| 🔴 Critical | Token Leakage | Password-reset token removed from API response (prevented account takeover via response body) | `apps/api/src/auth/service.ts` |
+| 🔴 Critical | Cross-Tenant IDOR | `businessId` scope enforced on all store write/delete routes — prevents accessing or mutating another tenant's stores | `apps/api/src/routes/stores.ts` |
+| 🟠 High | IP Spoofing | Auth audit log now reads `req.ip` (Express trust-proxy aware) instead of the raw `x-forwarded-for` header | `apps/api/src/routes/auth.ts` |
+| 🟠 High | Privilege Escalation | `storeId` and `roleId` ownership validated against caller's `businessId` during user create/update | `apps/api/src/routes/settings.ts` |
+| 🟠 High | Role Tampering | System-level `ADMIN` role protected from permission mutations by non-system callers | `apps/api/src/routes/settings.ts` |
+
+### Architecture Security Controls
+
+- **JWT + RBAC**: Short-lived access tokens (`ACCESS_TOKEN_SECRET`) with granular permission scopes enforced on every route.
+- **Password Hashing**: bcrypt with a cost factor ≥ 12.
+- **Rate Limiting**: Auth endpoints protected against brute-force via request-rate middleware.
+- **Audit Logging**: All state-mutating operations are persisted to an immutable `AuditLog` table (actor, IP, action, resource, diff).
+- **Multi-Tenant Isolation**: All database queries include an explicit `businessId` predicate — cross-tenant data access is structurally impossible at the ORM layer.
+- **Redis Session Blacklist**: Signed-out tokens are blacklisted for the remainder of their TTL.
+
+---
+
 ## 📄 License & Documentation
 
 Refer to the [`docs/`](./docs) folder for detailed guides:

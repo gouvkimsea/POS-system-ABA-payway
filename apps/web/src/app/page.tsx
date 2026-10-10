@@ -65,6 +65,16 @@ function DashboardContent() {
     checkHealth();
   }, []);
 
+  /** Convert raw uptime seconds into a human-readable string, e.g. "2h 14m 9s" */
+  const formatUptime = (seconds: number): string => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    if (h > 0) return `${h}h ${m}m ${s}s`;
+    if (m > 0) return `${m}m ${s}s`;
+    return `${s}s`;
+  };
+
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'ADMIN':
@@ -439,7 +449,7 @@ function DashboardContent() {
                 </div>
 
                 <div className="pt-3 text-[11px] text-slate-500 flex justify-between font-mono">
-                  <span>Uptime: {health.uptimeSeconds}s</span>
+                  <span>Uptime: {formatUptime(health.uptimeSeconds)}</span>
                   <span>Checked: {lastChecked}</span>
                 </div>
               </div>

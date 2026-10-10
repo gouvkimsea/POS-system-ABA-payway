@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import os from 'os';
 import { checkDatabaseConnection } from '../db/index.js';
 import { checkRedisConnection } from '../redis/index.js';
 import { SystemHealthCheck } from '@pos/types';
@@ -6,6 +7,25 @@ import { CONSTANTS, getEnvConfig } from '@pos/config';
 
 export const healthRouter: Router = Router();
 const config = getEnvConfig();
+
+/** Sample CPU usage over 100ms and return a 0–100 percentage. */
+function getCpuUsagePercent(): Promise<number> {
+  return new Promise((resolve) => {
+    const start = os.cpus().map((c) => ({ ...c.times }));
+    setTimeout(() => {
+      const end = os.cpus();
+      const deltas = end.map((cpu, i) => {
+        const s = start[i];
+        const idle = cpu.times.idle - s.idle;
+        const total = Object.values(cpu.times).reduce((a, b) => a + b, 0)
+                    - Object.values(s).reduce((a: number, b: number) => a + b, 0);
+        return total === 0 ? 0 : ((total - idle) / total) * 100;
+      });
+      const avg = deltas.reduce((a, b) => a + b, 0) / deltas.length;
+      resolve(Math.round(avg * 10) / 10);
+    }, 100);
+  });
+}
 
 /**
  * GET /api/health
@@ -105,5 +125,42 @@ healthRouter.get('/startup', async (_req: Request, res: Response) => {
   return res.status(503).json({
     status: 'starting',
     timestamp: new Date().toISOString(),
+  });
+});
+
+/**
+ * GET /api/health/metrics
+ * Detailed runtime metrics: CPU utilisation, memory breakdown, process & OS info.
+ * Intended for internal dashboards and alerting systems.
+ */
+healthRouter.get('/metrics', async (_req: Request, res: Response) => {
+  const [cpuPercent] = await Promise.all([getCpuUsagePercent()]);
+  const mem = process.memoryUsage();
+  const toMb = (bytes: number) => Math.round(bytes / 1024 / 1024);
+
+  return res.status(200).json({
+    timestamp: new Date().toISOString(),
+    uptimeSeconds: Math.floor(process.uptime()),
+    version: CONSTANTS.APP_VERSION,
+    environment: config.NODE_ENV,
+    process: {
+      pid: process.pid,
+      nodeVersion: process.version,
+      platform: process.platform,
+      arch: process.arch,
+    },
+    cpu: {
+      usagePercent: cpuPercent,
+      cores: os.cpus().length,
+      model: os.cpus()[0]?.model ?? 'unknown',
+    },
+    memory: {
+      rssMb: toMb(mem.rss),
+      heapUsedMb: toMb(mem.heapUsed),
+      heapTotalMb: toMb(mem.heapTotal),
+      externalMb: toMb(mem.external),
+      systemTotalMb: toMb(os.totalmem()),
+      systemFreeMb: toMb(os.freemem()),
+    },
   });
 });
