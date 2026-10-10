@@ -16,7 +16,7 @@ export interface StatusBadgeProps {
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label, className = '' }) => {
   const displayLabel = label || status;
 
-  let colorClasses = 'bg-slate-800 text-slate-300 border-slate-700';
+  let colorClasses = 'bg-slate-900 text-slate-300 border-slate-800';
   let indicatorColor = 'bg-slate-400';
 
   if (status === 'connected' || status === 'ok') {
@@ -59,9 +59,9 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   const hasHeader = Boolean(title || description || headerAction);
   return (
-    <div className={`bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm ${className}`}>
+    <div className={`bg-slate-900 border border-slate-800 rounded-lg overflow-hidden shadow-xs ${className}`}>
       {hasHeader && (
-        <div className="px-5 py-4 border-b border-slate-800/80 flex items-start justify-between gap-4">
+        <div className="px-5 py-3.5 border-b border-slate-800 flex items-start justify-between gap-4">
           <div>
             {title && <h3 className="text-sm font-semibold text-slate-100">{title}</h3>}
             {description && <p className="text-xs text-slate-400 mt-0.5">{description}</p>}
@@ -75,7 +75,7 @@ export const Card: React.FC<CardProps> = ({
 };
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
 }
@@ -90,7 +90,7 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const base =
-    'inline-flex items-center justify-center font-medium transition-all select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg active:scale-[0.99]';
+    'inline-flex items-center justify-center font-medium transition-colors select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg';
 
   const sizeClasses = {
     sm: 'text-xs px-2.5 py-1.5 h-8 gap-1.5',
@@ -99,10 +99,11 @@ export const Button: React.FC<ButtonProps> = ({
   }[size];
 
   const variantClasses = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-700 shadow-sm border border-indigo-500/30',
+    primary: 'bg-emerald-600 text-white hover:bg-emerald-500 active:bg-emerald-700 shadow-xs border border-emerald-500/30',
     secondary: 'bg-slate-800 text-slate-200 hover:bg-slate-700 active:bg-slate-800 border border-slate-700/80',
     outline: 'border border-slate-700 text-slate-300 hover:bg-slate-800/80 hover:text-white hover:border-slate-600',
-    danger: 'bg-rose-950/40 text-rose-300 hover:bg-rose-900/60 hover:text-rose-100 border border-rose-800/60 active:bg-rose-900',
+    danger: 'bg-rose-950/50 text-rose-300 hover:bg-rose-900/60 hover:text-rose-100 border border-rose-800/80 active:bg-rose-900',
+    ghost: 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 border border-transparent',
   }[variant];
 
   return (
@@ -137,4 +138,3 @@ export const Button: React.FC<ButtonProps> = ({
     </button>
   );
 };
-

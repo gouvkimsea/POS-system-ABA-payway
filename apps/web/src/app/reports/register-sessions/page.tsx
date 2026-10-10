@@ -8,7 +8,6 @@ import { RegisterSessionSummary, RegisterReportSummary, CashMovementRecord } fro
 import { ShiftReportModal } from '../../../components/pos/ShiftReportModal';
 import {
   Coins,
-  TrendingUp,
   ArrowUpRight,
   ArrowDownLeft,
   Search,
@@ -183,7 +182,7 @@ function RegisterReportsContent() {
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-sm shadow-xs hover:bg-indigo-500 transition-colors"
+              className="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-black text-sm shadow-xs hover:bg-emerald-500 transition-colors"
             >
               <ShoppingBag className="w-5 h-5" />
             </Link>
@@ -216,13 +215,13 @@ function RegisterReportsContent() {
               href="/reports"
               className="hidden sm:flex px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold items-center gap-1.5 border border-slate-700 transition-colors shadow-xs"
             >
-              <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
+              <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
               <span>Reports</span>
             </Link>
 
             <Link
               href="/pos"
-              className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
+              className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
             >
               <Monitor className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Open POS</span>
@@ -234,143 +233,93 @@ function RegisterReportsContent() {
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 lg:pb-8 space-y-6">
-        {/* KPI Summary Cards */}
+        {/* Integrated Shift KPI Summary Strip */}
         {summary && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 sm:p-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 divide-y lg:divide-y-0 lg:divide-x divide-slate-800/70 gap-4 lg:gap-0">
             {/* Total Sessions */}
-            <div className="bg-slate-900/60 rounded-xl p-4 border border-slate-800">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-xs font-medium uppercase tracking-wider">Total Shifts</span>
-                <Clock className="w-4 h-4 text-indigo-400" />
-              </div>
-              <div className="text-2xl font-black text-white font-mono">
+            <div className="lg:px-3 first:pl-0">
+              <span className="text-xs text-slate-400 block mb-1">Total Shifts</span>
+              <div className="text-xl font-bold text-white font-mono">
                 {summary.totalSessions}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
-                <span className="text-emerald-400 font-semibold">{summary.openSessions} Open</span>
+              <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5">
+                <span className="text-emerald-400 font-medium">{summary.openSessions} Open</span>
                 <span>&bull;</span>
-                <span className="text-slate-400">{summary.closedSessions} Closed</span>
+                <span>{summary.closedSessions} Closed</span>
               </div>
             </div>
 
             {/* Expected Cash in Drawers */}
-            <div className="bg-slate-900/60 rounded-xl p-4 border border-slate-800">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-xs font-medium uppercase tracking-wider">Expected Cash</span>
-                <Coins className="w-4 h-4 text-slate-400" />
-              </div>
-              <div className="text-xl font-black text-white font-mono">
+            <div className="pt-3 lg:pt-0 lg:px-3">
+              <span className="text-xs text-slate-400 block mb-1">Expected Cash</span>
+              <div className="text-xl font-bold text-white font-mono">
                 ${summary.totalExpectedCashUSD.toFixed(2)}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1 font-mono">
+              <div className="text-[11px] text-slate-500 mt-1 font-mono">
                 {Math.round(summary.totalExpectedCashUSD * 4100).toLocaleString()} KHR
               </div>
             </div>
 
             {/* Cash Sales */}
-            <div className="bg-slate-900/60 rounded-xl p-4 border border-slate-800">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-xs font-medium uppercase tracking-wider">Cash Sales</span>
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
-              </div>
-              <div className="text-xl font-black text-emerald-400 font-mono">
+            <div className="pt-3 lg:pt-0 lg:px-3">
+              <span className="text-xs text-slate-400 block mb-1">Cash Sales</span>
+              <div className="text-xl font-bold text-emerald-400 font-mono">
                 +${summary.totalCashSalesUSD.toFixed(2)}
               </div>
-              <div className="text-[11px] text-emerald-400/80 mt-1 font-mono">
-                +{Math.round(summary.totalCashSalesUSD * 4100).toLocaleString()} KHR (
-                {summary.totalSalesCount} tx)
+              <div className="text-[11px] text-slate-500 mt-1 font-mono">
+                {summary.totalSalesCount} transactions
               </div>
             </div>
 
             {/* Cash Additions (In) */}
-            <div className="bg-slate-900/60 rounded-xl p-4 border border-slate-800">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-xs font-medium uppercase tracking-wider">Cash In</span>
-                <ArrowDownLeft className="w-4 h-4 text-blue-400" />
-              </div>
-              <div className="text-xl font-black text-blue-400 font-mono">
+            <div className="pt-3 lg:pt-0 lg:px-3">
+              <span className="text-xs text-slate-400 block mb-1">Cash In</span>
+              <div className="text-xl font-bold text-white font-mono">
                 +${summary.totalCashInUSD.toFixed(2)}
               </div>
-              <div className="text-[11px] text-blue-400/80 mt-1 font-mono">
+              <div className="text-[11px] text-slate-500 mt-1 font-mono">
                 +{Math.round(summary.totalCashInUSD * 4100).toLocaleString()} KHR
               </div>
             </div>
 
             {/* Cash Out & Expenses */}
-            <div className="bg-slate-900/60 rounded-xl p-4 border border-slate-800">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-xs font-medium uppercase tracking-wider">Cash Out</span>
-                <ArrowUpRight className="w-4 h-4 text-rose-400" />
-              </div>
-              <div className="text-xl font-black text-rose-400 font-mono">
+            <div className="pt-3 lg:pt-0 lg:px-3">
+              <span className="text-xs text-slate-400 block mb-1">Cash Out</span>
+              <div className="text-xl font-bold text-rose-400 font-mono">
                 -${(summary.totalCashOutUSD + summary.totalExpensesUSD).toFixed(2)}
               </div>
-              <div className="text-[11px] text-rose-400/80 mt-1 font-mono">
-                -$
-                {Math.round(
-                  (summary.totalCashOutUSD + summary.totalExpensesUSD) * 4100,
-                ).toLocaleString()}{' '}
-                KHR
+              <div className="text-[11px] text-slate-500 mt-1 font-mono">
+                Drops &amp; expenses
               </div>
             </div>
 
             {/* Net Over / Short Variance */}
-            <div
-              className={`rounded-xl p-4 border ${
-                summary.totalDifferenceUSD === 0
-                  ? 'bg-emerald-950/40 border-emerald-800/60'
-                  : summary.totalDifferenceUSD > 0
-                    ? 'bg-blue-950/40 border-blue-800/60'
-                    : 'bg-rose-950/40 border-rose-800/60'
-              }`}
-            >
-              <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  Net Variance
-                </span>
-                <Coins
-                  className={`w-4 h-4 ${
-                    summary.totalDifferenceUSD === 0
-                      ? 'text-emerald-400'
-                      : summary.totalDifferenceUSD > 0
-                        ? 'text-blue-400'
-                        : 'text-rose-400'
-                  }`}
-                />
-              </div>
+            <div className="pt-3 lg:pt-0 lg:px-3 last:pr-0">
+              <span className="text-xs text-slate-400 block mb-1">Net Variance</span>
               <div
-                className={`text-xl font-black font-mono ${
+                className={`text-xl font-bold font-mono ${
                   summary.totalDifferenceUSD === 0
                     ? 'text-emerald-400'
                     : summary.totalDifferenceUSD > 0
-                      ? 'text-blue-400'
+                      ? 'text-emerald-400'
                       : 'text-rose-400'
                 }`}
               >
-                {summary.totalDifferenceUSD >= 0 ? '+' : ''}$
-                {summary.totalDifferenceUSD.toFixed(2)}
+                {summary.totalDifferenceUSD >= 0 ? '+' : ''}${summary.totalDifferenceUSD.toFixed(2)}
               </div>
-              <div
-                className={`text-[11px] mt-1 font-semibold ${
-                  summary.totalDifferenceUSD === 0
-                    ? 'text-emerald-400/80'
-                    : summary.totalDifferenceUSD > 0
-                      ? 'text-blue-400/80'
-                      : 'text-rose-400/80'
-                }`}
-              >
+              <div className="text-[11px] text-slate-500 mt-1">
                 {summary.totalDifferenceUSD === 0
-                  ? 'Balanced ($0.00)'
+                  ? 'Reconciled balanced'
                   : summary.totalDifferenceUSD > 0
-                    ? 'Cash Over (Surplus)'
-                    : 'Cash Short (Discrepancy)'}
+                    ? 'Cash over'
+                    : 'Cash short'}
               </div>
             </div>
           </div>
         )}
 
         {/* Filter Toolbar */}
-        <div className="bg-slate-900/60 rounded-xl p-4 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="bg-slate-900/60 rounded-lg p-4 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Left: Search input */}
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -379,7 +328,7 @@ function RegisterReportsContent() {
               placeholder="Filter by session #, cashier, register, store..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+              className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
             />
             {searchQuery && (
               <button
@@ -435,7 +384,7 @@ function RegisterReportsContent() {
                   onClick={() => setDatePreset(preset)}
                   className={`px-2.5 py-1 rounded-md capitalize transition-colors ${
                     datePreset === preset
-                      ? 'bg-indigo-600 text-white font-bold'
+                      ? 'bg-emerald-600 text-white font-bold'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -447,16 +396,16 @@ function RegisterReportsContent() {
         </div>
 
         {/* Sessions Table */}
-        <div className="bg-slate-900/60 rounded-xl border border-slate-800 overflow-hidden">
+        <div className="bg-slate-900/60 rounded-lg border border-slate-800 overflow-hidden">
           <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Coins className="w-4 h-4 text-indigo-400" />
+              <Coins className="w-4 h-4 text-emerald-400" />
               <h2 className="text-sm font-bold text-white">
                 Shift History ({filteredSessions.length} shifts)
               </h2>
             </div>
             {isLoading && (
-              <span className="text-xs text-indigo-400 flex items-center gap-1.5 font-medium">
+              <span className="text-xs text-emerald-400 flex items-center gap-1.5 font-medium">
                 <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                 Loading records...
               </span>
@@ -473,7 +422,7 @@ function RegisterReportsContent() {
           {!isLoading && filteredSessions.length === 0 ? (
             <div className="py-16 text-center">
               <div className="max-w-sm mx-auto space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
+                <div className="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
@@ -498,7 +447,7 @@ function RegisterReportsContent() {
                 ) : (
                   <Link
                     href="/pos"
-                    className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-colors inline-flex items-center gap-1.5"
+                    className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-sm transition-colors inline-flex items-center gap-1.5"
                   >
                     <Coins className="w-3.5 h-3.5" />
                     Open Register at POS
@@ -511,18 +460,18 @@ function RegisterReportsContent() {
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="bg-slate-950/60 text-slate-400 font-semibold border-b border-slate-800 uppercase tracking-wider text-[10px]">
-                    <th className="py-3 px-4">Session #</th>
-                    <th className="py-3 px-4">Register &amp; Store</th>
-                    <th className="py-3 px-4">Cashier</th>
-                    <th className="py-3 px-4">Opened / Closed</th>
-                    <th className="py-3 px-4 text-right">Opening Float</th>
-                    <th className="py-3 px-4 text-right">Cash Sales</th>
-                    <th className="py-3 px-4 text-right">Cash In / Out</th>
-                    <th className="py-3 px-4 text-right">Expenses</th>
-                    <th className="py-3 px-4 text-right">Expected Cash</th>
-                    <th className="py-3 px-4 text-right">Counted Cash</th>
-                    <th className="py-3 px-4 text-right">Difference</th>
-                    <th className="py-3 px-4 text-center">Actions</th>
+                    <th className="py-3 px-4 whitespace-nowrap">Session #</th>
+                    <th className="py-3 px-4 min-w-[140px] whitespace-nowrap">Register &amp; Store</th>
+                    <th className="py-3 px-4 whitespace-nowrap">Cashier</th>
+                    <th className="py-3 px-4 min-w-[140px] whitespace-nowrap">Opened / Closed</th>
+                    <th className="py-3 px-4 text-right whitespace-nowrap">Opening Float</th>
+                    <th className="py-3 px-4 text-right whitespace-nowrap">Cash Sales</th>
+                    <th className="py-3 px-4 text-right whitespace-nowrap">Cash In / Out</th>
+                    <th className="py-3 px-4 text-right whitespace-nowrap">Expenses</th>
+                    <th className="py-3 px-4 text-right whitespace-nowrap">Expected Cash</th>
+                    <th className="py-3 px-4 text-right whitespace-nowrap">Counted Cash</th>
+                    <th className="py-3 px-4 text-right whitespace-nowrap">Difference</th>
+                    <th className="py-3 px-4 text-center whitespace-nowrap">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -709,11 +658,11 @@ function RegisterReportsContent() {
       {/* Drill-down Detail Modal */}
       {selectedSessionId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80">
-          <div className="w-full max-w-3xl bg-slate-900 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[92vh] border border-slate-800">
+          <div className="w-full max-w-3xl bg-slate-900 rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[92vh] border border-slate-800">
             {/* Modal Header */}
             <div className="px-6 py-4 bg-slate-950 text-white flex items-center justify-between shrink-0 border-b border-slate-800">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+                <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
                   <Coins className="w-4 h-4" />
                 </div>
                 <div>
@@ -741,7 +690,7 @@ function RegisterReportsContent() {
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {isLoadingDetail || !sessionDetail ? (
                 <div className="py-12 text-center text-slate-400 flex flex-col items-center gap-2">
-                  <RefreshCw className="w-6 h-6 animate-spin text-indigo-400" />
+                  <RefreshCw className="w-6 h-6 animate-spin text-emerald-400" />
                   <span className="text-xs">
                     Loading shift movements and transaction audit logs...
                   </span>
@@ -749,7 +698,7 @@ function RegisterReportsContent() {
               ) : (
                 <>
                   {/* Financial Reconciliation Summary Bar */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950/60 p-4 rounded-lg border border-slate-800">
                     <div>
                       <span className="text-[10px] text-slate-400 uppercase font-semibold">
                         Opening Float
@@ -815,7 +764,7 @@ function RegisterReportsContent() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-                        <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                        <FileText className="w-3.5 h-3.5 text-emerald-400" />
                         Mid-Shift Cash Movements ({sessionDetail.movements.length})
                       </h4>
                       <span className="text-[11px] text-slate-400">
@@ -910,7 +859,7 @@ function RegisterReportsContent() {
                   {sessionDetail.session.denominationBreakdown && (
                     <div>
                       <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <Coins className="w-3.5 h-3.5 text-indigo-400" />
+                        <Coins className="w-3.5 h-3.5 text-emerald-400" />
                         Denomination Count Breakdown
                       </h4>
                       <div className="bg-slate-950/60 p-3.5 rounded-lg border border-slate-800 text-xs font-mono grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -968,7 +917,7 @@ function RegisterReportsContent() {
                   }
                 }}
                 disabled={!sessionDetail}
-                className="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>Print Shift Z-Report</span>

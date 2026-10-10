@@ -160,16 +160,16 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-3 sm:p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full overflow-hidden shadow-xl flex flex-col max-h-[90vh]">
+      <div className="bg-slate-900 border border-slate-800 rounded-lg max-w-md w-full overflow-hidden shadow-xl flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-4 bg-slate-850 border-b border-slate-800 flex items-center justify-between text-white">
+        <div className="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
               <Camera className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-bold text-sm">Camera Barcode Scanner</h3>
-              <p className="text-[11px] text-slate-400">Aim camera at product barcode</p>
+              <h3 className="font-bold text-sm">Camera Scanner</h3>
+              <p className="text-[11px] text-slate-400">Point camera at product barcode</p>
             </div>
           </div>
           <button
@@ -193,12 +193,12 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({
           {/* Aiming Reticle Overlay */}
           {hasCameraPermission && !errorMessage && (
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center p-6">
-              <div className="relative w-64 h-40 rounded-xl border-2 border-indigo-500/80 flex items-center justify-center">
+              <div className="relative w-64 h-40 rounded-lg border-2 border-emerald-500/80 flex items-center justify-center">
                 {/* Corner indicators */}
-                <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-indigo-400 rounded-tl" />
-                <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-indigo-400 rounded-tr" />
-                <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-indigo-400 rounded-bl" />
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-indigo-400 rounded-br" />
+                <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-emerald-400 rounded-tl" />
+                <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-emerald-400 rounded-tr" />
+                <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-emerald-400 rounded-bl" />
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-emerald-400 rounded-br" />
 
                 {/* Scanning Laser Line */}
                 <div className="w-full h-0.5 bg-rose-500" />
@@ -215,7 +215,7 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({
                   ? 'bg-amber-500 text-slate-900 shadow-xs'
                   : 'bg-slate-900 text-white hover:bg-slate-800'
               }`}
-              title="Toggle Flashlight"
+              title="Flashlight"
             >
               <Flashlight className="w-4 h-4" />
             </button>
@@ -229,10 +229,10 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({
               <p className="text-xs text-slate-400 max-w-xs mb-4">{errorMessage}</p>
               <button
                 onClick={startCamera}
-                className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
-                Retry Camera
+                Retry
               </button>
             </div>
           )}
@@ -249,13 +249,13 @@ export const CameraScannerModal: React.FC<CameraScannerModalProps> = ({
                 type="text"
                 value={manualInput}
                 onChange={(e) => setManualInput(e.target.value)}
-                placeholder="Or type/paste barcode here..."
-                className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 font-mono"
+                placeholder="Or enter barcode manually"
+                className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 font-mono"
               />
             </div>
             <button
               type="submit"
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-colors"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors"
             >
               Add
             </button>

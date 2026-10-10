@@ -20,7 +20,6 @@ import {
   Trash2,
   Receipt,
   RotateCcw,
-  TrendingUp,
   CheckCircle,
   AlertTriangle,
   ArrowLeft,
@@ -283,11 +282,11 @@ function CustomerManagementContent() {
   const totalLoyaltyPointsAll = customers.reduce((acc, c) => acc + c.loyaltyPoints, 0);
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
       {/* Toast */}
       {toastMessage && (
         <div
-          className={`fixed top-4 right-4 z-50 px-4 py-2.5 rounded-xl shadow-md text-xs font-semibold flex items-center gap-2 border animate-in slide-in-from-top-2 ${
+          className={`fixed top-4 right-4 z-50 px-4 py-2.5 rounded-lg shadow-md text-xs font-semibold flex items-center gap-2 border ${
             toastMessage.type === 'success'
               ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
               : 'bg-rose-950 text-rose-300 border-rose-800'
@@ -307,14 +306,14 @@ function CustomerManagementContent() {
         <div className="flex items-center gap-4">
           <Link
             href="/pos"
-            className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors flex items-center gap-1.5 text-xs font-medium"
+            className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors flex items-center gap-1.5 text-xs font-medium"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Back to POS</span>
           </Link>
           <div className="h-6 w-px bg-slate-800 hidden sm:block" />
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
               <Users className="w-5 h-5" />
             </div>
             <div>
@@ -334,7 +333,7 @@ function CustomerManagementContent() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleOpenCreate}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors"
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
           >
             <UserPlus className="w-4 h-4" />
             <span>Add Customer</span>
@@ -345,63 +344,51 @@ function CustomerManagementContent() {
       {/* Main Content Split: Overview, Table, Profile Drawer */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Side: Directory & Stats */}
-        <main className="flex-1 flex flex-col min-w-0 p-4 sm:p-6 overflow-y-auto space-y-6">
-          {/* KPI Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/60">
-              <div className="flex items-center justify-between text-slate-400 text-xs">
-                <span>Total Customers</span>
-                <Users className="w-4 h-4 text-indigo-400" />
-              </div>
-              <div className="text-2xl font-black text-white mt-2">{totalCount}</div>
-              <div className="text-[11px] text-slate-400 mt-1">Including walk-ins</div>
+        <main className="flex-1 flex flex-col min-w-0 p-4 sm:p-6 pb-24 lg:pb-8 overflow-y-auto space-y-6">
+          {/* Integrated Metrics Summary Bar */}
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 sm:p-5 grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-slate-800/70 gap-4 lg:gap-0">
+            <div className="lg:px-4 first:pl-0">
+              <div className="text-xs text-slate-400">Total Registered</div>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-white mt-1">{totalCount}</div>
+              <div className="text-[11px] text-slate-500 mt-0.5">Active directory records</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/60">
-              <div className="flex items-center justify-between text-slate-400 text-xs">
-                <span>Total Spent</span>
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
-              </div>
-              <div className="text-2xl font-black text-emerald-400 mt-2">
+            <div className="pt-3 lg:pt-0 lg:px-4">
+              <div className="text-xs text-slate-400">Cumulative Spend</div>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-emerald-400 mt-1">
                 ${totalSpentAll.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">Total customer purchases</div>
+              <div className="text-[11px] text-slate-500 mt-0.5">Recorded order volume</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/60">
-              <div className="flex items-center justify-between text-slate-400 text-xs">
-                <span>Loyalty Points</span>
-                <Award className="w-4 h-4 text-amber-400" />
+            <div className="pt-3 lg:pt-0 lg:px-4">
+              <div className="text-xs text-slate-400">Loyalty Points</div>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-amber-400 mt-1">
+                {totalLoyaltyPointsAll.toLocaleString()} <span className="text-xs font-normal text-slate-400">pts</span>
               </div>
-              <div className="text-2xl font-black text-amber-400 mt-2">
-                {totalLoyaltyPointsAll.toLocaleString()} pts
-              </div>
-              <div className="text-[11px] text-slate-400 mt-1">Total points earned</div>
+              <div className="text-[11px] text-slate-500 mt-0.5">Outstanding customer points</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/60">
-              <div className="flex items-center justify-between text-slate-400 text-xs">
-                <span>Store Credit</span>
-                <CreditCard className="w-4 h-4 text-purple-400" />
-              </div>
-              <div className="text-2xl font-black text-purple-400 mt-2">
+            <div className="pt-3 lg:pt-0 lg:px-4 last:pr-0">
+              <div className="text-xs text-slate-400">Store Credit Balance</div>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-white mt-1">
                 ${totalStoreCreditAll.toFixed(2)}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">Available balance</div>
+              <div className="text-[11px] text-slate-500 mt-0.5">Available customer credit</div>
             </div>
           </div>
 
           {/* Search & Filter Controls */}
-          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-slate-900 p-3 rounded-lg border border-slate-800">
             {/* Search Input */}
             <div className="relative flex-1">
-              <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
+              <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-500" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name, phone, email, or address..."
-                className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500"
+                className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               />
             </div>
 
@@ -409,40 +396,40 @@ function CustomerManagementContent() {
             <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
               <button
                 onClick={() => setFilterType('all')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${
                   filterType === 'all'
-                    ? 'bg-indigo-600 text-white'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                    ? 'bg-slate-800 text-white'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                 }`}
               >
                 All
               </button>
               <button
                 onClick={() => setFilterType('regular')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${
                   filterType === 'regular'
-                    ? 'bg-indigo-600 text-white'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                    ? 'bg-slate-800 text-white'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                 }`}
               >
                 Regular
               </button>
               <button
                 onClick={() => setFilterType('walk-in')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${
                   filterType === 'walk-in'
-                    ? 'bg-indigo-600 text-white'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                    ? 'bg-slate-800 text-white'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                 }`}
               >
                 Walk-In
               </button>
               <button
                 onClick={() => setFilterType('credit')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${
                   filterType === 'credit'
-                    ? 'bg-indigo-600 text-white'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                    ? 'bg-slate-800 text-white'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                 }`}
               >
                 Store Credit
@@ -451,16 +438,16 @@ function CustomerManagementContent() {
           </div>
 
           {/* Customers Table / Grid */}
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/60 overflow-hidden">
+          <div className="bg-slate-900 rounded-lg border border-slate-800 overflow-hidden">
             {isLoading ? (
               <div className="p-12 text-center text-slate-400 text-xs">
-                <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                 Loading customers...
               </div>
             ) : customers.length === 0 ? (
               <div className="p-12 text-center">
                 <div className="max-w-sm mx-auto space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
+                  <div className="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
                     <Users className="w-5 h-5" />
                   </div>
                   <div>
@@ -484,7 +471,7 @@ function CustomerManagementContent() {
                   ) : (
                     <button
                       onClick={handleOpenCreate}
-                      className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-colors inline-flex items-center gap-1.5"
+                      className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs transition-colors inline-flex items-center gap-1.5"
                     >
                       <UserPlus className="w-3.5 h-3.5" />
                       Add Customer Profile
@@ -495,24 +482,24 @@ function CustomerManagementContent() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-900/60 text-slate-400 border-b border-slate-700/60 font-semibold uppercase tracking-wider text-[10px]">
+                  <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 font-semibold uppercase tracking-wider text-[10px]">
                     <tr>
-                      <th className="py-3 px-4">Customer</th>
-                      <th className="py-3 px-4">Contact Info</th>
-                      <th className="py-3 px-4">Address & Notes</th>
-                      <th className="py-3 px-4">Loyalty & Credit</th>
-                      <th className="py-3 px-4">Orders & Spent</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
+                      <th className="py-3 px-4 min-w-[150px]">Customer</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Contact Info</th>
+                      <th className="py-3 px-4 min-w-[140px]">Address & Notes</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Loyalty & Credit</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Orders & Spent</th>
+                      <th className="py-3 px-4 text-right whitespace-nowrap">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-700/40">
+                  <tbody className="divide-y divide-slate-800/60">
                     {customers.map((c) => {
                       const isSelected = selectedCustomerId === c.id;
                       return (
                         <tr
                           key={c.id}
-                          className={`hover:bg-slate-700/30 transition-colors ${
-                            isSelected ? 'bg-indigo-950/40 border-l-2 border-indigo-500' : ''
+                          className={`hover:bg-slate-800/40 transition-colors ${
+                            isSelected ? 'bg-slate-800/80 border-l-2 border-emerald-500' : ''
                           }`}
                         >
                           {/* Name & Badge */}
@@ -521,8 +508,8 @@ function CustomerManagementContent() {
                               <div
                                 className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
                                   c.isWalkIn
-                                    ? 'bg-amber-900/40 text-amber-300 border border-amber-700/50'
-                                    : 'bg-indigo-900/40 text-indigo-300 border border-indigo-700/50'
+                                    ? 'bg-amber-950 text-amber-300 border border-amber-800/60'
+                                    : 'bg-slate-800 text-slate-200 border border-slate-700'
                                 }`}
                               >
                                 {c.name.charAt(0).toUpperCase()}
@@ -614,7 +601,7 @@ function CustomerManagementContent() {
                             <div className="flex items-center justify-end gap-1.5">
                               <button
                                 onClick={() => fetchCustomerHistory(c.id)}
-                                className="px-2.5 py-1 rounded-lg bg-indigo-600/30 text-indigo-300 hover:bg-indigo-600/50 border border-indigo-500/30 text-[11px] font-semibold flex items-center gap-1 transition-colors"
+                                className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700 text-[11px] font-semibold flex items-center gap-1 transition-colors"
                                 title="Order History"
                               >
                                 <span>History</span>
@@ -650,11 +637,11 @@ function CustomerManagementContent() {
 
         {/* Right Drawer: Customer Purchase History & Profile */}
         {selectedCustomerId && (
-          <aside className="w-96 xl:w-[460px] bg-slate-950 border-l border-slate-800 flex flex-col shrink-0 h-full overflow-hidden animate-in slide-in-from-right-2 duration-150">
+          <aside className="w-96 xl:w-[460px] bg-slate-950 border-l border-slate-800 flex flex-col shrink-0 h-full overflow-hidden">
             {/* Drawer Header */}
             <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-indigo-600/30 text-indigo-400 flex items-center justify-center font-bold text-xs">
+                <div className="w-8 h-8 rounded-full bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold text-xs">
                   <Receipt className="w-4 h-4" />
                 </div>
                 <div>
@@ -673,13 +660,13 @@ function CustomerManagementContent() {
             {/* Drawer Body */}
             {isHistoryLoading ? (
               <div className="p-12 text-center text-slate-400 text-xs flex-1 flex flex-col items-center justify-center">
-                <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-2" />
+                <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-2" />
                 Loading order history...
               </div>
             ) : customerHistory ? (
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {/* Profile Card Summary */}
-                <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+                <div className="p-4 rounded-lg bg-slate-900 border border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-bold text-sm text-white flex items-center gap-2">
@@ -732,7 +719,7 @@ function CustomerManagementContent() {
                     </div>
                     <div className="p-2 rounded bg-slate-950 border border-slate-800">
                       <div className="text-[10px] text-slate-500 uppercase">Avg Order</div>
-                      <div className="text-sm font-bold text-indigo-300 mt-0.5">
+                      <div className="text-sm font-bold text-slate-200 mt-0.5">
                         ${customerHistory.summary.averageOrderValueUSD.toFixed(2)}
                       </div>
                     </div>
@@ -749,19 +736,19 @@ function CustomerManagementContent() {
                   </div>
 
                   {customerHistory.orders.length === 0 ? (
-                    <div className="p-6 text-center text-slate-500 text-xs bg-slate-900 rounded-xl border border-slate-800">
+                    <div className="p-6 text-center text-slate-500 text-xs bg-slate-900 rounded-lg border border-slate-800">
                       No orders found for this customer.
                     </div>
                   ) : (
                     customerHistory.orders.map((order) => (
                       <div
                         key={order.id}
-                        className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2.5 text-xs hover:border-slate-700 transition-colors"
+                        className="p-3.5 rounded-lg bg-slate-900 border border-slate-800 space-y-2.5 text-xs hover:border-slate-700 transition-colors"
                       >
                         {/* Order Header */}
                         <div className="flex items-center justify-between">
                           <div>
-                            <span className="font-mono font-bold text-indigo-300">
+                            <span className="font-mono font-bold text-emerald-400">
                               {order.orderNumber}
                             </span>
                             <div className="text-[10px] text-slate-400 flex items-center gap-1.5 mt-0.5">
@@ -846,7 +833,7 @@ function CustomerManagementContent() {
                             </div>
                             {order.returns.map((ret) => (
                               <div key={ret.id} className="flex justify-between text-slate-300">
-                                <span className="font-mono text-indigo-400">
+                                <span className="font-mono text-slate-300">
                                   {ret.returnNumber}
                                 </span>
                                 <span>${ret.totalUSD.toFixed(2)}</span>
@@ -867,10 +854,10 @@ function CustomerManagementContent() {
       {/* Customer Create / Edit Modal */}
       {isFormModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full p-5 shadow-xl space-y-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg max-w-md w-full p-5 shadow-xl space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-indigo-400" />
+                <Users className="w-5 h-5 text-emerald-400" />
                 <h3 className="font-bold text-sm text-white">
                   {editingCustomer ? 'Edit Customer' : 'Add Customer'}
                 </h3>
@@ -884,7 +871,7 @@ function CustomerManagementContent() {
             </div>
 
             {formError && (
-              <div className="p-3 bg-rose-950/50 border border-rose-800 text-rose-300 rounded-xl text-xs flex items-center gap-2">
+              <div className="p-3 bg-rose-950/50 border border-rose-800 text-rose-300 rounded-lg text-xs flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
                 <span>{formError}</span>
               </div>
@@ -901,7 +888,7 @@ function CustomerManagementContent() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. Sopheap Chan"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -912,7 +899,7 @@ function CustomerManagementContent() {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="e.g. 012 888 123"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -923,7 +910,7 @@ function CustomerManagementContent() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="e.g. customer@gmail.com"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -934,7 +921,7 @@ function CustomerManagementContent() {
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   placeholder="e.g. #45, St 240, Daun Penh, Phnom Penh"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -945,7 +932,7 @@ function CustomerManagementContent() {
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   placeholder="e.g. Regular client, prefers ABA KHQR"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 resize-none"
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 resize-none"
                 />
               </div>
 
@@ -965,7 +952,7 @@ function CustomerManagementContent() {
                           loyaltyPoints: parseInt(e.target.value, 10) || 0,
                         })
                       }
-                      className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-slate-100"
+                      className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
                   <div>
@@ -983,7 +970,7 @@ function CustomerManagementContent() {
                           creditBalanceUSD: parseFloat(e.target.value) || 0,
                         })
                       }
-                      className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-slate-100"
+                      className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
                 </div>
@@ -993,14 +980,14 @@ function CustomerManagementContent() {
                 <button
                   type="button"
                   onClick={() => setIsFormModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-semibold"
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={formSubmitting}
-                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold disabled:opacity-50"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold disabled:opacity-50"
                 >
                   {formSubmitting
                     ? 'Saving...'

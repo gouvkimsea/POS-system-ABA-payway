@@ -345,25 +345,25 @@ function StoresManagementContent() {
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="p-2 rounded-xl bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 transition flex items-center gap-1.5 text-xs font-semibold"
+            className="p-2 rounded-lg bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 transition flex items-center gap-1.5 text-xs font-semibold"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Dashboard</span>
           </Link>
           <div className="h-4 w-px bg-slate-800 hidden sm:block" />
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+            <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
               <h1 className="text-sm sm:text-base font-bold tracking-tight text-white flex items-center gap-2">
-                <span>Multi-Branch Management</span>
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                <span>Stores &amp; Branches</span>
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
                   {stores.length} Branches
                 </span>
               </h1>
               <p className="text-[11px] text-slate-400 hidden sm:block">
-                Configure branches, localized pricing, registers, users &amp; branch permissions
+                Manage branch settings, registers, staff, and pricing.
               </p>
             </div>
           </div>
@@ -372,17 +372,17 @@ function StoresManagementContent() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/inventory/transfers"
-            className="hidden md:flex px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition text-xs font-medium items-center gap-2 border border-slate-700/60"
+            className="hidden md:flex px-3.5 py-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition text-xs font-medium items-center gap-2 border border-slate-700/60"
           >
             <Package className="w-4 h-4 text-emerald-400" />
             <span>Transfers</span>
           </Link>
           <button
             onClick={() => setShowCreateStoreModal(true)}
-            className="px-3 sm:px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition text-xs font-semibold shadow-xs flex items-center gap-1.5"
+            className="px-3 sm:px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition text-xs font-semibold shadow-xs flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Create New Branch</span>
+            <span className="hidden sm:inline">Add Branch</span>
             <span className="sm:hidden">Branch</span>
           </button>
         </div>
@@ -418,7 +418,7 @@ function StoresManagementContent() {
                 placeholder="Search branches..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-hidden focus:border-indigo-500"
+                className="w-full bg-slate-950/80 border border-slate-800 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-hidden focus:border-emerald-500"
               />
             </div>
           </div>
@@ -435,7 +435,7 @@ function StoresManagementContent() {
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="mt-2 text-xs text-indigo-400 hover:underline"
+                    className="mt-2 text-xs text-emerald-400 hover:underline"
                   >
                     Clear Search
                   </button>
@@ -448,9 +448,9 @@ function StoresManagementContent() {
                   <button
                     key={s.id}
                     onClick={() => setSelectedStore(s)}
-                    className={`w-full text-left p-3.5 rounded-xl border transition flex items-start justify-between ${
+                    className={`w-full text-left p-3.5 rounded-lg border transition flex items-start justify-between ${
                       isSelected
-                        ? 'bg-indigo-600/10 border-indigo-500/40 text-white'
+                        ? 'bg-slate-800 border-emerald-500/50 text-white'
                         : 'bg-slate-900/40 border-slate-800/80 hover:bg-slate-800/40 text-slate-300'
                     }`}
                   >
@@ -480,7 +480,7 @@ function StoresManagementContent() {
                     </div>
                     <ChevronRight
                       className={`w-4 h-4 shrink-0 transition ${
-                        isSelected ? 'text-indigo-400 translate-x-0.5' : 'text-slate-600'
+                        isSelected ? 'text-emerald-400 translate-x-0.5' : 'text-slate-600'
                       }`}
                     />
                   </button>
@@ -508,7 +508,7 @@ function StoresManagementContent() {
                   <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
                     {selectedStore.name}
                   </h2>
-                  <span className="px-2 py-0.5 rounded-md bg-slate-800 text-indigo-300 font-mono text-xs font-semibold border border-slate-700">
+                  <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 font-mono text-xs font-semibold border border-slate-700">
                     {selectedStore.code}
                   </span>
                   <span
@@ -518,7 +518,7 @@ function StoresManagementContent() {
                         : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
                     }`}
                   >
-                    {selectedStore.isActive ? 'Active Branch' : 'Inactive'}
+                    {selectedStore.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </div>
                 <div className="flex items-center gap-4 text-xs text-slate-400 pt-1">
@@ -544,32 +544,32 @@ function StoresManagementContent() {
               </div>
 
               {/* Navigation Tabs */}
-              <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+              <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
                 <button
                   onClick={() => setActiveTab('info')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                     activeTab === 'info'
-                      ? 'bg-indigo-600 text-white shadow-sm'
+                      ? 'bg-slate-800 text-white shadow-xs'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  Branch Overview
+                  Overview
                 </button>
                 <button
                   onClick={() => setActiveTab('settings')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                     activeTab === 'settings'
-                      ? 'bg-indigo-600 text-white shadow-sm'
+                      ? 'bg-slate-800 text-white shadow-xs'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  Store Settings
+                  Settings
                 </button>
                 <button
                   onClick={() => setActiveTab('registers')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                     activeTab === 'registers'
-                      ? 'bg-indigo-600 text-white shadow-sm'
+                      ? 'bg-slate-800 text-white shadow-xs'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
@@ -579,29 +579,29 @@ function StoresManagementContent() {
                   onClick={() => setActiveTab('users')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                     activeTab === 'users'
-                      ? 'bg-indigo-600 text-white shadow-sm'
+                      ? 'bg-slate-800 text-white shadow-xs'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  Store Users ({storeUsers.length})
+                  Users ({storeUsers.length})
                 </button>
                 <button
                   onClick={() => setActiveTab('products')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                     activeTab === 'products'
-                      ? 'bg-indigo-600 text-white shadow-sm'
+                      ? 'bg-slate-800 text-white shadow-xs'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  Store Products
+                  Products
                 </button>
               </div>
             </div>
 
             {/* Sub-tab loading indicator */}
             {subLoading && (
-              <div className="h-0.5 w-full bg-indigo-950 overflow-hidden">
-                <div className="h-full bg-indigo-500 w-1/3" />
+              <div className="h-0.5 w-full bg-emerald-950 overflow-hidden">
+                <div className="h-full bg-emerald-500 w-1/3" />
               </div>
             )}
 
@@ -609,71 +609,71 @@ function StoresManagementContent() {
             {activeTab === 'info' && (
               <div className="p-6 space-y-6">
                 <div className="grid grid-cols-4 gap-4">
-                  <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
+                  <div className="bg-slate-900/60 p-4 rounded-lg border border-slate-800/80">
                     <span className="text-xs text-slate-400">Total Registers</span>
                     <p className="text-2xl font-bold text-white mt-1">
                       {selectedStore.registerCount || 0}
                     </p>
-                    <span className="text-[11px] text-indigo-400 mt-1 block">
-                      Active checkout points
+                    <span className="text-[11px] text-emerald-400 mt-1 block">
+                      Active registers
                     </span>
                   </div>
-                  <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
+                  <div className="bg-slate-900/60 p-4 rounded-lg border border-slate-800/80">
                     <span className="text-xs text-slate-400">Assigned Staff</span>
                     <p className="text-2xl font-bold text-white mt-1">
                       {selectedStore.userCount || 0}
                     </p>
                     <span className="text-[11px] text-emerald-400 mt-1 block">
-                      Authorized branch users
+                      Assigned users
                     </span>
                   </div>
-                  <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
-                    <span className="text-xs text-slate-400">Custom Price Overrides</span>
+                  <div className="bg-slate-900/60 p-4 rounded-lg border border-slate-800/80">
+                    <span className="text-xs text-slate-400">Price Overrides</span>
                     <p className="text-2xl font-bold text-white mt-1">
                       {selectedStore.productCount || 0}
                     </p>
                     <span className="text-[11px] text-amber-400 mt-1 block">
-                      Branch pricing rules
+                      Branch prices
                     </span>
                   </div>
-                  <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
-                    <span className="text-xs text-slate-400">Branch Status</span>
+                  <div className="bg-slate-900/60 p-4 rounded-lg border border-slate-800/80">
+                    <span className="text-xs text-slate-400">Status</span>
                     <p
                       className={`text-2xl font-bold mt-1 ${selectedStore.isActive ? 'text-emerald-400' : 'text-slate-500'}`}
                     >
                       {selectedStore.isActive ? 'ACTIVE' : 'INACTIVE'}
                     </p>
-                    <span className="text-[11px] text-slate-500 mt-1 block">Operation state</span>
+                    <span className="text-[11px] text-slate-500 mt-1 block">Current status</span>
                   </div>
                 </div>
 
-                <div className="bg-slate-900/40 p-6 rounded-xl border border-slate-800/80 space-y-4">
-                  <h3 className="text-sm font-bold text-white">Branch Profile Details</h3>
+                <div className="bg-slate-900/40 p-6 rounded-lg border border-slate-800/80 space-y-4">
+                  <h3 className="text-sm font-bold text-white">Branch Details</h3>
                   <div className="grid grid-cols-2 gap-4 text-xs">
                     <div>
-                      <span className="text-slate-500">Branch Name:</span>
+                      <span className="text-slate-500">Name:</span>
                       <p className="font-semibold text-slate-200 mt-0.5">{selectedStore.name}</p>
                     </div>
                     <div>
-                      <span className="text-slate-500">Unique Code:</span>
-                      <p className="font-mono font-semibold text-indigo-400 mt-0.5">
+                      <span className="text-slate-500">Code:</span>
+                      <p className="font-mono font-semibold text-emerald-400 mt-0.5">
                         {selectedStore.code}
                       </p>
                     </div>
                     <div>
-                      <span className="text-slate-500">Contact Telephone:</span>
+                      <span className="text-slate-500">Phone:</span>
                       <p className="font-medium text-slate-200 mt-0.5">
                         {selectedStore.phone || 'Not specified'}
                       </p>
                     </div>
                     <div>
-                      <span className="text-slate-500">Official Email:</span>
+                      <span className="text-slate-500">Email:</span>
                       <p className="font-medium text-slate-200 mt-0.5">
                         {selectedStore.email || 'Not specified'}
                       </p>
                     </div>
                     <div className="col-span-2">
-                      <span className="text-slate-500">Physical Address:</span>
+                      <span className="text-slate-500">Address:</span>
                       <p className="font-medium text-slate-200 mt-0.5">
                         {selectedStore.address || 'Not specified'}
                       </p>
@@ -687,10 +687,10 @@ function StoresManagementContent() {
             {activeTab === 'settings' && (
               <div className="p-6 max-w-3xl space-y-6">
                 <form onSubmit={handleSaveSettings} className="space-y-5">
-                  <div className="bg-slate-900/40 p-6 rounded-xl border border-slate-800/80 space-y-4">
+                  <div className="bg-slate-900/40 p-6 rounded-lg border border-slate-800/80 space-y-4">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <Sliders className="w-4 h-4 text-indigo-400" />
-                      Branch Financial & Operational Settings
+                      <Sliders className="w-4 h-4 text-emerald-400" />
+                      Branch Financial Settings
                     </h3>
 
                     <div className="grid grid-cols-2 gap-4 text-xs">
@@ -706,7 +706,7 @@ function StoresManagementContent() {
                               defaultCurrency: e.target.value as any,
                             })
                           }
-                          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:border-indigo-500 focus:outline-hidden"
+                          className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 focus:outline-hidden"
                         >
                           <option value="USD">USD ($ - US Dollar)</option>
                           <option value="KHR">KHR (៛ - Khmer Riel)</option>
@@ -715,7 +715,7 @@ function StoresManagementContent() {
 
                       <div>
                         <label className="block text-slate-400 mb-1 font-medium">
-                          Default Tax Rate (e.g. 0.1 for 10%)
+                          Tax Rate (e.g. 0.1 for 10%)
                         </label>
                         <input
                           type="number"
@@ -729,13 +729,13 @@ function StoresManagementContent() {
                               taxRate: parseFloat(e.target.value) || 0,
                             })
                           }
-                          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:border-indigo-500 focus:outline-hidden"
+                          className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 focus:outline-hidden"
                         />
                       </div>
 
                       <div>
                         <label className="block text-slate-400 mb-1 font-medium">
-                          Branch Timezone
+                          Timezone
                         </label>
                         <input
                           type="text"
@@ -743,7 +743,7 @@ function StoresManagementContent() {
                           onChange={(e) =>
                             setSettingsForm({ ...settingsForm, timezone: e.target.value })
                           }
-                          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:border-indigo-500 focus:outline-hidden font-mono"
+                          className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 focus:outline-hidden font-mono"
                         />
                       </div>
 
@@ -758,25 +758,25 @@ function StoresManagementContent() {
                                 autoPrintReceipt: e.target.checked,
                               })
                             }
-                            className="rounded border-slate-800 text-indigo-600 focus:ring-0"
+                            className="rounded border-slate-800 text-emerald-600 focus:ring-0"
                           />
-                          Auto-print customer receipts upon checkout
+                          Auto-print receipts at checkout
                         </label>
                       </div>
                     </div>
                   </div>
 
                   {/* Receipt Customization */}
-                  <div className="bg-slate-900/40 p-6 rounded-xl border border-slate-800/80 space-y-4">
+                  <div className="bg-slate-900/40 p-6 rounded-lg border border-slate-800/80 space-y-4">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                       <Printer className="w-4 h-4 text-emerald-400" />
-                      Branch Receipt Header & Footer Customization
+                      Receipt Header &amp; Footer
                     </h3>
 
                     <div className="space-y-3 text-xs">
                       <div>
                         <label className="block text-slate-400 mb-1 font-medium">
-                          Receipt Header Text
+                          Receipt Header
                         </label>
                         <textarea
                           rows={2}
@@ -785,13 +785,13 @@ function StoresManagementContent() {
                           onChange={(e) =>
                             setSettingsForm({ ...settingsForm, receiptHeader: e.target.value })
                           }
-                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-indigo-500 focus:outline-hidden"
+                          className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-200 focus:border-emerald-500 focus:outline-hidden"
                         />
                       </div>
 
                       <div>
                         <label className="block text-slate-400 mb-1 font-medium">
-                          Receipt Footer Text
+                          Receipt Footer
                         </label>
                         <textarea
                           rows={2}
@@ -800,7 +800,7 @@ function StoresManagementContent() {
                           onChange={(e) =>
                             setSettingsForm({ ...settingsForm, receiptFooter: e.target.value })
                           }
-                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-indigo-500 focus:outline-hidden"
+                          className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-200 focus:border-emerald-500 focus:outline-hidden"
                         />
                       </div>
                     </div>
@@ -809,9 +809,9 @@ function StoresManagementContent() {
                   <button
                     type="submit"
                     disabled={savingSettings}
-                    className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition shadow-xs disabled:opacity-50"
+                    className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition shadow-xs disabled:opacity-50"
                   >
-                    {savingSettings ? 'Saving Settings...' : 'Save Branch Settings'}
+                    {savingSettings ? 'Saving Settings...' : 'Save Settings'}
                   </button>
                 </form>
               </div>
@@ -824,14 +824,14 @@ function StoresManagementContent() {
                   <h3 className="text-sm font-bold text-white">Branch Cash Registers</h3>
                   <button
                     onClick={() => setShowCreateRegisterModal(true)}
-                    className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition"
+                    className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     Add Register
                   </button>
                 </div>
 
-                <div className="bg-slate-900/40 rounded-xl border border-slate-800/80 overflow-hidden">
+                <div className="bg-slate-900/40 rounded-lg border border-slate-800/80 overflow-hidden">
                   <table className="w-full text-left text-xs">
                     <thead>
                       <tr className="border-b border-slate-800/80 text-slate-400 bg-slate-950/60 font-medium">
@@ -847,13 +847,13 @@ function StoresManagementContent() {
                       {registers.map((r) => (
                         <tr key={r.id} className="hover:bg-slate-900/40 transition">
                           <td className="py-3 px-4 font-semibold text-white">{r.name}</td>
-                          <td className="py-3 px-4 font-mono text-indigo-400">{r.code}</td>
+                          <td className="py-3 px-4 font-mono text-emerald-400">{r.code}</td>
                           <td className="py-3 px-4">
                             <span
                               className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
                                 r.isActive
-                                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                                  : 'bg-slate-800 text-slate-400'
+                                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                    : 'bg-slate-800 text-slate-400'
                               }`}
                             >
                               {r.isActive ? 'Active' : 'Disabled'}
@@ -884,21 +884,21 @@ function StoresManagementContent() {
               <div className="p-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-bold text-white">Branch Users & Permissions</h3>
+                    <h3 className="text-sm font-bold text-white">Branch Users</h3>
                     <p className="text-xs text-slate-400">
-                      Only authorized branch users and Administrators can access this store
+                      Users assigned to this branch.
                     </p>
                   </div>
                   <button
                     onClick={() => setShowAssignUserModal(true)}
-                    className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition"
+                    className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    Assign User to Branch
+                    Assign User
                   </button>
                 </div>
 
-                <div className="bg-slate-900/40 rounded-xl border border-slate-800/80 overflow-hidden">
+                <div className="bg-slate-900/40 rounded-lg border border-slate-800/80 overflow-hidden">
                   <table className="w-full text-left text-xs">
                     <thead>
                       <tr className="border-b border-slate-800/80 text-slate-400 bg-slate-950/60 font-medium">
@@ -913,8 +913,7 @@ function StoresManagementContent() {
                       {storeUsers.length === 0 ? (
                         <tr>
                           <td colSpan={5} className="py-8 text-center text-slate-500 text-xs">
-                            No branch-specific users assigned yet. Administrators have access to all
-                            branches by default.
+                            No branch-specific users assigned yet.
                           </td>
                         </tr>
                       ) : (
@@ -927,13 +926,13 @@ function StoresManagementContent() {
                               </span>
                             </td>
                             <td className="py-3 px-4">
-                              <span className="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 font-semibold border border-indigo-500/20">
+                              <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 font-semibold border border-slate-700">
                                 {su.roleName}
                               </span>
                             </td>
                             <td className="py-3 px-4">
                               <span className="text-[11px] text-slate-400">
-                                {su.permissions?.length || 0} granular permissions granted
+                                {su.permissions?.length || 0} permissions
                               </span>
                             </td>
                             <td className="py-3 px-4 text-slate-400">
@@ -972,33 +971,33 @@ function StoresManagementContent() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-bold text-white">
-                      Store-Specific Product Catalog & Overrides
+                      Product Pricing &amp; Overrides
                     </h3>
                     <p className="text-xs text-slate-400">
-                      Customize product availability and branch-specific selling prices
+                      Set branch-specific prices and product availability.
                     </p>
                   </div>
                   <div className="relative w-64">
                     <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
-                      placeholder="Search store products..."
+                      placeholder="Search products..."
                       value={productSearch}
                       onChange={(e) => setProductSearch(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-hidden focus:border-indigo-500"
+                      className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-hidden focus:border-emerald-500"
                     />
                   </div>
                 </div>
 
-                <div className="bg-slate-900/40 rounded-xl border border-slate-800/80 overflow-hidden">
+                <div className="bg-slate-900/40 rounded-lg border border-slate-800/80 overflow-hidden">
                   <table className="w-full text-left text-xs">
                     <thead>
                       <tr className="border-b border-slate-800/80 text-slate-400 bg-slate-950/60 font-medium">
                         <th className="py-3 px-4">Product</th>
-                        <th className="py-3 px-4">Base Catalog Price</th>
-                        <th className="py-3 px-4">Branch Selling Price (USD)</th>
-                        <th className="py-3 px-4">Stock on Hand</th>
-                        <th className="py-3 px-4">Branch Active</th>
+                        <th className="py-3 px-4">Base Price</th>
+                        <th className="py-3 px-4">Branch Price (USD)</th>
+                        <th className="py-3 px-4">In Stock</th>
+                        <th className="py-3 px-4">Active</th>
                         <th className="py-3 px-4 text-right">Actions</th>
                       </tr>
                     </thead>
@@ -1029,10 +1028,10 @@ function StoresManagementContent() {
                                     customPriceKHR: val != null ? Math.round(val * 4100) : null,
                                   });
                                 }}
-                                className="w-24 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-xs text-white font-mono focus:border-indigo-500 focus:outline-hidden"
+                                className="w-24 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-xs text-white font-mono focus:border-emerald-500 focus:outline-hidden"
                               />
                               {p.storePriceUSD != null && (
-                                <span className="text-[10px] text-indigo-400 font-semibold px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">
+                                <span className="text-[10px] text-emerald-400 font-semibold px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
                                   Custom
                                 </span>
                               )}
@@ -1068,7 +1067,7 @@ function StoresManagementContent() {
                                 }}
                                 className="text-[11px] text-slate-500 hover:text-slate-300 underline"
                               >
-                                Reset to Base
+                                Reset Price
                               </button>
                             )}
                           </td>
@@ -1090,11 +1089,11 @@ function StoresManagementContent() {
       {/* Modal: Create Store */}
       {showCreateStoreModal && (
         <div className="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-md p-6 space-y-4 shadow-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg w-full max-w-md p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-indigo-400" />
-                Create New Branch
+                <Building2 className="w-5 h-5 text-emerald-400" />
+                Add Branch
               </h3>
               <button
                 onClick={() => setShowCreateStoreModal(false)}
@@ -1110,16 +1109,16 @@ function StoresManagementContent() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Tuol Kouk Flagship Branch"
+                  placeholder="e.g. Tuol Kouk Branch"
                   value={newStoreForm.name}
                   onChange={(e) => setNewStoreForm({ ...newStoreForm, name: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:border-indigo-500 focus:outline-hidden"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:border-emerald-500 focus:outline-hidden"
                 />
               </div>
 
               <div>
                 <label className="block text-slate-400 mb-1 font-medium">
-                  Unique Branch Code *
+                  Branch Code *
                 </label>
                 <input
                   type="text"
@@ -1129,19 +1128,19 @@ function StoresManagementContent() {
                   onChange={(e) =>
                     setNewStoreForm({ ...newStoreForm, code: e.target.value.toUpperCase() })
                   }
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white font-mono uppercase focus:border-indigo-500 focus:outline-hidden"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white font-mono uppercase focus:border-emerald-500 focus:outline-hidden"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-medium">Telephone</label>
+                  <label className="block text-slate-400 mb-1 font-medium">Phone</label>
                   <input
                     type="text"
                     placeholder="+855 23 888 101"
                     value={newStoreForm.phone}
                     onChange={(e) => setNewStoreForm({ ...newStoreForm, phone: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:border-indigo-500 focus:outline-hidden"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:border-emerald-500 focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -1151,19 +1150,19 @@ function StoresManagementContent() {
                     placeholder="branch@domain.com"
                     value={newStoreForm.email}
                     onChange={(e) => setNewStoreForm({ ...newStoreForm, email: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:border-indigo-500 focus:outline-hidden"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:border-emerald-500 focus:outline-hidden"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-medium">Physical Address</label>
+                <label className="block text-slate-400 mb-1 font-medium">Address</label>
                 <input
                   type="text"
                   placeholder="Street 315, Khan Tuol Kouk, Phnom Penh"
                   value={newStoreForm.address}
                   onChange={(e) => setNewStoreForm({ ...newStoreForm, address: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:border-indigo-500 focus:outline-hidden"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:border-emerald-500 focus:outline-hidden"
                 />
               </div>
 
@@ -1171,15 +1170,15 @@ function StoresManagementContent() {
                 <button
                   type="button"
                   onClick={() => setShowCreateStoreModal(false)}
-                  className="flex-1 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition"
+                  className="flex-1 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition shadow-xs"
+                  className="flex-1 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition shadow-xs"
                 >
-                  Create Branch
+                  Add Branch
                 </button>
               </div>
             </form>
@@ -1190,9 +1189,9 @@ function StoresManagementContent() {
       {/* Modal: Create Register */}
       {showCreateRegisterModal && (
         <div className="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-sm p-6 space-y-4 shadow-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg w-full max-w-sm p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-white">Add Cash Register</h3>
+              <h3 className="text-base font-bold text-white">Add Register</h3>
               <button
                 onClick={() => setShowCreateRegisterModal(false)}
                 className="text-slate-400 hover:text-white"
@@ -1209,7 +1208,7 @@ function StoresManagementContent() {
                   placeholder="e.g. Counter 02"
                   value={registerForm.name}
                   onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:border-indigo-500 focus:outline-hidden"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:border-emerald-500 focus:outline-hidden"
                 />
               </div>
               <div>
@@ -1222,20 +1221,20 @@ function StoresManagementContent() {
                   onChange={(e) =>
                     setRegisterForm({ ...registerForm, code: e.target.value.toUpperCase() })
                   }
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white font-mono uppercase focus:border-indigo-500 focus:outline-hidden"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white font-mono uppercase focus:border-emerald-500 focus:outline-hidden"
                 />
               </div>
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowCreateRegisterModal(false)}
-                  className="flex-1 px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold"
+                  className="flex-1 px-4 py-2 rounded-lg bg-slate-800 text-slate-300 font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold"
+                  className="flex-1 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition"
                 >
                   Add Register
                 </button>
@@ -1248,9 +1247,9 @@ function StoresManagementContent() {
       {/* Modal: Assign User */}
       {showAssignUserModal && (
         <div className="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-sm p-6 space-y-4 shadow-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg w-full max-w-sm p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-white">Assign User to Branch</h3>
+              <h3 className="text-base font-bold text-white">Assign User</h3>
               <button
                 onClick={() => setShowAssignUserModal(false)}
                 className="text-slate-400 hover:text-white"
@@ -1265,7 +1264,7 @@ function StoresManagementContent() {
                   required
                   value={assignUserForm.userId}
                   onChange={(e) => setAssignUserForm({ ...assignUserForm, userId: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:border-indigo-500 focus:outline-hidden"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:border-emerald-500 focus:outline-hidden"
                 >
                   <option value="">-- Choose User --</option>
                   {allUsers.map((u) => (
@@ -1281,26 +1280,25 @@ function StoresManagementContent() {
                   required
                   value={assignUserForm.roleId}
                   onChange={(e) => setAssignUserForm({ ...assignUserForm, roleId: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:border-indigo-500 focus:outline-hidden"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:border-emerald-500 focus:outline-hidden"
                 >
                   <option value="">-- Choose Role --</option>
-                  {/* Common roles */}
-                  <option value="CASHIER">CASHIER (Point of sale & drawer access)</option>
-                  <option value="MANAGER">MANAGER (Inventory, voids, branch reports)</option>
-                  <option value="ADMIN">ADMIN (Full permissions)</option>
+                  <option value="CASHIER">Cashier</option>
+                  <option value="MANAGER">Manager</option>
+                  <option value="ADMIN">Admin</option>
                 </select>
               </div>
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowAssignUserModal(false)}
-                  className="flex-1 px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold"
+                  className="flex-1 px-4 py-2 rounded-lg bg-slate-800 text-slate-300 font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold"
+                  className="flex-1 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition"
                 >
                   Assign User
                 </button>

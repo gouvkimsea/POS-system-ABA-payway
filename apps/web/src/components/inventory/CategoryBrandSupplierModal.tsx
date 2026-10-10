@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, AlertCircle } from 'lucide-react';
 
 export type ClassificationType = 'category' | 'brand' | 'supplier';
@@ -13,6 +13,12 @@ interface CategoryBrandSupplierModalProps {
   onSaveSuccess: () => void;
 }
 
+interface EntityFormProps {
+  item?: any | null;
+  onSuccess: () => void;
+  onCancel: () => void;
+}
+
 export function CategoryBrandSupplierModal({
   isOpen,
   onClose,
@@ -20,127 +26,18 @@ export function CategoryBrandSupplierModal({
   item,
   onSaveSuccess,
 }: CategoryBrandSupplierModalProps) {
-  const isEditing = !!item;
-
-  const [name, setName] = useState('');
-  // Category specific
-  const [code, setCode] = useState('');
-  const [color, setColor] = useState('#4f46e5');
-  const [sortOrder, setSortOrder] = useState('0');
-  // Brand specific
-  const [description, setDescription] = useState('');
-  // Supplier specific
-  const [contactPerson, setContactPerson] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [address, setAddress] = useState('');
-  const [taxId, setTaxId] = useState('');
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (item) {
-      setName(item.name || '');
-      setCode(item.code || '');
-      setColor(item.color || '#4f46e5');
-      setSortOrder(String(item.sortOrder || 0));
-      setDescription(item.description || '');
-      setContactPerson(item.contactPerson || '');
-      setPhone(item.phone || '');
-      setEmail(item.email || '');
-      setAddress(item.address || '');
-      setTaxId(item.taxId || '');
-    } else {
-      setName('');
-      setCode('');
-      setColor('#4f46e5');
-      setSortOrder('0');
-      setDescription('');
-      setContactPerson('');
-      setPhone('');
-      setEmail('');
-      setAddress('');
-      setTaxId('');
-    }
-    setError(null);
-  }, [item, isOpen, type]);
-
   if (!isOpen) return null;
 
+  const isEditing = Boolean(item);
   const titles = {
-    category: isEditing ? 'Edit Category' : 'Create Category',
-    brand: isEditing ? 'Edit Brand' : 'Create Brand',
-    supplier: isEditing ? 'Edit Supplier' : 'Create Supplier',
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (!name.trim()) {
-      setError('Name is required');
-      return;
-    }
-
-    let payload: any = { name: name.trim() };
-    const endpoint = `/api/catalog/${type === 'category' ? 'categories' : type === 'brand' ? 'brands' : 'suppliers'}`;
-
-    if (type === 'category') {
-      payload = {
-        ...payload,
-        code: code.trim() || undefined,
-        color: color || '#4f46e5',
-        sortOrder: parseInt(sortOrder, 10) || 0,
-      };
-    } else if (type === 'brand') {
-      payload = {
-        ...payload,
-        description: description.trim() || undefined,
-      };
-    } else if (type === 'supplier') {
-      payload = {
-        ...payload,
-        contactPerson: contactPerson.trim() || undefined,
-        phone: phone.trim() || undefined,
-        email: email.trim() || undefined,
-        address: address.trim() || undefined,
-        taxId: taxId.trim() || undefined,
-      };
-    }
-
-    try {
-      setIsSubmitting(true);
-      const token = localStorage.getItem('pos_access_token');
-      const url = isEditing ? `${endpoint}/${item.id}` : endpoint;
-      const method = isEditing ? 'PUT' : 'POST';
-
-      const res = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const json = await res.json();
-      if (!res.ok) {
-        throw new Error(json.error?.message || `Failed to save ${type}`);
-      }
-
-      onSaveSuccess();
-      onClose();
-    } catch (err: any) {
-      setError(err.message || 'Error occurred');
-    } finally {
-      setIsSubmitting(false);
-    }
+    category: isEditing ? 'Edit Category' : 'Add Category',
+    brand: isEditing ? 'Edit Brand' : 'Add Brand',
+    supplier: isEditing ? 'Edit Supplier' : 'Add Supplier',
   };
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg overflow-hidden shadow-xl text-slate-100">
+      <div className="bg-slate-900 border border-slate-800 rounded-lg w-full max-w-lg overflow-hidden shadow-xl text-slate-100">
         <div className="px-6 py-4 bg-slate-800/80 border-b border-slate-700/60 flex items-center justify-between">
           <h2 className="text-base font-bold text-white">{titles[type]}</h2>
           <button
@@ -152,176 +49,385 @@ export function CategoryBrandSupplierModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {error && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-rose-300 text-xs flex items-center space-x-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
-              {type === 'category'
-                ? 'Category Name *'
-                : type === 'brand'
-                  ? 'Brand Name *'
-                  : 'Company / Supplier Name *'}
-            </label>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-
-          {type === 'category' && (
-            <div className="grid grid-cols-3 gap-3">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Code (Short)
-                </label>
-                <input
-                  type="text"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="BEV"
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Badge Color
-                </label>
-                <input
-                  type="color"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="w-full h-9 p-1 bg-slate-800 border border-slate-700 rounded-lg cursor-pointer"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Display Order
-                </label>
-                <input
-                  type="number"
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
-                />
-              </div>
-            </div>
-          )}
-
-          {type === 'brand' && (
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Brand Description
-              </label>
-              <textarea
-                rows={3}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Product line or manufacturer notes..."
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
-              />
-            </div>
-          )}
-
-          {type === 'supplier' && (
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Contact Person
-                  </label>
-                  <input
-                    type="text"
-                    value={contactPerson}
-                    onChange={(e) => setContactPerson(e.target.value)}
-                    placeholder="Mr. Vanna"
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Phone Number
-                  </label>
-                  <input
-                    type="text"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+855 12 555 777"
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="orders@supplier.com"
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Tax ID / VAT Reg
-                  </label>
-                  <input
-                    type="text"
-                    value={taxId}
-                    onChange={(e) => setTaxId(e.target.value)}
-                    placeholder="K001-902..."
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Physical Address / Warehouse
-                </label>
-                <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Street / Sangkat, Phnom Penh"
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="pt-2 flex items-center justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold shadow-xs transition disabled:opacity-50"
-            >
-              {isSubmitting ? 'Saving...' : isEditing ? 'Update' : 'Save'}
-            </button>
-          </div>
-        </form>
+        {type === 'category' && (
+          <CategoryForm item={item} onSuccess={onSaveSuccess} onCancel={onClose} />
+        )}
+        {type === 'brand' && (
+          <BrandForm item={item} onSuccess={onSaveSuccess} onCancel={onClose} />
+        )}
+        {type === 'supplier' && (
+          <SupplierForm item={item} onSuccess={onSaveSuccess} onCancel={onClose} />
+        )}
       </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 1. Category Form
+// ---------------------------------------------------------------------------
+function CategoryForm({ item, onSuccess, onCancel }: EntityFormProps) {
+  const isEditing = Boolean(item);
+  const [name, setName] = useState(item?.name || '');
+  const [code, setCode] = useState(item?.code || '');
+  const [color, setColor] = useState(item?.color || '#10b981');
+  const [sortOrder, setSortOrder] = useState(String(item?.sortOrder || 0));
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setError('Category name is required');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('pos_access_token');
+      const url = isEditing ? `/api/catalog/categories/${item.id}` : '/api/catalog/categories';
+      const res = await fetch(url, {
+        method: isEditing ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          code: code.trim() || undefined,
+          color: color || '#4f46e5',
+          sortOrder: parseInt(sortOrder, 10) || 0,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Failed to save category');
+      onSuccess();
+      onCancel();
+    } catch (err: any) {
+      setError(err.message || 'Error occurred');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="p-6 space-y-4">
+      {error && <FormErrorMessage message={error} />}
+
+      <div>
+        <label className="block text-xs font-semibold text-slate-300 mb-1">
+          Category Name *
+        </label>
+        <input
+          type="text"
+          required
+          autoFocus
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
+        />
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1">Code</label>
+          <input
+            type="text"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="BEV"
+            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1">Color</label>
+          <input
+            type="color"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            className="w-full h-9 p-1 bg-slate-800 border border-slate-700 rounded-lg cursor-pointer"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1">Sort Order</label>
+          <input
+            type="number"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
+          />
+        </div>
+      </div>
+
+      <FormActions isSubmitting={isSubmitting} isEditing={isEditing} label="Category" onCancel={onCancel} />
+    </form>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 2. Brand Form
+// ---------------------------------------------------------------------------
+function BrandForm({ item, onSuccess, onCancel }: EntityFormProps) {
+  const isEditing = Boolean(item);
+  const [name, setName] = useState(item?.name || '');
+  const [description, setDescription] = useState(item?.description || '');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setError('Brand name is required');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('pos_access_token');
+      const url = isEditing ? `/api/catalog/brands/${item.id}` : '/api/catalog/brands';
+      const res = await fetch(url, {
+        method: isEditing ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          description: description.trim() || undefined,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Failed to save brand');
+      onSuccess();
+      onCancel();
+    } catch (err: any) {
+      setError(err.message || 'Error occurred');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="p-6 space-y-4">
+      {error && <FormErrorMessage message={error} />}
+
+      <div>
+        <label className="block text-xs font-semibold text-slate-300 mb-1">
+          Brand Name *
+        </label>
+        <input
+          type="text"
+          required
+          autoFocus
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-semibold text-slate-300 mb-1">
+          Description
+        </label>
+        <textarea
+          rows={3}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Product line or manufacturer notes..."
+          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
+        />
+      </div>
+
+      <FormActions isSubmitting={isSubmitting} isEditing={isEditing} label="Brand" onCancel={onCancel} />
+    </form>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 3. Supplier Form
+// ---------------------------------------------------------------------------
+function SupplierForm({ item, onSuccess, onCancel }: EntityFormProps) {
+  const isEditing = Boolean(item);
+  const [name, setName] = useState(item?.name || '');
+  const [contactPerson, setContactPerson] = useState(item?.contactPerson || '');
+  const [phone, setPhone] = useState(item?.phone || '');
+  const [email, setEmail] = useState(item?.email || '');
+  const [taxId, setTaxId] = useState(item?.taxId || '');
+  const [address, setAddress] = useState(item?.address || '');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setError('Supplier name is required');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('pos_access_token');
+      const url = isEditing ? `/api/catalog/suppliers/${item.id}` : '/api/catalog/suppliers';
+      const res = await fetch(url, {
+        method: isEditing ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          contactPerson: contactPerson.trim() || undefined,
+          phone: phone.trim() || undefined,
+          email: email.trim() || undefined,
+          taxId: taxId.trim() || undefined,
+          address: address.trim() || undefined,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Failed to save supplier');
+      onSuccess();
+      onCancel();
+    } catch (err: any) {
+      setError(err.message || 'Error occurred');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="p-6 space-y-4">
+      {error && <FormErrorMessage message={error} />}
+
+      <div>
+        <label className="block text-xs font-semibold text-slate-300 mb-1">
+          Supplier Name *
+        </label>
+        <input
+          type="text"
+          required
+          autoFocus
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1">
+            Contact Person
+          </label>
+          <input
+            type="text"
+            value={contactPerson}
+            onChange={(e) => setContactPerson(e.target.value)}
+            placeholder="Mr. Vanna"
+            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1">
+            Phone
+          </label>
+          <input
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="+855 12 555 777"
+            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="orders@supplier.com"
+            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1">
+            Tax ID
+          </label>
+          <input
+            type="text"
+            value={taxId}
+            onChange={(e) => setTaxId(e.target.value)}
+            placeholder="K001-902..."
+            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-semibold text-slate-300 mb-1">
+          Address
+        </label>
+        <input
+          type="text"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          placeholder="Street / Sangkat, Phnom Penh"
+          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
+        />
+      </div>
+
+      <FormActions isSubmitting={isSubmitting} isEditing={isEditing} label="Supplier" onCancel={onCancel} />
+    </form>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Shared Form Helpers
+// ---------------------------------------------------------------------------
+function FormErrorMessage({ message }: { message: string }) {
+  return (
+    <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-rose-300 text-xs flex items-center space-x-2">
+      <AlertCircle className="w-4 h-4 shrink-0" />
+      <span>{message}</span>
+    </div>
+  );
+}
+
+interface FormActionsProps {
+  isSubmitting: boolean;
+  isEditing: boolean;
+  label: string;
+  onCancel: () => void;
+}
+
+function FormActions({ isSubmitting, isEditing, label, onCancel }: FormActionsProps) {
+  return (
+    <div className="pt-2 flex items-center justify-end space-x-3">
+      <button
+        type="button"
+        onClick={onCancel}
+        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-semibold shadow-xs transition disabled:opacity-50"
+      >
+        {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : `Add ${label}`}
+      </button>
     </div>
   );
 }

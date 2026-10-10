@@ -18,14 +18,8 @@ import {
   RefreshCw,
   Cpu,
   LogOut,
-  Store,
-  Clock,
-  ShieldCheck,
-  CheckCircle2,
   ChevronRight,
-  MonitorCheck,
-  HardDrive,
-  Database,
+  CheckCircle2,
   ArrowUpRight,
 } from 'lucide-react';
 
@@ -74,11 +68,11 @@ function DashboardContent() {
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'ADMIN':
-        return 'bg-purple-950/70 text-purple-300 border-purple-800/60';
+        return 'bg-purple-950/60 text-purple-300 border-purple-800/60';
       case 'MANAGER':
-        return 'bg-blue-950/70 text-blue-300 border-blue-800/60';
+        return 'bg-sky-950/60 text-sky-300 border-sky-800/60';
       case 'CASHIER':
-        return 'bg-emerald-950/70 text-emerald-300 border-emerald-800/60';
+        return 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60';
       default:
         return 'bg-slate-800 text-slate-300 border-slate-700';
     }
@@ -191,10 +185,10 @@ function DashboardContent() {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8 pb-24 lg:pb-8">
-      {/* Top Header Bar */}
-      <header className="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      {/* Workstation Header Bar */}
+      <header className="bg-slate-900 border border-slate-800 rounded-lg p-5 mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-bold text-base shrink-0">
+          <div className="w-11 h-11 rounded-lg bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 flex items-center justify-center font-bold text-base shrink-0">
             {user?.fullName
               ? user.fullName[0].toUpperCase()
               : user?.username?.[0].toUpperCase() || 'U'}
@@ -238,7 +232,7 @@ function DashboardContent() {
         <div className="flex items-center gap-2.5 self-end md:self-auto">
           <Link
             href="/pos"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
           >
             <ShoppingCart className="w-4 h-4" />
             <span>Launch POS Terminal</span>
@@ -262,65 +256,72 @@ function DashboardContent() {
 
       {/* Main Content Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column (2 spans): Operational Modules Grouped by Function */}
-        <div className="lg:col-span-2 space-y-7">
+        {/* Left Column (2 spans): Operational Sections */}
+        <div className="lg:col-span-2 space-y-6">
           {operationalSections.map((section) => (
-            <section key={section.title} className="space-y-3">
-              <div className="flex items-baseline justify-between border-b border-slate-800 pb-2">
+            <section
+              key={section.title}
+              className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden"
+            >
+              {/* Section Header */}
+              <div className="px-5 py-3.5 border-b border-slate-800 flex items-baseline justify-between bg-slate-950/40">
                 <div>
-                  <h2 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">
+                  <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
                     {section.title}
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">{section.description}</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">{section.description}</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Module Items List */}
+              <div className="divide-y divide-slate-800/80">
                 {section.items.map((item) => {
                   const Icon = item.icon;
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`group p-4 rounded-xl border transition-all flex flex-col justify-between ${
+                      className={`group p-4 flex items-center justify-between gap-4 transition-colors ${
                         item.isPrimary
-                          ? 'bg-slate-900 border-indigo-500/40 hover:border-indigo-400/80 hover:bg-slate-850'
-                          : 'bg-slate-900 border-slate-800 hover:border-slate-700 hover:bg-slate-850/60'
+                          ? 'bg-slate-900 hover:bg-slate-850'
+                          : 'bg-slate-900 hover:bg-slate-850'
                       }`}
                     >
-                      <div>
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          <div className="flex items-center gap-2.5">
-                            <div
-                              className={`p-2 rounded-lg border ${
-                                item.isPrimary
-                                  ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500/40'
-                                  : 'bg-slate-800 text-slate-300 border-slate-700'
-                              }`}
-                            >
-                              <Icon className="w-4 h-4" />
-                            </div>
-                            <h3 className="text-sm font-semibold text-slate-100 group-hover:text-white transition-colors">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div
+                          className={`p-2 rounded-lg border shrink-0 transition-colors ${
+                            item.isPrimary
+                              ? 'bg-emerald-950/80 text-emerald-400 border-emerald-800/80 group-hover:border-emerald-600'
+                              : 'bg-slate-800 text-slate-300 border-slate-700/80 group-hover:text-white'
+                          }`}
+                        >
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-semibold text-slate-100 group-hover:text-white transition-colors truncate">
                               {item.title}
                             </h3>
+                            {item.badge && (
+                              <span
+                                className={`text-[10px] px-2 py-0.5 rounded font-medium ${
+                                  item.isPrimary
+                                    ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60'
+                                    : 'bg-slate-800 text-slate-300 border border-slate-700'
+                                }`}
+                              >
+                                {item.badge}
+                              </span>
+                            )}
                           </div>
-                          {item.badge && (
-                            <span className="text-[10px] px-2 py-0.5 rounded font-medium bg-indigo-950/80 text-indigo-300 border border-indigo-800/60">
-                              {item.badge}
-                            </span>
-                          )}
+                          <p className="text-xs text-slate-400 mt-0.5 truncate leading-relaxed">
+                            {item.description}
+                          </p>
                         </div>
-
-                        <p className="text-xs text-slate-400 leading-relaxed mb-3">
-                          {item.description}
-                        </p>
                       </div>
 
-                      <div className="pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400 group-hover:text-slate-200">
-                        <span className="font-medium text-slate-400 group-hover:text-indigo-300 transition-colors">
-                          Open module
-                        </span>
-                        <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all" />
+                      <div className="shrink-0 flex items-center text-slate-500 group-hover:text-slate-300 transition-colors">
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                       </div>
                     </Link>
                   );
@@ -333,54 +334,42 @@ function DashboardContent() {
         {/* Right Column (1 span): Operational Context, Connectivity & User Permissions */}
         <div className="space-y-6">
           {/* Store Branch Context */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h2 className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+              <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
                 Store Environment
               </h2>
               <span className="text-[11px] text-slate-400">Monivong Central</span>
             </div>
 
-            <div className="space-y-2.5 text-xs">
-              <div className="p-3 bg-slate-850/80 rounded-lg border border-slate-800/90 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <Store className="w-4 h-4 text-indigo-400 shrink-0" />
-                  <span>Assigned Store:</span>
-                </div>
-                <span className="font-semibold text-slate-100">Central Mart #01</span>
+            <dl className="divide-y divide-slate-800/60 text-xs">
+              <div className="py-2.5 flex items-center justify-between first:pt-0">
+                <dt className="text-slate-400">Assigned Store</dt>
+                <dd className="font-medium text-slate-100">Central Mart #01</dd>
               </div>
 
-              <div className="p-3 bg-slate-850/80 rounded-lg border border-slate-800/90 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <Coins className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>Exchange Rate:</span>
-                </div>
-                <span className="font-mono font-bold text-amber-400">1 USD = 4,100 KHR</span>
+              <div className="py-2.5 flex items-center justify-between">
+                <dt className="text-slate-400">Exchange Rate</dt>
+                <dd className="font-mono font-medium text-amber-400">1 USD = 4,100 KHR</dd>
               </div>
 
-              <div className="p-3 bg-slate-850/80 rounded-lg border border-slate-800/90 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <Clock className="w-4 h-4 text-slate-400 shrink-0" />
-                  <span>Timezone:</span>
-                </div>
-                <span className="font-mono text-slate-300">Asia/Phnom_Penh (UTC+7)</span>
+              <div className="py-2.5 flex items-center justify-between">
+                <dt className="text-slate-400">Operational Timezone</dt>
+                <dd className="font-mono text-slate-300">Asia/Phnom_Penh (UTC+7)</dd>
               </div>
 
-              <div className="p-3 bg-slate-850/80 rounded-lg border border-slate-800/90 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Access Control:</span>
-                </div>
-                <span className="text-emerald-400 font-semibold">Active & Enforced</span>
+              <div className="py-2.5 flex items-center justify-between last:pb-0">
+                <dt className="text-slate-400">Access Control</dt>
+                <dd className="text-emerald-400 font-medium">Active & Enforced</dd>
               </div>
-            </div>
+            </dl>
           </div>
 
           {/* Backend Services Connection Status */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div>
-                <h2 className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+                <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
                   System Health
                 </h2>
                 <p className="text-[11px] text-slate-400 font-mono mt-0.5">{apiUrl}/health</p>
@@ -416,46 +405,40 @@ function DashboardContent() {
             )}
 
             {health && (
-              <div className="space-y-2 text-xs">
-                <div className="flex items-center justify-between p-2.5 bg-slate-850/80 rounded-lg border border-slate-800/90">
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <MonitorCheck className="w-3.5 h-3.5 text-indigo-400" />
-                    <span className="font-medium">API Service</span>
+              <div className="divide-y divide-slate-800/60 text-xs">
+                <div className="py-2.5 flex items-center justify-between first:pt-0">
+                  <div>
+                    <span className="font-medium text-slate-200">API Service</span>
+                    <span className="text-[11px] text-slate-500 block font-mono">REST Gateway</span>
                   </div>
                   <StatusBadge status={health.status} />
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 bg-slate-850/80 rounded-lg border border-slate-800/90">
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <Database className="w-3.5 h-3.5 text-indigo-400" />
-                    <div>
-                      <span className="font-medium">PostgreSQL</span>
-                      <span className="text-[11px] text-slate-400 block">
-                        {health.services.database.latencyMs !== undefined
-                          ? `Latency: ${health.services.database.latencyMs}ms`
-                          : 'Connected'}
-                      </span>
-                    </div>
+                <div className="py-2.5 flex items-center justify-between">
+                  <div>
+                    <span className="font-medium text-slate-200">PostgreSQL</span>
+                    <span className="text-[11px] text-slate-400 block font-mono">
+                      {health.services.database.latencyMs !== undefined
+                        ? `Latency: ${health.services.database.latencyMs}ms`
+                        : 'Connected'}
+                    </span>
                   </div>
                   <StatusBadge status={health.services.database.status} />
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 bg-slate-850/80 rounded-lg border border-slate-800/90">
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <HardDrive className="w-3.5 h-3.5 text-indigo-400" />
-                    <div>
-                      <span className="font-medium">State & Cache</span>
-                      <span className="text-[11px] text-slate-400 block">
-                        {health.services.redis.status === 'in-memory-fallback'
-                          ? 'In-Memory State Store'
-                          : 'Redis Cluster'}
-                      </span>
-                    </div>
+                <div className="py-2.5 flex items-center justify-between">
+                  <div>
+                    <span className="font-medium text-slate-200">State & Cache</span>
+                    <span className="text-[11px] text-slate-400 block">
+                      {health.services.redis.status === 'in-memory-fallback'
+                        ? 'In-Memory State Store'
+                        : 'Redis Cluster'}
+                    </span>
                   </div>
                   <StatusBadge status={health.services.redis.status} />
                 </div>
 
-                <div className="pt-2 text-[11px] text-slate-500 flex justify-between font-mono">
+                <div className="pt-3 text-[11px] text-slate-500 flex justify-between font-mono">
                   <span>Uptime: {health.uptimeSeconds}s</span>
                   <span>Checked: {lastChecked}</span>
                 </div>
@@ -464,12 +447,12 @@ function DashboardContent() {
           </div>
 
           {/* User Roles & Permissions Info */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h2 className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+              <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
                 Assigned Authorizations
               </h2>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-slate-400 font-mono">
                 {user?.permissions?.length || 0} scopes
               </span>
             </div>
@@ -478,7 +461,7 @@ function DashboardContent() {
               {user?.permissions?.map((perm) => (
                 <span
                   key={perm}
-                  className="inline-flex items-center px-2 py-0.5 rounded bg-slate-850 text-slate-300 font-mono text-[11px] border border-slate-700/80"
+                  className="inline-flex items-center px-2 py-0.5 rounded bg-slate-950 text-slate-300 font-mono text-[11px] border border-slate-800"
                 >
                   {perm}
                 </span>
@@ -489,7 +472,7 @@ function DashboardContent() {
       </div>
 
       {/* Footer Info */}
-      <footer className="mt-12 pt-6 border-t border-slate-800/80 text-xs text-slate-400 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <footer className="mt-12 pt-6 border-t border-slate-800 text-xs text-slate-400 flex flex-col sm:flex-row justify-between items-center gap-2">
         <div className="flex items-center gap-2">
           <span className="font-medium text-slate-300">Angkor Fresh Mart</span>
           <span>&bull;</span>

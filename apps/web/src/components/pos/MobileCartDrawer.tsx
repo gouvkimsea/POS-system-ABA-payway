@@ -75,15 +75,15 @@ export const MobileCartDrawer: React.FC<MobileCartDrawerProps> = ({
       <div className="lg:hidden fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] inset-x-0 p-2.5 z-30 pointer-events-none">
         <button
           onClick={onOpen}
-          className="pointer-events-auto w-full max-w-lg mx-auto py-2.5 px-4 bg-slate-900 text-white rounded-xl flex items-center justify-between border border-slate-800 transition-colors"
+          className="pointer-events-auto w-full max-w-lg mx-auto py-2.5 px-4 bg-slate-900 text-white rounded-lg flex items-center justify-between border border-slate-800 transition-colors"
         >
           <div className="flex items-center gap-2.5">
             <div className="relative">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+              <div className="w-8 h-8 rounded-lg bg-emerald-600/30 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
                 <ShoppingBag className="w-4 h-4" />
               </div>
               {totalItemsCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-indigo-600 text-white font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-emerald-600 text-white font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
                   {totalItemsCount}
                 </span>
               )}
@@ -97,7 +97,7 @@ export const MobileCartDrawer: React.FC<MobileCartDrawerProps> = ({
             <span className="font-bold text-sm sm:text-base text-emerald-400 font-mono">
               ${Math.max(0, totalUSD).toFixed(2)}
             </span>
-            <div className="flex items-center gap-1 text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-lg font-semibold">
+            <div className="flex items-center gap-1 text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-lg font-semibold">
               <span>Checkout</span>
               <ArrowUp className="w-3.5 h-3.5" />
             </div>
@@ -108,11 +108,11 @@ export const MobileCartDrawer: React.FC<MobileCartDrawerProps> = ({
       {/* 2. Slide-up Modal Drawer for Mobile with Touch Gesture */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end bg-black/70 animate-in fade-in duration-150"
+          className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end bg-black/70"
           onClick={onClose}
         >
           <div
-            className="bg-white rounded-t-2xl max-h-[92dvh] h-[92dvh] flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-200 border-t border-slate-700"
+            className="bg-slate-900 rounded-t-xl max-h-[92dvh] h-[92dvh] flex flex-col overflow-hidden border-t border-slate-700"
             style={{ transform: touchDelta > 0 ? `translateY(${touchDelta}px)` : undefined }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -121,29 +121,29 @@ export const MobileCartDrawer: React.FC<MobileCartDrawerProps> = ({
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
-              className="pt-2 pb-3 px-4 border-b border-slate-100 bg-slate-50 shrink-0 cursor-grab active:cursor-grabbing select-none"
+              className="pt-2 pb-3 px-4 border-b border-slate-800 bg-slate-950 shrink-0 cursor-grab active:cursor-grabbing select-none"
             >
               {/* Visual Pull Handle */}
-              <div className="w-12 h-1.5 rounded-full bg-slate-300 mx-auto mb-2" />
+              <div className="w-12 h-1.5 rounded-full bg-slate-700 mx-auto mb-2" />
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
                     POS
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-sm text-slate-900 leading-none">
-                      Active Order Cart
+                    <h3 className="font-bold text-sm text-slate-100 leading-none">
+                      Active Cart
                     </h3>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      {cart.length} unique SKU(s) &bull; {totalItemsCount} units
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      {cart.length} item(s) &bull; {totalItemsCount} units
                     </p>
                   </div>
                 </div>
 
                 <button
                   onClick={onClose}
-                  className="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center transition-colors min-h-[36px] min-w-[36px]"
+                  className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition-colors min-h-[36px] min-w-[36px]"
                   aria-label="Close cart drawer"
                 >
                   <X className="w-4 h-4" />

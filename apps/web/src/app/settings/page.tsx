@@ -76,7 +76,7 @@ function SettingsContent() {
   // Users & Roles state
   const [usersList, setUsersList] = useState<UserDetailExtended[]>([]);
   const [rolesList, setRolesList] = useState<RoleDetailExtended[]>([]);
-  const [allPermissions, setAllPermissions] = useState<any[]>([]);
+  const [, setAllPermissions] = useState<any[]>([]);
   const [, setIsLoadingUsers] = useState(false);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showAddPaymentModal, setShowAddPaymentModal] = useState(false);
@@ -356,7 +356,7 @@ function SettingsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col font-sans pb-16">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans pb-16">
       {/* Top Header */}
       <header className="bg-slate-950 border-b border-slate-800 sticky top-0 z-40 px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -369,7 +369,7 @@ function SettingsContent() {
           </Link>
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-              <Sliders className="w-6 h-6 text-indigo-400" />
+              <Sliders className="w-6 h-6 text-emerald-400" />
               Settings
             </h1>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -386,7 +386,7 @@ function SettingsContent() {
             <RefreshCw className="w-3.5 h-3.5" />
             Reload Settings
           </button>
-          <div className="px-3 py-1.5 rounded-lg bg-indigo-950/60 border border-indigo-700/50 text-indigo-300 text-xs font-bold font-mono">
+          <div className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs font-bold font-mono">
             {business.code}
           </div>
         </div>
@@ -394,103 +394,103 @@ function SettingsContent() {
 
       {/* Feedback Toast */}
       {saveSuccess && (
-        <div className="fixed top-20 right-6 z-50 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs sm:text-sm font-bold border border-emerald-400">
+        <div className="fixed top-20 right-6 z-50 bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-xl flex items-center gap-2.5 text-xs sm:text-sm font-bold border border-emerald-400">
           <CheckCircle2 className="w-5 h-5" />
           {saveSuccess}
         </div>
       )}
       {saveError && (
-        <div className="fixed top-20 right-6 z-50 bg-rose-600 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs sm:text-sm font-bold border border-rose-400">
+        <div className="fixed top-20 right-6 z-50 bg-rose-600 text-white px-4 py-3 rounded-lg shadow-xl flex items-center gap-2.5 text-xs sm:text-sm font-bold border border-rose-400">
           <AlertCircle className="w-5 h-5" />
           {saveError}
         </div>
       )}
 
       {/* Main Container */}
-      <div className="max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col md:flex-row gap-6">
+      <div className="max-w-7xl w-full mx-auto p-4 sm:p-6 pb-24 lg:pb-8 flex flex-col md:flex-row gap-6">
         {/* Left Navigation Tabs */}
         <aside className="w-full md:w-64 shrink-0 flex md:flex-col gap-1.5 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
           <button
             onClick={() => setActiveTab('business')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap text-left ${
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap text-left ${
               activeTab === 'business'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/40'
+                ? 'bg-slate-800 text-white border border-slate-700'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
             }`}
           >
-            <Building2 className="w-4 h-4 text-indigo-300" />
+            <Building2 className="w-4 h-4 text-slate-300" />
             Business
           </button>
 
           <button
             onClick={() => setActiveTab('store')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap text-left ${
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap text-left ${
               activeTab === 'store'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/40'
+                ? 'bg-slate-800 text-white border border-slate-700'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
             }`}
           >
-            <Store className="w-4 h-4 text-emerald-300" />
+            <Store className="w-4 h-4 text-slate-300" />
             Store & Receipts
           </button>
 
           <button
             onClick={() => setActiveTab('pos')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap text-left ${
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap text-left ${
               activeTab === 'pos'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/40'
+                ? 'bg-slate-800 text-white border border-slate-700'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
             }`}
           >
-            <Monitor className="w-4 h-4 text-amber-300" />
+            <Monitor className="w-4 h-4 text-slate-300" />
             POS & Sound
           </button>
 
           <button
             onClick={() => setActiveTab('users')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap text-left ${
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap text-left ${
               activeTab === 'users'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/40'
+                ? 'bg-slate-800 text-white border border-slate-700'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
             }`}
           >
-            <Users className="w-4 h-4 text-purple-300" />
+            <Users className="w-4 h-4 text-slate-300" />
             Users & Roles
           </button>
 
           <button
             onClick={() => setActiveTab('payments')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap text-left ${
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap text-left ${
               activeTab === 'payments'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/40'
+                ? 'bg-slate-800 text-white border border-slate-700'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
             }`}
           >
-            <CreditCard className="w-4 h-4 text-rose-300" />
+            <CreditCard className="w-4 h-4 text-slate-300" />
             Payment Methods
           </button>
 
           <button
             onClick={() => setActiveTab('localization')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap text-left ${
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap text-left ${
               activeTab === 'localization'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/40'
+                ? 'bg-slate-800 text-white border border-slate-700'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent'
             }`}
           >
-            <Globe className="w-4 h-4 text-cyan-300" />
+            <Globe className="w-4 h-4 text-slate-300" />
             Localization
           </button>
         </aside>
 
         {/* Right Active Panel Content */}
-        <main className="flex-1 min-w-0 bg-slate-900 border border-slate-800 rounded-xl p-5 sm:p-7">
+        <main className="flex-1 min-w-0 bg-slate-900 border border-slate-800 rounded-lg p-5 sm:p-7">
           {/* TAB 1: BUSINESS */}
           {activeTab === 'business' && (
             <form onSubmit={handleSaveBusiness} className="space-y-6">
               <div>
                 <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-indigo-400" />
+                  <Building2 className="w-5 h-5 text-emerald-400" />
                   Business Details
                 </h2>
                 <p className="text-xs text-slate-400 mt-1">
@@ -508,7 +508,7 @@ function SettingsContent() {
                     required
                     value={bizForm.name}
                     onChange={(e) => setBizForm({ ...bizForm, name: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 font-medium"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-medium"
                   />
                 </div>
 
@@ -521,7 +521,7 @@ function SettingsContent() {
                     value={bizForm.taxNumber || ''}
                     onChange={(e) => setBizForm({ ...bizForm, taxNumber: e.target.value })}
                     placeholder="e.g. K001-90023412"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 font-mono"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono"
                   />
                 </div>
 
@@ -533,7 +533,7 @@ function SettingsContent() {
                     type="text"
                     value={bizForm.phone || ''}
                     onChange={(e) => setBizForm({ ...bizForm, phone: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
@@ -545,7 +545,7 @@ function SettingsContent() {
                     type="email"
                     value={bizForm.email || ''}
                     onChange={(e) => setBizForm({ ...bizForm, email: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
@@ -557,7 +557,7 @@ function SettingsContent() {
                     rows={2}
                     value={bizForm.address || ''}
                     onChange={(e) => setBizForm({ ...bizForm, address: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
@@ -568,7 +568,7 @@ function SettingsContent() {
                     value={bizForm.logoUrl || ''}
                     onChange={(e) => setBizForm({ ...bizForm, logoUrl: e.target.value })}
                     placeholder="https://..."
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 font-mono text-xs"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono text-xs"
                   />
                 </div>
 
@@ -583,7 +583,7 @@ function SettingsContent() {
                     onChange={(e) =>
                       setBizForm({ ...bizForm, baseExchangeRate: Number(e.target.value) })
                     }
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 font-mono"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono"
                   />
                 </div>
 
@@ -594,7 +594,7 @@ function SettingsContent() {
                   <select
                     value={bizForm.timezone}
                     onChange={(e) => setBizForm({ ...bizForm, timezone: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
                   >
                     <option value="Asia/Phnom_Penh">Asia/Phnom_Penh (UTC+7)</option>
                     <option value="Asia/Bangkok">Asia/Bangkok (UTC+7)</option>
@@ -610,7 +610,7 @@ function SettingsContent() {
                   <select
                     value={bizForm.defaultCurrency}
                     onChange={(e) => setBizForm({ ...bizForm, defaultCurrency: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
                   >
                     <option value="USD">USD ($)</option>
                     <option value="KHR">KHR (៛)</option>
@@ -622,7 +622,7 @@ function SettingsContent() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-sm transition-colors disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   {isSaving ? 'Saving...' : 'Save Changes'}
@@ -651,7 +651,7 @@ function SettingsContent() {
                     <select
                       value={selectedStoreId || store.storeId}
                       onChange={(e) => setSelectedStoreId(e.target.value)}
-                      className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-emerald-500"
+                      className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-emerald-500"
                     >
                       {storesList.map((s) => (
                         <option key={s.id} value={s.id}>
@@ -664,7 +664,7 @@ function SettingsContent() {
               </div>
 
               {/* Receipt Layout Section */}
-              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-4">
+              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-lg space-y-4">
                 <h3 className="text-sm font-bold text-emerald-300 flex items-center gap-2">
                   <Printer className="w-4 h-4" />
                   Thermal Receipt Layout
@@ -684,7 +684,7 @@ function SettingsContent() {
                           receipt: { ...storeForm.receipt, customHeader: e.target.value },
                         })
                       }
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
                     />
                   </div>
 
@@ -701,11 +701,11 @@ function SettingsContent() {
                           receipt: { ...storeForm.receipt, customFooter: e.target.value },
                         })
                       }
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-2.5 bg-slate-800/40 rounded-xl border border-slate-700/50">
+                  <div className="flex items-center justify-between p-2.5 bg-slate-800/40 rounded-lg border border-slate-700/50">
                     <span className="text-xs font-medium text-slate-300">Print Store Logo</span>
                     <input
                       type="checkbox"
@@ -720,7 +720,7 @@ function SettingsContent() {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-2.5 bg-slate-800/40 rounded-xl border border-slate-700/50">
+                  <div className="flex items-center justify-between p-2.5 bg-slate-800/40 rounded-lg border border-slate-700/50">
                     <span className="text-xs font-medium text-slate-300">Show Tax Breakdown</span>
                     <input
                       type="checkbox"
@@ -738,7 +738,7 @@ function SettingsContent() {
               </div>
 
               {/* Tax Settings Section */}
-              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-4">
+              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-lg space-y-4">
                 <h3 className="text-sm font-bold text-amber-300 flex items-center gap-2">
                   <DollarSign className="w-4 h-4" />
                   Tax Configuration
@@ -761,11 +761,11 @@ function SettingsContent() {
                           tax: { ...storeForm.tax, defaultTaxRate: Number(e.target.value) },
                         })
                       }
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-2.5 bg-slate-800/40 rounded-xl border border-slate-700/50 sm:col-span-2">
+                  <div className="flex items-center justify-between p-2.5 bg-slate-800/40 rounded-lg border border-slate-700/50 sm:col-span-2">
                     <div>
                       <div className="text-xs font-bold text-slate-200">Tax Inclusive Pricing</div>
                       <div className="text-[10px] text-slate-400">
@@ -788,8 +788,8 @@ function SettingsContent() {
               </div>
 
               {/* Inventory Settings Section */}
-              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-4">
-                <h3 className="text-sm font-bold text-indigo-300 flex items-center gap-2">
+              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-lg space-y-4">
+                <h3 className="text-sm font-bold text-emerald-300 flex items-center gap-2">
                   <Sliders className="w-4 h-4" />
                   Inventory Rules
                 </h3>
@@ -812,11 +812,11 @@ function SettingsContent() {
                           },
                         })
                       }
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-2.5 bg-slate-800/40 rounded-xl border border-slate-700/50">
+                  <div className="flex items-center justify-between p-2.5 bg-slate-800/40 rounded-lg border border-slate-700/50">
                     <div>
                       <div className="text-xs font-bold text-slate-200">Allow Negative Stock</div>
                       <div className="text-[10px] text-slate-400">
@@ -845,7 +845,7 @@ function SettingsContent() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/30 transition-all disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-sm transition-colors disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   {isSaving ? 'Saving...' : 'Save Changes'}
@@ -869,7 +869,7 @@ function SettingsContent() {
 
               {/* Receipt Size & Barcode Behavior */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-3">
+                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-lg space-y-3">
                   <h3 className="text-xs font-bold text-amber-300 flex items-center gap-2">
                     <Printer className="w-4 h-4" />
                     Thermal Receipt Paper Size
@@ -878,7 +878,7 @@ function SettingsContent() {
                     <button
                       type="button"
                       onClick={() => setPosForm({ ...posForm, receiptSize: '80mm' })}
-                      className={`py-2 rounded-xl text-xs font-bold border transition-all ${
+                      className={`py-2 rounded-lg text-xs font-bold border transition-all ${
                         posForm.receiptSize === '80mm'
                           ? 'bg-amber-500/20 text-amber-300 border-amber-500'
                           : 'bg-slate-800 text-slate-400 border-slate-700'
@@ -889,7 +889,7 @@ function SettingsContent() {
                     <button
                       type="button"
                       onClick={() => setPosForm({ ...posForm, receiptSize: '58mm' })}
-                      className={`py-2 rounded-xl text-xs font-bold border transition-all ${
+                      className={`py-2 rounded-lg text-xs font-bold border transition-all ${
                         posForm.receiptSize === '58mm'
                           ? 'bg-amber-500/20 text-amber-300 border-amber-500'
                           : 'bg-slate-800 text-slate-400 border-slate-700'
@@ -900,7 +900,7 @@ function SettingsContent() {
                   </div>
                 </div>
 
-                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-3">
+                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-lg space-y-3">
                   <h3 className="text-xs font-bold text-amber-300 flex items-center gap-2">
                     <Barcode className="w-4 h-4" />
                     Barcode Scanner Behavior
@@ -943,7 +943,7 @@ function SettingsContent() {
               </div>
 
               {/* Sound & Audio Effects */}
-              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-4">
+              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-lg space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-amber-300 flex items-center gap-2">
                     <Volume2 className="w-4 h-4" />
@@ -1020,7 +1020,7 @@ function SettingsContent() {
               </div>
 
               {/* Keyboard Shortcuts Mapping */}
-              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-3">
+              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-lg space-y-3">
                 <h3 className="text-xs font-bold text-amber-300 flex items-center gap-2">
                   <Keyboard className="w-4 h-4" />
                   Keyboard Shortcuts Mapping
@@ -1114,7 +1114,7 @@ function SettingsContent() {
 
               {/* Customer Display & Cash Drawer */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-2">
+                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-lg space-y-2">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
                       <Smartphone className="w-4 h-4" />
@@ -1148,11 +1148,11 @@ function SettingsContent() {
                       })
                     }
                     placeholder="Welcome Message"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white"
                   />
                 </div>
 
-                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-2">
+                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-lg space-y-2">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
                       <DollarSign className="w-4 h-4" />
@@ -1180,7 +1180,7 @@ function SettingsContent() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-sm shadow-lg shadow-amber-600/30 transition-all disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-sm transition-colors disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   {isSaving ? 'Saving...' : 'Save Changes'}
@@ -1195,7 +1195,7 @@ function SettingsContent() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
-                    <Users className="w-5 h-5 text-purple-400" />
+                    <Users className="w-5 h-5 text-emerald-400" />
                     Users & Roles
                   </h2>
                   <p className="text-xs text-slate-400 mt-1">
@@ -1204,7 +1204,7 @@ function SettingsContent() {
                 </div>
                 <button
                   onClick={() => setShowAddUserModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md shadow-purple-600/20"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors shadow-sm"
                 >
                   <Plus className="w-4 h-4" />
                   Add User
@@ -1212,7 +1212,7 @@ function SettingsContent() {
               </div>
 
               {/* Users Table */}
-              <div className="overflow-x-auto rounded-xl border border-slate-800">
+              <div className="overflow-x-auto rounded-lg border border-slate-800">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-900/80 text-slate-400 border-b border-slate-800 uppercase tracking-wider font-semibold">
                     <tr>
@@ -1231,7 +1231,7 @@ function SettingsContent() {
                           <div className="text-[11px] text-slate-400 font-mono">@{u.username}</div>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="px-2.5 py-1 rounded-lg bg-purple-950/60 text-purple-300 font-bold border border-purple-800/40">
+                          <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-200 font-bold border border-slate-700">
                             {u.roles[0]?.roleName || 'Custom'}
                           </span>
                         </td>
@@ -1284,8 +1284,8 @@ function SettingsContent() {
               </div>
 
               {/* Roles & Permissions Summary */}
-              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-3">
-                <h3 className="text-xs font-bold text-purple-300 flex items-center gap-2">
+              <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-lg space-y-3">
+                <h3 className="text-xs font-bold text-emerald-300 flex items-center gap-2">
                   <Shield className="w-4 h-4" />
                   Roles ({rolesList.length})
                 </h3>
@@ -1293,7 +1293,7 @@ function SettingsContent() {
                   {rolesList.map((r) => (
                     <div
                       key={r.id}
-                      className="p-3 bg-slate-950/80 rounded-xl border border-slate-800"
+                      className="p-3 bg-slate-950/80 rounded-lg border border-slate-800"
                     >
                       <div className="font-bold text-white text-xs">{r.name}</div>
                       <div className="text-[10px] text-slate-400 mt-0.5">
@@ -1312,7 +1312,7 @@ function SettingsContent() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
-                    <CreditCard className="w-5 h-5 text-rose-400" />
+                    <CreditCard className="w-5 h-5 text-emerald-400" />
                     Payment Methods
                   </h2>
                   <p className="text-xs text-slate-400 mt-1">
@@ -1321,7 +1321,7 @@ function SettingsContent() {
                 </div>
                 <button
                   onClick={() => setShowAddPaymentModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all shadow-md shadow-rose-600/20"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors shadow-sm"
                 >
                   <Plus className="w-4 h-4" />
                   Add Payment Method
@@ -1332,7 +1332,7 @@ function SettingsContent() {
                 {paymentMethods.map((pm) => (
                   <div
                     key={pm.id}
-                    className={`p-4 rounded-xl border transition-all ${
+                    className={`p-4 rounded-lg border transition-all ${
                       pm.isActive
                         ? 'bg-slate-900/80 border-slate-700/80'
                         : 'bg-slate-900/30 border-slate-800 opacity-60'
@@ -1343,7 +1343,7 @@ function SettingsContent() {
                         <div className="font-bold text-white text-sm flex items-center gap-2">
                           {pm.name}
                           {pm.isDefault && (
-                            <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold">
+                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
                               Default
                             </span>
                           )}
@@ -1356,7 +1356,7 @@ function SettingsContent() {
                       <button
                         type="button"
                         onClick={() => handleTogglePaymentMethod(pm.id)}
-                        className={`px-3 py-1 rounded-xl text-xs font-bold transition-colors ${
+                        className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
                           pm.isActive
                             ? 'bg-emerald-950 text-emerald-300 border border-emerald-700'
                             : 'bg-slate-800 text-slate-400 border border-slate-700'
@@ -1391,9 +1391,9 @@ function SettingsContent() {
               </div>
 
               {/* Live Preview Card */}
-              <div className="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="bg-slate-950 border border-slate-800 p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <div className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">
+                  <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
                     Preview
                   </div>
                   <div className="text-xl font-bold text-white mt-1">
@@ -1403,7 +1403,7 @@ function SettingsContent() {
                     </span>
                   </div>
                   <div className="text-xs text-slate-300 mt-1 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-indigo-400" />
+                    <Clock className="w-3.5 h-3.5 text-slate-400" />
                     {formatDateTime(new Date())}
                   </div>
                 </div>
@@ -1420,7 +1420,7 @@ function SettingsContent() {
                   <select
                     value={locForm.language}
                     onChange={(e) => setLocForm({ ...locForm, language: e.target.value as any })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500 font-medium"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-medium"
                   >
                     <option value="en">English (US/UK)</option>
                     <option value="km">Khmer ភាសាខ្មែរ</option>
@@ -1437,7 +1437,7 @@ function SettingsContent() {
                     onChange={(e) =>
                       setLocForm({ ...locForm, defaultCurrency: e.target.value as any })
                     }
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500 font-medium"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-medium"
                   >
                     <option value="USD">USD ($)</option>
                     <option value="KHR">KHR (៛)</option>
@@ -1459,7 +1459,7 @@ function SettingsContent() {
                         },
                       })
                     }
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
                   >
                     <option value="prefix">Prefix ($100)</option>
                     <option value="suffix">Suffix (100 $)</option>
@@ -1484,7 +1484,7 @@ function SettingsContent() {
                         },
                       })
                     }
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono"
                   />
                 </div>
 
@@ -1503,7 +1503,7 @@ function SettingsContent() {
                         },
                       })
                     }
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono text-xs"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono text-xs"
                   >
                     <option value="DD/MM/YYYY">DD/MM/YYYY (e.g. 08/10/2026)</option>
                     <option value="MM/DD/YYYY">MM/DD/YYYY (e.g. 10/08/2026)</option>
@@ -1511,7 +1511,7 @@ function SettingsContent() {
                   </select>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                <div className="flex items-center justify-between p-3 bg-slate-900/60 rounded-lg border border-slate-800">
                   <div>
                     <div className="text-xs font-bold text-slate-200">24-Hour Time Format</div>
                     <div className="text-[10px] text-slate-400">
@@ -1530,7 +1530,7 @@ function SettingsContent() {
                         },
                       })
                     }
-                    className="w-4 h-4 rounded text-cyan-600 focus:ring-0"
+                    className="w-4 h-4 rounded text-emerald-600 focus:ring-0"
                   />
                 </div>
               </div>
@@ -1539,7 +1539,7 @@ function SettingsContent() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-sm shadow-lg shadow-cyan-600/30 transition-all disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-sm transition-colors disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   {isSaving ? 'Saving...' : 'Save Changes'}
@@ -1553,9 +1553,9 @@ function SettingsContent() {
       {/* Modal: Add User */}
       {showAddUserModal && (
         <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full p-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg max-w-md w-full p-6">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Users className="w-5 h-5 text-purple-400" />
+              <Users className="w-5 h-5 text-emerald-400" />
               Add User
             </h3>
 
@@ -1568,7 +1568,7 @@ function SettingsContent() {
                   value={newUserForm.username}
                   onChange={(e) => setNewUserForm({ ...newUserForm, username: e.target.value })}
                   placeholder="e.g. cashier2"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
                 />
               </div>
 
@@ -1580,7 +1580,7 @@ function SettingsContent() {
                   value={newUserForm.fullName}
                   onChange={(e) => setNewUserForm({ ...newUserForm, fullName: e.target.value })}
                   placeholder="e.g. Sreymom Meas"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
                 />
               </div>
 
@@ -1592,7 +1592,7 @@ function SettingsContent() {
                     required
                     value={newUserForm.password}
                     onChange={(e) => setNewUserForm({ ...newUserForm, password: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
                   />
                 </div>
                 <div>
@@ -1605,7 +1605,7 @@ function SettingsContent() {
                     value={newUserForm.pinCode}
                     onChange={(e) => setNewUserForm({ ...newUserForm, pinCode: e.target.value })}
                     placeholder="1234"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono text-center"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono text-center"
                   />
                 </div>
               </div>
@@ -1615,7 +1615,7 @@ function SettingsContent() {
                 <select
                   value={newUserForm.roleId}
                   onChange={(e) => setNewUserForm({ ...newUserForm, roleId: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
                 >
                   {rolesList.map((r) => (
                     <option key={r.id} value={r.id}>
@@ -1629,13 +1629,13 @@ function SettingsContent() {
                 <button
                   type="button"
                   onClick={() => setShowAddUserModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700"
+                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-500"
+                  className="px-5 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500"
                 >
                   Add User
                 </button>
@@ -1648,9 +1648,9 @@ function SettingsContent() {
       {/* Modal: Add Payment Method */}
       {showAddPaymentModal && (
         <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full p-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg max-w-md w-full p-6">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-rose-400" />
+              <CreditCard className="w-5 h-5 text-emerald-400" />
               Add Payment Method
             </h3>
 
@@ -1663,7 +1663,7 @@ function SettingsContent() {
                   value={newPaymentForm.name}
                   onChange={(e) => setNewPaymentForm({ ...newPaymentForm, name: e.target.value })}
                   placeholder="e.g. Wing Pay QR"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
                 />
               </div>
 
@@ -1677,7 +1677,7 @@ function SettingsContent() {
                     setNewPaymentForm({ ...newPaymentForm, code: e.target.value.toUpperCase() })
                   }
                   placeholder="e.g. WING_QR"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
                 />
               </div>
 
@@ -1686,7 +1686,7 @@ function SettingsContent() {
                 <select
                   value={newPaymentForm.type}
                   onChange={(e) => setNewPaymentForm({ ...newPaymentForm, type: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
                 >
                   <option value="DIGITAL_QR">Digital QR (KHQR / Bakong / e-Wallet)</option>
                   <option value="CARD">Credit / Debit Card</option>
@@ -1707,7 +1707,7 @@ function SettingsContent() {
                     setNewPaymentForm({ ...newPaymentForm, merchantId: e.target.value })
                   }
                   placeholder="e.g. 000192831"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
                 />
               </div>
 
@@ -1715,13 +1715,13 @@ function SettingsContent() {
                 <button
                   type="button"
                   onClick={() => setShowAddPaymentModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700"
+                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-500 shadow-md shadow-rose-600/30"
+                  className="px-5 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500 shadow-sm transition-colors"
                 >
                   Add Payment Method
                 </button>

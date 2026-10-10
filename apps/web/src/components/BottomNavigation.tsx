@@ -81,13 +81,13 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
                 href={item.href}
                 className={`flex-1 flex flex-col items-center justify-center h-full min-h-[48px] py-1 transition-colors ${
                   item.isActive
-                    ? 'text-indigo-400 font-semibold'
+                    ? 'text-emerald-400 font-semibold'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
                 <div
                   className={`p-1 rounded-lg ${
-                    item.isActive ? 'bg-indigo-600/20 text-indigo-400' : ''
+                    item.isActive ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/60' : ''
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -124,7 +124,7 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <div>
-                <h3 className="text-sm font-semibold text-white">Operations Menu</h3>
+                <h3 className="text-sm font-semibold text-white">Menu</h3>
                 <p className="text-[11px] text-slate-400">
                   {user?.fullName || 'Cashier'} &bull; {user?.roles?.join(', ')}
                 </p>
@@ -139,20 +139,20 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
             </div>
 
             {/* Menu Links Grid */}
-            <div className="grid grid-cols-2 gap-2.5 mt-4">
+            <div className="grid grid-cols-2 gap-2 mt-4">
               <Link
                 href="/"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
+                className="p-3 rounded-lg bg-slate-800 border border-slate-700/60 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-750 transition min-h-[44px]"
               >
-                <Home className="w-4 h-4 text-indigo-400" />
+                <Home className="w-4 h-4 text-emerald-400" />
                 <span>Dashboard</span>
               </Link>
 
               <Link
                 href="/settings/stores"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
+                className="p-3 rounded-lg bg-slate-800 border border-slate-700/60 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-750 transition min-h-[44px]"
               >
                 <Building2 className="w-4 h-4 text-slate-400" />
                 <span>Branches</span>
@@ -161,7 +161,7 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
               <Link
                 href="/reports/register-sessions"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
+                className="p-3 rounded-lg bg-slate-800 border border-slate-700/60 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-750 transition min-h-[44px]"
               >
                 <Coins className="w-4 h-4 text-amber-400" />
                 <span>Shift Reports</span>
@@ -170,25 +170,25 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
               <Link
                 href="/settings/sync"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
+                className="p-3 rounded-lg bg-slate-800 border border-slate-700/60 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-750 transition min-h-[44px]"
               >
-                <RefreshCw className="w-4 h-4 text-sky-400" />
+                <RefreshCw className="w-4 h-4 text-slate-400" />
                 <span>Offline Sync</span>
               </Link>
 
               <Link
                 href="/settings/hardware"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
+                className="p-3 rounded-lg bg-slate-800 border border-slate-700/60 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-750 transition min-h-[44px]"
               >
-                <Cpu className="w-4 h-4 text-purple-400" />
+                <Cpu className="w-4 h-4 text-slate-400" />
                 <span>Hardware</span>
               </Link>
 
               <Link
                 href="/customers"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
+                className="p-3 rounded-lg bg-slate-800 border border-slate-700/60 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-750 transition min-h-[44px]"
               >
                 <Users className="w-4 h-4 text-slate-400" />
                 <span>Customers</span>
@@ -197,10 +197,10 @@ export function BottomNavigation({ isPosPage: _isPosPage = false }: BottomNaviga
               <Link
                 href="/settings"
                 onClick={() => setIsMoreMenuOpen(false)}
-                className="col-span-2 p-3 rounded-xl bg-slate-850 border border-slate-800 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition"
+                className="col-span-2 p-3 rounded-lg bg-slate-800 border border-slate-700/60 flex items-center gap-2.5 text-xs font-medium text-slate-200 hover:bg-slate-750 transition min-h-[44px]"
               >
-                <Sliders className="w-4 h-4 text-indigo-400" />
-                <span>All Settings</span>
+                <Sliders className="w-4 h-4 text-slate-400" />
+                <span>Settings</span>
               </Link>
             </div>
 

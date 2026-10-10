@@ -234,7 +234,7 @@ function SyncMonitorContent() {
           </Link>
           <div className="h-4 w-px bg-slate-700" />
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
               <Database className="w-4 h-4" />
             </div>
             <div>
@@ -290,12 +290,12 @@ function SyncMonitorContent() {
       {/* Toast Alert */}
       {notification && (
         <div
-          className={`fixed top-20 right-6 z-50 px-4 py-2.5 rounded-xl shadow-lg border text-xs font-medium flex items-center gap-2 animate-in fade-in slide-in-from-top-2 ${
+          className={`fixed top-20 right-6 z-50 px-4 py-2.5 rounded-lg shadow-lg border text-xs font-medium flex items-center gap-2 ${
             notification.type === 'success'
               ? 'bg-emerald-950 text-emerald-200 border-emerald-700'
               : notification.type === 'warn'
                 ? 'bg-amber-950 text-amber-200 border-amber-700'
-                : 'bg-indigo-950 text-indigo-200 border-indigo-700'
+                : 'bg-slate-900 text-slate-200 border-slate-700'
           }`}
         >
           {notification.type === 'success' ? (
@@ -303,7 +303,7 @@ function SyncMonitorContent() {
           ) : notification.type === 'warn' ? (
             <AlertTriangle className="w-4 h-4 text-amber-400" />
           ) : (
-            <Clock className="w-4 h-4 text-indigo-400" />
+            <Clock className="w-4 h-4 text-slate-400" />
           )}
           <span>{notification.msg}</span>
         </div>
@@ -314,17 +314,17 @@ function SyncMonitorContent() {
         {/* KPI Metric Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {/* Card 1: Total Queued */}
-          <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3.5 flex flex-col justify-between">
+          <div className="bg-slate-800/80 border border-slate-700/80 rounded-lg p-3.5 flex flex-col justify-between">
             <div className="flex items-center justify-between text-slate-400 text-xs">
               <span>Total Queued</span>
-              <Layers className="w-4 h-4 text-indigo-400" />
+              <Layers className="w-4 h-4 text-emerald-400" />
             </div>
             <div className="text-2xl font-black text-white mt-2">{stats.totalQueued}</div>
             <div className="text-[10px] text-slate-400 mt-1">Local queue</div>
           </div>
 
           {/* Card 2: Pending */}
-          <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3.5 flex flex-col justify-between">
+          <div className="bg-slate-800/80 border border-slate-700/80 rounded-lg p-3.5 flex flex-col justify-between">
             <div className="flex items-center justify-between text-slate-400 text-xs">
               <span>Pending</span>
               <Clock className="w-4 h-4 text-amber-400" />
@@ -334,7 +334,7 @@ function SyncMonitorContent() {
           </div>
 
           {/* Card 3: Syncing */}
-          <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3.5 flex flex-col justify-between">
+          <div className="bg-slate-800/80 border border-slate-700/80 rounded-lg p-3.5 flex flex-col justify-between">
             <div className="flex items-center justify-between text-slate-400 text-xs">
               <span>Syncing</span>
               <RefreshCw className={`w-4 h-4 text-blue-400 ${isSyncing ? 'animate-spin' : ''}`} />
@@ -346,7 +346,7 @@ function SyncMonitorContent() {
           </div>
 
           {/* Card 4: Synchronized */}
-          <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3.5 flex flex-col justify-between">
+          <div className="bg-slate-800/80 border border-slate-700/80 rounded-lg p-3.5 flex flex-col justify-between">
             <div className="flex items-center justify-between text-slate-400 text-xs">
               <span>Synchronized</span>
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -359,7 +359,7 @@ function SyncMonitorContent() {
 
           {/* Card 5: Conflicts */}
           <div
-            className={`border rounded-xl p-3.5 flex flex-col justify-between ${
+            className={`border rounded-lg p-3.5 flex flex-col justify-between ${
               stats.conflictCount > 0
                 ? 'bg-rose-950/40 border-rose-700 text-rose-300'
                 : 'bg-slate-800/80 border-slate-700/80'
@@ -382,7 +382,7 @@ function SyncMonitorContent() {
           </div>
 
           {/* Card 6: Failed */}
-          <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3.5 flex flex-col justify-between">
+          <div className="bg-slate-800/80 border border-slate-700/80 rounded-lg p-3.5 flex flex-col justify-between">
             <div className="flex items-center justify-between text-slate-400 text-xs">
               <span>Failed</span>
               <XCircle className="w-4 h-4 text-rose-400" />
@@ -393,12 +393,12 @@ function SyncMonitorContent() {
         </div>
 
         {/* Action Toolbar */}
-        <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="bg-slate-800/60 border border-slate-700 rounded-lg p-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <button
               onClick={handleTriggerSync}
               disabled={isSyncing || !isOnline}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg text-xs font-bold transition-all shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg text-xs font-bold transition-all shadow-sm"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
               <span>{isSyncing ? 'Syncing...' : 'Sync Now'}</span>
@@ -436,7 +436,7 @@ function SyncMonitorContent() {
               title="Refresh queue view"
             >
               <RefreshCw
-                className={`w-3.5 h-3.5 ${isLoadingData ? 'animate-spin text-indigo-400' : ''}`}
+                className={`w-3.5 h-3.5 ${isLoadingData ? 'animate-spin text-emerald-400' : ''}`}
               />
             </button>
           </div>
@@ -449,7 +449,7 @@ function SyncMonitorContent() {
               onClick={() => setActiveTab('all')}
               className={`px-3.5 py-2 text-xs font-bold border-b-2 transition-colors ${
                 activeTab === 'all'
-                  ? 'border-indigo-500 text-indigo-400'
+                  ? 'border-emerald-500 text-emerald-400'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -509,7 +509,7 @@ function SyncMonitorContent() {
               onClick={() => setActiveTab('server_db')}
               className={`px-3.5 py-2 text-xs font-bold border-b-2 flex items-center gap-1.5 transition-colors ${
                 activeTab === 'server_db'
-                  ? 'border-indigo-500 text-indigo-400'
+                  ? 'border-emerald-500 text-emerald-400'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -521,7 +521,7 @@ function SyncMonitorContent() {
 
         {/* Tab Content: Client Queue Table */}
         {activeTab !== 'server_db' && (
-          <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl overflow-hidden shadow-xs">
+          <div className="bg-slate-800/80 border border-slate-700/80 rounded-lg overflow-hidden shadow-xs">
             {filteredItems.length === 0 ? (
               <div className="p-12 text-center text-slate-400 space-y-3">
                 <CheckCircle2 className="w-10 h-10 text-slate-600 mx-auto" />
@@ -676,7 +676,7 @@ function SyncMonitorContent() {
 
         {/* Tab Content: Server PostgreSQL SyncQueue Records */}
         {activeTab === 'server_db' && (
-          <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl overflow-hidden shadow-xs">
+          <div className="bg-slate-800/80 border border-slate-700/80 rounded-lg overflow-hidden shadow-xs">
             {serverRecords.length === 0 ? (
               <div className="p-12 text-center text-slate-400 space-y-3">
                 <Server className="w-10 h-10 text-slate-600 mx-auto" />
@@ -731,7 +731,7 @@ function SyncMonitorContent() {
                             {rec.status}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-[11px] text-indigo-400 font-mono">
+                        <td className="px-4 py-3 text-[11px] text-emerald-400 font-mono">
                           {rec.orderId || '—'}
                         </td>
                         <td className="px-4 py-3 text-slate-400 text-[11px] max-w-xs truncate">
@@ -751,7 +751,7 @@ function SyncMonitorContent() {
       {/* Transaction Details Modal */}
       {selectedItem && (
         <div className="fixed inset-0 bg-slate-950/80 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-700 rounded-lg max-w-2xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div>
                 <h3 className="font-bold text-base text-white">
@@ -771,7 +771,7 @@ function SyncMonitorContent() {
 
             {/* Status Alert Banner */}
             <div
-              className={`p-3 rounded-xl border text-xs font-medium flex items-center gap-2 ${
+              className={`p-3 rounded-lg border text-xs font-medium flex items-center gap-2 ${
                 selectedItem.status === 'synchronized'
                   ? 'bg-emerald-950/60 text-emerald-300 border-emerald-700'
                   : selectedItem.status === 'conflict'
@@ -791,7 +791,7 @@ function SyncMonitorContent() {
             {/* Line items list */}
             <div className="space-y-2">
               <h4 className="text-xs font-bold uppercase text-slate-400 font-mono">Line Items</h4>
-              <div className="bg-slate-950 rounded-xl p-3 divide-y divide-slate-800 text-xs font-mono">
+              <div className="bg-slate-950 rounded-lg p-3 divide-y divide-slate-800 text-xs font-mono">
                 {selectedItem.payload.items.map((item, i) => (
                   <div key={i} className="py-2 flex justify-between items-center">
                     <div>
@@ -815,7 +815,7 @@ function SyncMonitorContent() {
               <h4 className="text-xs font-bold uppercase text-slate-400 font-mono">
                 Payments Tendered
               </h4>
-              <div className="bg-slate-950 rounded-xl p-3 divide-y divide-slate-800 text-xs font-mono">
+              <div className="bg-slate-950 rounded-lg p-3 divide-y divide-slate-800 text-xs font-mono">
                 {selectedItem.payload.payments.map((p, i) => (
                   <div key={i} className="py-2 flex justify-between items-center">
                     <span className="text-slate-300">{p.paymentMethodCode}</span>
@@ -829,7 +829,7 @@ function SyncMonitorContent() {
 
             {/* Error message if any */}
             {selectedItem.errorMessage && (
-              <div className="p-3 bg-rose-950/40 border border-rose-800 rounded-xl text-rose-300 text-xs">
+              <div className="p-3 bg-rose-950/40 border border-rose-800 rounded-lg text-rose-300 text-xs">
                 <span className="font-bold">Error Notice:</span> {selectedItem.errorMessage}
               </div>
             )}
@@ -849,7 +849,7 @@ function SyncMonitorContent() {
       {/* Conflict Resolution Modal */}
       {conflictItem && (
         <div className="fixed inset-0 bg-slate-950/80 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-900 border border-rose-700/80 rounded-xl max-w-xl w-full p-6 space-y-4">
+          <div className="bg-slate-900 border border-rose-700/80 rounded-lg max-w-xl w-full p-6 space-y-4">
             <div className="flex items-center gap-3 text-rose-400 border-b border-slate-800 pb-3">
               <ShieldAlert className="w-6 h-6" />
               <div>
@@ -862,14 +862,14 @@ function SyncMonitorContent() {
               </div>
             </div>
 
-            <div className="p-3 bg-rose-950/40 border border-rose-800/80 rounded-xl text-xs space-y-1 text-rose-200">
+            <div className="p-3 bg-rose-950/40 border border-rose-800/80 rounded-lg text-xs space-y-1 text-rose-200">
               <div className="font-bold">Reason:</div>
               <p>{conflictItem.conflict?.message || conflictItem.errorMessage}</p>
             </div>
 
             {/* Side-by-side comparison */}
             <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-              <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
+              <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-2">
                 <div className="font-bold text-amber-400 uppercase text-[10px]">
                   Local Offline Sale
                 </div>
@@ -882,8 +882,8 @@ function SyncMonitorContent() {
                 </div>
               </div>
 
-              <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
-                <div className="font-bold text-indigo-400 uppercase text-[10px]">
+              <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-2">
+                <div className="font-bold text-sky-400 uppercase text-[10px]">
                   Current Server State
                 </div>
                 <div className="text-slate-300">
@@ -905,7 +905,7 @@ function SyncMonitorContent() {
               </button>
               <button
                 onClick={() => handleResolveConflict(conflictItem, 'RETRY')}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition-colors"
+                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-xs font-bold transition-colors"
               >
                 Retry Sync
               </button>

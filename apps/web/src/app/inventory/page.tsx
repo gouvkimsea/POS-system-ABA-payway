@@ -329,7 +329,7 @@ function InventoryHubContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-600 selection:text-white">
       {/* Top Header & Tab Navigation */}
       <InventoryNav
         activeTab={activeTab}
@@ -348,8 +348,8 @@ function InventoryHubContent() {
         {isLoading && (
           <div className="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 flex items-center justify-between text-xs text-slate-300">
             <span className="flex items-center space-x-2">
-              <RefreshCw className="w-4 h-4 animate-spin text-indigo-400" />
-              <span>Updating catalog and inventory records...</span>
+              <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
+              <span>Loading inventory...</span>
             </span>
           </div>
         )}
@@ -357,7 +357,7 @@ function InventoryHubContent() {
         {/* Toast Alert */}
         {toastMessage && (
           <div
-            className={`fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-50 px-4 py-3 rounded-xl shadow-xl border text-sm flex items-center space-x-2 ${
+            className={`fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-50 px-4 py-3 rounded-lg shadow-xl border text-sm flex items-center space-x-2 ${
               toastMessage.type === 'success'
                 ? 'bg-emerald-950/90 text-emerald-200 border-emerald-500/40'
                 : 'bg-rose-950/90 text-rose-200 border-rose-500/40'
@@ -378,7 +378,7 @@ function InventoryHubContent() {
         {activeTab === 'products' && (
           <section className="space-y-5">
             {/* Action Bar & Filtering */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-lg flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 shadow-lg flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
               {/* Search & Selectors */}
               <div className="flex flex-wrap items-center gap-3 flex-1">
                 <div className="relative min-w-[240px] flex-1">
@@ -390,14 +390,14 @@ function InventoryHubContent() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search by English, Khmer name, SKU, barcode..."
-                    className="w-full pl-9 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500"
+                    className="w-full pl-9 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
                   />
                 </div>
 
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
+                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500"
                 >
                   <option value="">All Categories</option>
                   {categories.map((c) => (
@@ -410,7 +410,7 @@ function InventoryHubContent() {
                 <select
                   value={selectedBrand}
                   onChange={(e) => setSelectedBrand(e.target.value)}
-                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
+                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500"
                 >
                   <option value="">All Brands</option>
                   {brands.map((b) => (
@@ -423,7 +423,7 @@ function InventoryHubContent() {
                 <select
                   value={selectedSupplier}
                   onChange={(e) => setSelectedSupplier(e.target.value)}
-                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
+                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500"
                 >
                   <option value="">All Suppliers</option>
                   {suppliers.map((s) => (
@@ -453,7 +453,7 @@ function InventoryHubContent() {
                     setEditingProduct(null);
                     setIsProductModalOpen(true);
                   }}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center space-x-2"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center space-x-2"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Product</span>
@@ -462,18 +462,18 @@ function InventoryHubContent() {
             </div>
 
             {/* Products Table */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
+            <div className="bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead className="bg-slate-800/80 text-slate-300 uppercase tracking-wider text-[11px] border-b border-slate-700">
                     <tr>
-                      <th className="py-3.5 px-4 font-semibold">Product &amp; Khmer</th>
-                      <th className="py-3.5 px-4 font-semibold">SKU / Barcode</th>
-                      <th className="py-3.5 px-4 font-semibold">Classification</th>
-                      <th className="py-3.5 px-4 font-semibold text-right">Cost / Selling</th>
-                      <th className="py-3.5 px-4 font-semibold text-center">Stock Level</th>
-                      <th className="py-3.5 px-4 font-semibold text-center">Status</th>
-                      <th className="py-3.5 px-4 font-semibold text-right">Actions</th>
+                      <th className="py-3.5 px-4 font-semibold min-w-[180px]">Product</th>
+                      <th className="py-3.5 px-4 font-semibold whitespace-nowrap">SKU / Barcode</th>
+                      <th className="py-3.5 px-4 font-semibold whitespace-nowrap">Classification</th>
+                      <th className="py-3.5 px-4 font-semibold text-right whitespace-nowrap">Cost / Price</th>
+                      <th className="py-3.5 px-4 font-semibold text-center whitespace-nowrap">Stock</th>
+                      <th className="py-3.5 px-4 font-semibold text-center whitespace-nowrap">Status</th>
+                      <th className="py-3.5 px-4 font-semibold text-right whitespace-nowrap">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">
@@ -481,7 +481,7 @@ function InventoryHubContent() {
                       <tr>
                         <td colSpan={7} className="py-12 px-4 text-center">
                           <div className="max-w-sm mx-auto space-y-3">
-                            <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
+                            <div className="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
                               <Package className="w-5 h-5" />
                             </div>
                             <div>
@@ -503,7 +503,7 @@ function InventoryHubContent() {
                                 }}
                                 className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition-colors"
                               >
-                                Reset All Filters
+                                Reset Filters
                               </button>
                             ) : (
                               <button
@@ -511,10 +511,10 @@ function InventoryHubContent() {
                                   setEditingProduct(null);
                                   setIsProductModalOpen(true);
                                 }}
-                                className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-colors inline-flex items-center gap-1.5"
+                                className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-sm transition-colors inline-flex items-center gap-1.5"
                               >
                                 <Plus className="w-3.5 h-3.5" />
-                                Add First Product
+                                Add Product
                               </button>
                             )}
                           </div>
@@ -541,7 +541,7 @@ function InventoryHubContent() {
                                 <div>
                                   <p className="font-bold text-white text-sm">{product.name}</p>
                                   {product.nameKhmer && (
-                                    <p className="text-indigo-300 text-xs font-medium">
+                                    <p className="text-emerald-400 text-xs font-medium">
                                       {product.nameKhmer}
                                     </p>
                                   )}
@@ -563,7 +563,7 @@ function InventoryHubContent() {
                             {/* Classification */}
                             <td className="py-3.5 px-4 space-y-1">
                               {product.categoryName ? (
-                                <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">
                                   {product.categoryName}
                                 </span>
                               ) : (
@@ -664,22 +664,22 @@ function InventoryHubContent() {
                           {product.variants && product.variants.length > 0 && (
                             <tr className="bg-slate-900/60">
                               <td colSpan={7} className="px-6 py-2.5">
-                                <div className="pl-6 border-l-2 border-indigo-500/40 space-y-1.5">
-                                  <p className="text-[11px] font-bold uppercase tracking-wider text-indigo-400">
-                                    Registered Variants ({product.variants.length})
+                                <div className="pl-6 border-l-2 border-emerald-500/40 space-y-1.5">
+                                  <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">
+                                    Variants ({product.variants.length})
                                   </p>
                                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                                     {product.variants.map((v) => (
                                       <div
                                         key={v.id}
-                                        className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700/80 flex items-center justify-between text-xs"
+                                        className="p-2.5 bg-slate-800/80 rounded-lg border border-slate-700/80 flex items-center justify-between text-xs"
                                       >
                                         <div>
                                           <p className="font-bold text-white">{v.name}</p>
                                           <p className="font-mono text-[10px] text-slate-300">
                                             SKU: {v.sku} {v.barcode ? `&bull; ${v.barcode}` : ''}
                                           </p>
-                                          <div className="flex flex-wrap gap-1 mt-1 text-[10px] text-indigo-300">
+                                          <div className="flex flex-wrap gap-1 mt-1 text-[10px] text-slate-300">
                                             {v.size && (
                                               <span className="bg-slate-700 px-1.5 py-0.2 rounded">
                                                 Size: {v.size}
@@ -706,7 +706,7 @@ function InventoryHubContent() {
                                           <span className="font-bold text-emerald-400 block">
                                             ${v.sellingPriceUSD.toFixed(2)}
                                           </span>
-                                          <span className="text-[11px] font-bold text-indigo-300">
+                                          <span className="text-[11px] font-bold text-slate-200">
                                             {v.stockQuantity} pcs
                                           </span>
                                           <div className="flex items-center space-x-1 mt-1">
@@ -724,7 +724,7 @@ function InventoryHubContent() {
                                               onClick={() => handleDeleteVariant(v)}
                                               className="text-[10px] text-rose-400 hover:text-rose-300 underline"
                                             >
-                                              Del
+                                              Delete
                                             </button>
                                           </div>
                                         </div>
@@ -752,28 +752,28 @@ function InventoryHubContent() {
           <section className="space-y-5">
             {/* Stock Metric Highlights */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-md">
-                <p className="text-xs font-semibold text-slate-400">Total Tracked Items</p>
+              <div className="p-4 bg-slate-900 border border-slate-800 rounded-lg shadow-md">
+                <p className="text-xs font-semibold text-slate-400">Total Items</p>
                 <p className="text-2xl font-extrabold text-white mt-1">{stockLevels.length}</p>
               </div>
-              <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-md">
-                <p className="text-xs font-semibold text-slate-400">Physical Units in Stock</p>
+              <div className="p-4 bg-slate-900 border border-slate-800 rounded-lg shadow-md">
+                <p className="text-xs font-semibold text-slate-400">Total Units</p>
                 <p className="text-2xl font-extrabold text-emerald-400 mt-1">
                   {stockLevels.reduce((acc, s) => acc + s.quantity, 0).toLocaleString()}
                 </p>
               </div>
-              <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-md">
-                <p className="text-xs font-semibold text-slate-400">Low Stock Items</p>
+              <div className="p-4 bg-slate-900 border border-slate-800 rounded-lg shadow-md">
+                <p className="text-xs font-semibold text-slate-400">Low Stock</p>
                 <p className="text-2xl font-extrabold text-amber-400 mt-1">{lowStockCount}</p>
               </div>
-              <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-md flex items-center justify-between">
+              <div className="p-4 bg-slate-900 border border-slate-800 rounded-lg shadow-md flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold text-slate-400">Inventory Locations</p>
-                  <p className="text-2xl font-extrabold text-indigo-400 mt-1">{locations.length}</p>
+                  <p className="text-xs font-semibold text-slate-400">Locations</p>
+                  <p className="text-2xl font-extrabold text-slate-200 mt-1">{locations.length}</p>
                 </div>
                 <button
                   onClick={() => setIsAdjustmentModalOpen(true)}
-                  className="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition"
+                  className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition"
                 >
                   Adjust Stock
                 </button>
@@ -781,17 +781,17 @@ function InventoryHubContent() {
             </div>
 
             {/* Filter Controls */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-wrap items-center gap-3 justify-between">
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 flex flex-wrap items-center gap-3 justify-between">
               <div className="flex flex-wrap items-center gap-3 flex-1">
                 <select
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
+                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white"
                 >
-                  <option value="">All Storage Locations</option>
+                  <option value="">All Locations</option>
                   {locations.map((loc) => (
                     <option key={loc.id} value={loc.id}>
-                      {loc.name} {loc.isDefault ? '(Default Sales Floor)' : ''}
+                      {loc.name} {loc.isDefault ? '(Default)' : ''}
                     </option>
                   ))}
                 </select>
@@ -801,7 +801,7 @@ function InventoryHubContent() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Filter stock by product name or SKU..."
-                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white min-w-[220px]"
+                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white min-w-[220px]"
                 />
 
                 <button
@@ -813,14 +813,14 @@ function InventoryHubContent() {
                   }`}
                 >
                   <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                  <span>Low Stock Alert ({lowStockCount})</span>
+                  <span>Low Stock ({lowStockCount})</span>
                 </button>
               </div>
 
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setIsTransferModalOpen(true)}
-                  className="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-xs font-semibold transition-colors flex items-center space-x-1.5"
+                  className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold transition-colors flex items-center space-x-1.5"
                 >
                   <ArrowLeftRight className="w-3.5 h-3.5 shrink-0" />
                   <span>Transfer Stock</span>
@@ -829,7 +829,7 @@ function InventoryHubContent() {
             </div>
 
             {/* Granular Stock Balances Table */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
+            <div className="bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead className="bg-slate-800/80 text-slate-300 uppercase tracking-wider text-[11px] border-b border-slate-700">
@@ -837,17 +837,17 @@ function InventoryHubContent() {
                       <th className="py-3 px-4 font-semibold">Location</th>
                       <th className="py-3 px-4 font-semibold">Product Name</th>
                       <th className="py-3 px-4 font-semibold">SKU / Barcode</th>
-                      <th className="py-3 px-4 font-semibold text-center">Available Stock</th>
-                      <th className="py-3 px-4 font-semibold text-center">Reorder Threshold</th>
-                      <th className="py-3 px-4 font-semibold text-center">Indicator</th>
-                      <th className="py-3 px-4 font-semibold text-right">Quick Action</th>
+                      <th className="py-3 px-4 font-semibold text-center">In Stock</th>
+                      <th className="py-3 px-4 font-semibold text-center">Reorder At</th>
+                      <th className="py-3 px-4 font-semibold text-center">Status</th>
+                      <th className="py-3 px-4 font-semibold text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">
                     {stockLevels.length === 0 ? (
                       <tr>
                         <td colSpan={7} className="py-12 text-center text-slate-400">
-                          No stock inventory matches criteria.
+                          No items found matching the selected filters.
                         </td>
                       </tr>
                     ) : (
@@ -862,7 +862,7 @@ function InventoryHubContent() {
                           <td className="py-3.5 px-4">
                             <p className="font-bold text-white text-sm">{item.productName}</p>
                             {item.productNameKhmer && (
-                              <p className="text-indigo-300 text-xs">{item.productNameKhmer}</p>
+                              <p className="text-emerald-400 text-xs">{item.productNameKhmer}</p>
                             )}
                             {item.variantName && (
                               <span className="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[10px] bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30">
@@ -895,7 +895,7 @@ function InventoryHubContent() {
                               </span>
                             ) : (
                               <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/80">
-                                Optimal
+                                In Stock
                               </span>
                             )}
                           </td>
@@ -907,7 +907,7 @@ function InventoryHubContent() {
                               }}
                               className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium transition"
                             >
-                              Adjust
+                              Adjust Stock
                             </button>
                           </td>
                         </tr>
@@ -925,21 +925,21 @@ function InventoryHubContent() {
            ========================================================================= */}
         {activeTab === 'adjustments' && (
           <section className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
               <h2 className="text-lg font-bold text-white mb-2">
                 Stock Operations
               </h2>
               <p className="text-slate-400 text-xs max-w-3xl leading-relaxed">
-                Record audited inventory adjustments, supplier deliveries, damaged write-offs, and inter-location transfers.
+                Record stock adjustments, supplier deliveries, damaged items, and location transfers.
               </p>
 
               <div className="mt-5 flex flex-wrap gap-3">
                 <button
                   onClick={() => setIsAdjustmentModalOpen(true)}
-                  className="px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition flex items-center space-x-2"
+                  className="px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition flex items-center space-x-2"
                 >
                   <Package className="w-4 h-4" />
-                  <span>Record Stock Adjustment</span>
+                  <span>Adjust Stock</span>
                 </button>
 
                 <button
@@ -947,42 +947,42 @@ function InventoryHubContent() {
                   className="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs transition flex items-center space-x-2"
                 >
                   <ArrowLeftRight className="w-4 h-4 text-slate-400" />
-                  <span>Location Transfer</span>
+                  <span>Transfer Stock</span>
                 </button>
               </div>
             </div>
 
             {/* Quick Adjustment Shortcuts */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
+              <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 space-y-2">
                 <div className="w-9 h-9 rounded-lg bg-emerald-950/80 border border-emerald-800/80 text-emerald-400 flex items-center justify-center">
                   <Package className="w-4 h-4" />
                 </div>
                 <h3 className="font-semibold text-white text-sm">Purchase Receiving</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Receive inbound supplier deliveries directly into the central warehouse or floor displays with supplier invoice references.
+                  Receive supplier deliveries into a storage location or sales floor.
                 </p>
               </div>
 
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
+              <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 space-y-2">
                 <div className="w-9 h-9 rounded-lg bg-rose-950/80 border border-rose-800/80 text-rose-400 flex items-center justify-center">
                   <AlertTriangle className="w-4 h-4" />
                 </div>
                 <h3 className="font-semibold text-white text-sm">
-                  Damage &amp; Expiration Write-offs
+                  Damaged &amp; Expired Items
                 </h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Deduct broken, damaged packaging, or date-expired goods with reason documentation.
+                  Deduct broken, damaged, or expired items with a note explaining the reason.
                 </p>
               </div>
 
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
+              <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 space-y-2">
                 <div className="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center">
                   <ArrowLeftRight className="w-4 h-4" />
                 </div>
-                <h3 className="font-semibold text-white text-sm">Store Location Transfers</h3>
+                <h3 className="font-semibold text-white text-sm">Location Transfers</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Move inventory between storage rooms and counter shelves atomically.
+                  Move stock between storage rooms and shelves.
                 </p>
               </div>
             </div>
@@ -995,29 +995,29 @@ function InventoryHubContent() {
         {activeTab === 'movements' && (
           <section className="space-y-5">
             {/* Filter Bar */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-wrap items-center gap-3 justify-between">
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 flex flex-wrap items-center gap-3 justify-between">
               <div className="flex flex-wrap items-center gap-3 flex-1">
                 <select
                   value={selectedMovementType}
                   onChange={(e) => setSelectedMovementType(e.target.value)}
-                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
+                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white"
                 >
                   <option value="">All Movement Types</option>
-                  <option value="SALE">SALE (Customer POS Checkout)</option>
-                  <option value="PURCHASE">PURCHASE (Supplier Receiving)</option>
-                  <option value="RETURN">RETURN (Customer Return)</option>
-                  <option value="ADJUSTMENT_IN">ADJUSTMENT_IN (Manual Stock Found)</option>
-                  <option value="ADJUSTMENT_OUT">ADJUSTMENT_OUT (Manual Stock Reduction)</option>
-                  <option value="DAMAGE">DAMAGE (Broken / Damaged Stock)</option>
-                  <option value="EXPIRED">EXPIRED (Expired Goods Write-off)</option>
-                  <option value="TRANSFER_IN">TRANSFER_IN (Received from Transfer)</option>
-                  <option value="TRANSFER_OUT">TRANSFER_OUT (Dispatched in Transfer)</option>
+                  <option value="SALE">Sale (POS Checkout)</option>
+                  <option value="PURCHASE">Purchase (Supplier Delivery)</option>
+                  <option value="RETURN">Return (Customer Return)</option>
+                  <option value="ADJUSTMENT_IN">Adjustment In (Stock Added)</option>
+                  <option value="ADJUSTMENT_OUT">Adjustment Out (Stock Removed)</option>
+                  <option value="DAMAGE">Damage (Damaged Item)</option>
+                  <option value="EXPIRED">Expired (Expired Item)</option>
+                  <option value="TRANSFER_IN">Transfer In (Received)</option>
+                  <option value="TRANSFER_OUT">Transfer Out (Sent)</option>
                 </select>
 
                 <select
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
+                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white"
                 >
                   <option value="">All Locations</option>
                   {locations.map((loc) => (
@@ -1032,40 +1032,40 @@ function InventoryHubContent() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search reason notes or product..."
-                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white min-w-[200px]"
+                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white min-w-[200px]"
                 />
               </div>
 
               <button
                 onClick={fetchMovements}
-                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5"
+                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold transition flex items-center gap-1.5"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
-                <span>Refresh Logs</span>
+                <span>Refresh</span>
               </button>
             </div>
 
             {/* Movement Audit Table */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
+            <div className="bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead className="bg-slate-800/80 text-slate-300 uppercase tracking-wider text-[11px] border-b border-slate-700">
                     <tr>
                       <th className="py-3 px-4 font-semibold">Timestamp</th>
-                      <th className="py-3 px-4 font-semibold">Movement Type</th>
+                      <th className="py-3 px-4 font-semibold">Type</th>
                       <th className="py-3 px-4 font-semibold">Product &amp; SKU</th>
                       <th className="py-3 px-4 font-semibold">Location</th>
-                      <th className="py-3 px-4 font-semibold text-center">Net Change</th>
+                      <th className="py-3 px-4 font-semibold text-center">Change</th>
                       <th className="py-3 px-4 font-semibold text-center">Before &rarr; After</th>
-                      <th className="py-3 px-4 font-semibold">Mandatory Reason / Notes</th>
-                      <th className="py-3 px-4 font-semibold">Operator</th>
+                      <th className="py-3 px-4 font-semibold">Reason / Notes</th>
+                      <th className="py-3 px-4 font-semibold">User</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">
                     {movements.length === 0 ? (
                       <tr>
                         <td colSpan={8} className="py-12 text-center text-slate-400">
-                          No stock movement history found.
+                          No stock movements found.
                         </td>
                       </tr>
                     ) : (
@@ -1084,13 +1084,13 @@ function InventoryHubContent() {
                                     : m.type === 'PURCHASE'
                                       ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                                       : m.type === 'RETURN'
-                                        ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                                         : m.type === 'DAMAGE'
                                           ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                                           : m.type === 'EXPIRED'
                                             ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                                             : m.type === 'TRANSFER_IN' || m.type === 'TRANSFER_OUT'
-                                              ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
+                                              ? 'bg-slate-800 text-slate-200 border border-slate-700'
                                               : 'bg-slate-800 text-slate-300'
                                 }`}
                               >
@@ -1145,9 +1145,9 @@ function InventoryHubContent() {
           <section className="space-y-5">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-white">Store Inventory Locations</h2>
+                <h2 className="text-lg font-bold text-white">Locations</h2>
                 <p className="text-xs text-slate-400">
-                  Manage retail sales floor display shelves, backrooms, and storage warehouses
+                  Manage display shelves, backrooms, and storage areas.
                 </p>
               </div>
               <button
@@ -1155,10 +1155,10 @@ function InventoryHubContent() {
                   setEditingLocation(null);
                   setIsLocationModalOpen(true);
                 }}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Storage Location</span>
+                <span>Add Location</span>
               </button>
             </div>
 
@@ -1166,16 +1166,16 @@ function InventoryHubContent() {
               {locations.map((loc) => (
                 <div
                   key={loc.id}
-                  className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-3 relative overflow-hidden"
+                  className="bg-slate-900 border border-slate-800 rounded-lg p-5 shadow-lg space-y-3 relative overflow-hidden"
                 >
                   {loc.isDefault && (
-                    <div className="absolute top-0 right-0 bg-indigo-600 text-[10px] font-bold text-white px-3 py-1 rounded-bl-xl uppercase tracking-wider">
+                    <div className="absolute top-0 right-0 bg-emerald-600 text-[10px] font-bold text-white px-3 py-1 rounded-bl-lg uppercase tracking-wider">
                       Default POS Floor
                     </div>
                   )}
 
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-indigo-400">
+                    <div className="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-emerald-400">
                       <MapPin className="w-5 h-5" />
                     </div>
                     <div>
@@ -1226,7 +1226,7 @@ function InventoryHubContent() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center space-x-2">
-                    <Tag className="w-4 h-4 text-indigo-400" />
+                    <Tag className="w-4 h-4 text-emerald-400" />
                     <span>Product Categories ({categories.length})</span>
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1239,7 +1239,7 @@ function InventoryHubContent() {
                     setEditingClassItem(null);
                     setIsClassModalOpen(true);
                   }}
-                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition inline-flex items-center gap-1"
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition inline-flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Category</span>
@@ -1250,12 +1250,12 @@ function InventoryHubContent() {
                 {categories.map((c) => (
                   <div
                     key={c.id}
-                    className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between"
+                    className="p-3.5 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-between"
                   >
                     <div className="flex items-center space-x-2.5">
                       <div
                         className="w-4 h-4 rounded-full border border-white/20"
-                        style={{ backgroundColor: c.color || '#4f46e5' }}
+                        style={{ backgroundColor: c.color || '#10b981' }}
                       />
                       <div>
                         <p className="font-semibold text-white text-xs">{c.name}</p>
@@ -1283,7 +1283,7 @@ function InventoryHubContent() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center space-x-2">
-                    <Tag className="w-4 h-4 text-purple-400" />
+                    <Tag className="w-4 h-4 text-slate-400" />
                     <span>Brands ({brands.length})</span>
                   </h3>
                   <p className="text-xs text-slate-400">Manufacturers and trademarks</p>
@@ -1294,7 +1294,7 @@ function InventoryHubContent() {
                     setEditingClassItem(null);
                     setIsClassModalOpen(true);
                   }}
-                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition inline-flex items-center gap-1"
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition inline-flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Brand</span>
@@ -1305,7 +1305,7 @@ function InventoryHubContent() {
                 {brands.map((b) => (
                   <div
                     key={b.id}
-                    className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between"
+                    className="p-3.5 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-between"
                   >
                     <div>
                       <p className="font-semibold text-white text-xs">{b.name}</p>
@@ -1333,10 +1333,10 @@ function InventoryHubContent() {
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center space-x-2">
                     <Building2 className="w-4 h-4 text-emerald-400" />
-                    <span>Suppliers &amp; Distributors ({suppliers.length})</span>
+                    <span>Suppliers ({suppliers.length})</span>
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Vendor contacts and replenishment sources
+                    Supplier contact details and addresses.
                   </p>
                 </div>
                 <button
@@ -1345,7 +1345,7 @@ function InventoryHubContent() {
                     setEditingClassItem(null);
                     setIsClassModalOpen(true);
                   }}
-                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition inline-flex items-center gap-1"
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition inline-flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Supplier</span>
@@ -1356,7 +1356,7 @@ function InventoryHubContent() {
                 {suppliers.map((s) => (
                   <div
                     key={s.id}
-                    className="p-4 bg-slate-900 border border-slate-800 rounded-xl space-y-2"
+                    className="p-4 bg-slate-900 border border-slate-800 rounded-lg space-y-2"
                   >
                     <div className="flex items-center justify-between">
                       <h4 className="font-semibold text-white text-sm">{s.name}</h4>
@@ -1390,11 +1390,11 @@ function InventoryHubContent() {
          ========================================================================= */}
       {barcodeMatchResult && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/75 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg overflow-hidden p-6 space-y-4 text-slate-100 shadow-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg w-full max-w-lg overflow-hidden p-6 space-y-4 text-slate-100 shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center space-x-2">
-                <Package className="w-5 h-5 text-indigo-400" />
-                <h3 className="font-bold text-white text-base">Barcode Match Resolved</h3>
+                <Package className="w-5 h-5 text-emerald-400" />
+                <h3 className="font-bold text-white text-base">Barcode Match</h3>
               </div>
               <button
                 onClick={() => setBarcodeMatchResult(null)}
@@ -1406,7 +1406,7 @@ function InventoryHubContent() {
             </div>
 
             <div className="space-y-2">
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-800/80">
                 {barcodeMatchResult.matchType === 'VARIANT'
                   ? 'Product Variant'
                   : 'Standard Product'}
@@ -1419,12 +1419,12 @@ function InventoryHubContent() {
               </h4>
 
               {barcodeMatchResult.product?.nameKhmer && (
-                <p className="text-sm font-semibold text-indigo-300">
+                <p className="text-sm font-semibold text-emerald-400">
                   {barcodeMatchResult.product.nameKhmer}
                 </p>
               )}
 
-              <div className="grid grid-cols-2 gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-800 text-xs">
+              <div className="grid grid-cols-2 gap-3 bg-slate-800/60 p-3 rounded-lg border border-slate-800 text-xs">
                 <div>
                   <span className="text-slate-400">SKU:</span>
                   <span className="font-mono text-white block">
@@ -1442,7 +1442,7 @@ function InventoryHubContent() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400">Selling Price:</span>
+                  <span className="text-slate-400">Price:</span>
                   <span className="font-bold text-emerald-400 block">
                     $
                     {(barcodeMatchResult.matchType === 'VARIANT'
@@ -1452,8 +1452,8 @@ function InventoryHubContent() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400">Total Stock:</span>
-                  <span className="font-bold text-indigo-300 block">
+                  <span className="text-slate-400">In Stock:</span>
+                  <span className="font-bold text-slate-200 block">
                     {barcodeMatchResult.matchType === 'VARIANT'
                       ? barcodeMatchResult.variant.stockQuantity
                       : barcodeMatchResult.product.stockQuantity}{' '}
@@ -1492,9 +1492,9 @@ function InventoryHubContent() {
                   setBarcodeMatchResult(null);
                   setIsAdjustmentModalOpen(true);
                 }}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition"
               >
-                Adjust Stock for this Item
+                Adjust Stock
               </button>
             </div>
           </div>

@@ -104,7 +104,7 @@ export default function CustomerDisplayPage() {
       {/* Top Header Bar */}
       <header className="h-16 bg-slate-900 border-b border-slate-800 px-6 sm:px-10 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
             <ShoppingBag className="w-5 h-5" />
           </div>
           <div>
@@ -122,14 +122,14 @@ export default function CustomerDisplayPage() {
         </div>
 
         <div className="flex items-center gap-6">
-          <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-slate-850 rounded-lg border border-slate-800 text-xs">
+          <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-slate-900 rounded-lg border border-slate-800 text-xs">
             <Coins className="w-3.5 h-3.5 text-amber-400" />
             <span className="text-slate-400">Rate:</span>
             <span className="font-mono font-bold text-amber-400">1 USD = 4,100 KHR</span>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1 bg-slate-850 rounded-lg border border-slate-800 text-slate-200 font-mono text-xs">
-            <Clock className="w-3.5 h-3.5 text-indigo-400" />
+          <div className="flex items-center gap-2 px-3 py-1 bg-slate-900 rounded-lg border border-slate-800 text-slate-200 font-mono text-xs">
+            <Clock className="w-3.5 h-3.5 text-slate-400" />
             <span>{clock || '12:00:00 PM'}</span>
           </div>
         </div>
@@ -140,8 +140,8 @@ export default function CustomerDisplayPage() {
         {/* State 1: IDLE / WELCOME */}
         {status === 'IDLE' && (
           <div className="flex-1 flex flex-col items-center justify-center text-center max-w-2xl mx-auto">
-            <div className="w-16 h-16 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-6">
-              <ShoppingBag className="w-8 h-8 text-indigo-400" />
+            <div className="w-16 h-16 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center mb-6">
+              <ShoppingBag className="w-8 h-8 text-emerald-400" />
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-2">
@@ -169,9 +169,9 @@ export default function CustomerDisplayPage() {
         {status === 'SCANNING' && (
           <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             {/* Left: Last Scanned Item (5 cols) */}
-            <div className="lg:col-span-5 flex flex-col justify-between bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-xl">
+            <div className="lg:col-span-5 flex flex-col justify-between bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-lg">
               <div>
-                <span className="inline-block text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-4">
+                <span className="inline-block text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-4">
                   Last Scanned Item
                 </span>
 
@@ -181,7 +181,7 @@ export default function CustomerDisplayPage() {
                       {currentItem.name}
                     </h2>
                     <div className="flex items-center gap-3 text-slate-300 font-mono text-base">
-                      <span className="font-semibold text-indigo-400">
+                      <span className="font-semibold text-slate-200">
                         Qty: {currentItem.quantity}
                       </span>
                       <span>&times;</span>
@@ -205,14 +205,14 @@ export default function CustomerDisplayPage() {
 
               <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-slate-400 text-xs">
                 <span>Total Items in Cart:</span>
-                <span className="font-bold text-white text-sm bg-slate-850 px-2.5 py-1 rounded border border-slate-800">
+                <span className="font-bold text-white text-sm bg-slate-900 px-2.5 py-1 rounded border border-slate-800">
                   {cartSummary?.itemsCount || 0}
                 </span>
               </div>
             </div>
 
             {/* Right: Running Total Summary (7 cols) */}
-            <div className="lg:col-span-7 flex flex-col justify-between bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-xl">
+            <div className="lg:col-span-7 flex flex-col justify-between bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-lg">
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
                   Order Summary
@@ -235,15 +235,15 @@ export default function CustomerDisplayPage() {
               </div>
 
               {/* Grand Total Display */}
-              <div className="bg-slate-950 border border-slate-800 p-6 rounded-xl text-right">
-                <span className="text-xs font-semibold text-indigo-400 uppercase tracking-widest block mb-1">
+              <div className="bg-slate-950 border border-slate-800 p-6 rounded-lg text-right">
+                <span className="text-xs font-semibold text-emerald-400 uppercase tracking-widest block mb-1">
                   Amount Due (USD)
                 </span>
                 <div className="text-4xl sm:text-6xl font-bold text-white font-mono tracking-tight leading-none">
                   ${(cartSummary?.totalUSD || 0).toFixed(2)}
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-850 flex items-center justify-between">
+                <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
                   <span className="text-xs font-medium text-slate-400">Khmer Riel (KHR):</span>
                   <div className="text-xl sm:text-2xl font-bold text-amber-400 font-mono">
                     {Math.round(cartSummary?.totalKHR || 0).toLocaleString()} &#x17DB;
@@ -259,7 +259,7 @@ export default function CustomerDisplayPage() {
           <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-8 max-w-4xl mx-auto">
             {/* Dynamic KHQR Display */}
             {paymentPrompt.qrPayload ? (
-              <div className="bg-white p-6 rounded-xl flex flex-col items-center max-w-xs w-full text-slate-900 border border-slate-300">
+              <div className="bg-white p-6 rounded-lg flex flex-col items-center max-w-xs w-full text-slate-900 border border-slate-300">
                 <div className="w-full flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded bg-rose-600 flex items-center justify-center text-white font-bold text-xs">
@@ -273,7 +273,7 @@ export default function CustomerDisplayPage() {
                 </div>
 
                 {/* QR Canvas */}
-                <div className="w-56 h-56 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center p-3 relative">
+                <div className="w-56 h-56 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center p-3 relative">
                   <QrCode className="w-48 h-48 text-slate-900" />
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="w-8 h-8 rounded-full bg-white border border-rose-500 flex items-center justify-center font-bold text-[9px] text-rose-600">
@@ -287,8 +287,8 @@ export default function CustomerDisplayPage() {
                 </p>
               </div>
             ) : (
-              <div className="w-72 h-72 rounded-xl bg-slate-900 border border-slate-800 flex flex-col items-center justify-center p-6 text-center">
-                <CreditCard className="w-16 h-16 text-indigo-400 mb-4" />
+              <div className="w-72 h-72 rounded-lg bg-slate-900 border border-slate-800 flex flex-col items-center justify-center p-6 text-center">
+                <CreditCard className="w-16 h-16 text-slate-400 mb-4" />
                 <h3 className="text-lg font-semibold text-white">Payment Selected</h3>
                 <p className="text-xs text-slate-400 mt-1 uppercase font-semibold">
                   {paymentPrompt.method}
@@ -297,8 +297,8 @@ export default function CustomerDisplayPage() {
             )}
 
             {/* Payment Details */}
-            <div className="flex-1 max-w-md w-full bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-xl">
-              <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">
+            <div className="flex-1 max-w-md w-full bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-lg">
+              <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
                 Please Pay Exact Amount
               </span>
               <div className="mt-2 text-4xl sm:text-5xl font-bold text-white font-mono">
@@ -339,7 +339,7 @@ export default function CustomerDisplayPage() {
             </p>
 
             {thankYouNotice && (
-              <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl w-full text-left space-y-2.5 mb-4">
+              <div className="bg-slate-900 border border-slate-800 p-5 rounded-lg w-full text-left space-y-2.5 mb-4">
                 <div className="flex justify-between text-xs text-slate-400">
                   <span className="flex items-center gap-1">
                     <Receipt className="w-3.5 h-3.5" />

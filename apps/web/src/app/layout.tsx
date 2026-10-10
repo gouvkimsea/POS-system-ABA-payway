@@ -16,7 +16,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: 'Angkor Fresh Mart POS',
-  description: 'Enterprise Point of Sale System & Multi-Branch Retail Management',
+  description: 'Point of sale and retail store management',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="format-detection" content="telephone=no" />
       </head>
-      <body className="min-h-screen bg-slate-950 text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
+      <body className="min-h-screen bg-slate-950 text-slate-100 antialiased selection:bg-emerald-600 selection:text-white">
         <AuthProvider>
           <SettingsProvider>
             <ServiceWorkerRegister />

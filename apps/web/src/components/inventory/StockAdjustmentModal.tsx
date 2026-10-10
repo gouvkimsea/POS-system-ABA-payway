@@ -124,13 +124,13 @@ export function StockAdjustmentModal({
     }
     if (!reason.trim() || reason.trim().length < 3) {
       setError(
-        'CRITICAL: Never change stock without recording a descriptive reason (minimum 3 characters)',
+        'Please enter a reason with at least 3 characters.',
       );
       return;
     }
     if (projectedBalance < 0) {
       setError(
-        `Cannot deduct ${parsedQty} items: Current stock is only ${currentStock}. Negative stock is prohibited.`,
+        `Cannot deduct ${parsedQty} items. Only ${currentStock} in stock.`,
       );
       return;
     }
@@ -172,17 +172,17 @@ export function StockAdjustmentModal({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/75 flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl overflow-hidden text-slate-100 shadow-xl">
+      <div className="bg-slate-900 border border-slate-800 rounded-lg w-full max-w-2xl overflow-hidden text-slate-100 shadow-xl">
         {/* Header */}
-        <div className="px-6 py-4 bg-slate-850 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
               <ArrowLeftRight className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Record Stock Adjustment</h2>
+              <h2 className="text-base font-bold text-white">Adjust Stock</h2>
               <p className="text-xs text-slate-400">
-                Audited inventory balance changes with reason tracking
+                Update inventory quantity with a required note.
               </p>
             </div>
           </div>
@@ -208,17 +208,17 @@ export function StockAdjustmentModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Target Storage Location *
+                Location *
               </label>
               <select
                 required
                 value={selectedLocationId}
                 onChange={(e) => setSelectedLocationId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               >
                 {locations.map((loc) => (
                   <option key={loc.id} value={loc.id}>
-                    {loc.name} {loc.isDefault ? '(Default Sales Floor)' : ''}
+                    {loc.name} {loc.isDefault ? '(Default)' : ''}
                   </option>
                 ))}
               </select>
@@ -226,7 +226,7 @@ export function StockAdjustmentModal({
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Target Product *
+                Product *
               </label>
               <select
                 required
@@ -235,7 +235,7 @@ export function StockAdjustmentModal({
                   setSelectedProductId(e.target.value);
                   setSelectedVariantId('');
                 }}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               >
                 {products.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -250,14 +250,14 @@ export function StockAdjustmentModal({
           {availableVariants.length > 0 && (
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Specific Product Variant
+                Variant
               </label>
               <select
                 value={selectedVariantId}
                 onChange={(e) => setSelectedVariantId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               >
-                <option value="">-- Main Product (No Variant) --</option>
+                <option value="">-- No Variant --</option>
                 {availableVariants.map((v) => (
                   <option key={v.id} value={v.id}>
                     {v.name} &bull; SKU: {v.sku} {v.size ? `(Size ${v.size})` : ''}{' '}
@@ -272,29 +272,29 @@ export function StockAdjustmentModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Adjustment Reason / Type *
+                Reason *
               </label>
               <select
                 value={movementType}
                 onChange={(e) => setMovementType(e.target.value as any)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-semibold text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-semibold text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               >
-                <optgroup label="Stock Inflow (+)">
-                  <option value="PURCHASE">Purchase Receiving (+Stock)</option>
-                  <option value="RETURN">Customer Return (+Stock)</option>
-                  <option value="ADJUSTMENT_IN">Manual Stock Found (+Stock)</option>
+                <optgroup label="Add Stock (+)">
+                  <option value="PURCHASE">Purchase (Supplier Delivery)</option>
+                  <option value="RETURN">Return (Customer Return)</option>
+                  <option value="ADJUSTMENT_IN">Adjustment In (Stock Added)</option>
                 </optgroup>
-                <optgroup label="Stock Outflow (-)">
-                  <option value="ADJUSTMENT_OUT">Manual Stock Count Reduction (-Stock)</option>
-                  <option value="DAMAGE">Damaged / Broken Goods (-Stock)</option>
-                  <option value="EXPIRED">Expired / Rotated Goods (-Stock)</option>
+                <optgroup label="Remove Stock (-)">
+                  <option value="ADJUSTMENT_OUT">Adjustment Out (Stock Removed)</option>
+                  <option value="DAMAGE">Damage (Damaged Item)</option>
+                  <option value="EXPIRED">Expired (Expired Item)</option>
                 </optgroup>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Quantity Amount *
+                Quantity *
               </label>
               <input
                 type="number"
@@ -303,13 +303,13 @@ export function StockAdjustmentModal({
                 required
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-bold text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-bold text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               />
             </div>
           </div>
 
           {/* Live Before & After Balance Calculation */}
-          <div className="bg-slate-800/60 p-4 rounded-xl border border-slate-700/80 flex items-center justify-around">
+          <div className="bg-slate-800/60 p-4 rounded-lg border border-slate-700/80 flex items-center justify-around">
             <div className="text-center">
               <p className="text-[11px] text-slate-400 uppercase font-semibold">Current Stock</p>
               <p className="text-xl font-bold text-slate-200">
@@ -330,10 +330,10 @@ export function StockAdjustmentModal({
             <div className="text-2xl text-slate-500">➔</div>
             <div className="text-center">
               <p className="text-[11px] text-slate-400 uppercase font-semibold">
-                Projected New Balance
+                New Balance
               </p>
               <p
-                className={`text-xl font-extrabold ${projectedBalance < 0 ? 'text-rose-500' : 'text-indigo-400'}`}
+                className={`text-xl font-extrabold ${projectedBalance < 0 ? 'text-rose-500' : 'text-emerald-400'}`}
               >
                 {projectedBalance}{' '}
                 <span className="text-xs font-normal">{selectedProduct?.unit || 'pcs'}</span>
@@ -341,19 +341,19 @@ export function StockAdjustmentModal({
             </div>
           </div>
 
-          {/* Mandatory Reason Note (INVARIANT: Never change stock without reason!) */}
+          {/* Reason Note */}
           <div>
             <label className="block text-xs font-semibold text-slate-200 mb-1 flex items-center justify-between">
-              <span>Audit Reason / Notes * (Strictly Required)</span>
-              <span className="text-[10px] text-amber-400">Mandatory audit trail log</span>
+              <span>Reason / Notes *</span>
+              <span className="text-[10px] text-slate-400">Required</span>
             </label>
             <textarea
               required
               rows={2}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="e.g. Broken packaging discovered during shelf cleaning / Invoice PO-881 supplier delivery"
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500"
+              placeholder="e.g. Damaged packaging during shelf cleaning / Supplier delivery invoice PO-881"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
             />
           </div>
 
@@ -361,7 +361,7 @@ export function StockAdjustmentModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Reference Doc Type
+                Reference Type
               </label>
               <input
                 type="text"
@@ -373,7 +373,7 @@ export function StockAdjustmentModal({
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Reference Doc ID
+                Reference Number
               </label>
               <input
                 type="text"
@@ -397,9 +397,9 @@ export function StockAdjustmentModal({
             <button
               type="submit"
               disabled={isSubmitting || projectedBalance < 0}
-              className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold shadow-md shadow-indigo-600/30 transition disabled:opacity-50"
+              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-semibold shadow-sm transition-colors disabled:opacity-50"
             >
-              {isSubmitting ? 'Adjusting Stock...' : 'Confirm Stock Adjustment'}
+              {isSubmitting ? 'Saving...' : 'Save Adjustment'}
             </button>
           </div>
         </form>

@@ -464,11 +464,11 @@ function TransfersContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-600 selection:text-white">
       {/* 1. Header Navigation */}
       <header className="sticky top-0 z-30 bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
             <Truck className="w-5 h-5" />
           </div>
           <div>
@@ -499,7 +499,7 @@ function TransfersContent() {
             href="/settings/stores"
             className="hidden lg:flex px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors items-center gap-1.5"
           >
-            <Building2 className="w-3.5 h-3.5 text-indigo-400" />
+            <Building2 className="w-3.5 h-3.5 text-slate-400" />
             <span>Stores</span>
           </Link>
 
@@ -515,7 +515,7 @@ function TransfersContent() {
               setActionError(null);
               setShowCreateModal(true);
             }}
-            className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white shadow-sm flex items-center gap-1.5 transition-all"
+            className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs flex items-center gap-1.5 transition-all"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Transfer</span>
@@ -527,68 +527,52 @@ function TransfersContent() {
             className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
             title="Refresh transfers"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-sky-400' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-emerald-400' : ''}`} />
           </button>
         </div>
       </header>
 
-      {/* 2. Top Summary KPI Cards */}
+      {/* 2. Integrated Summary Panel */}
       <section className="px-4 sm:px-6 pt-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80 shadow-sm flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium text-slate-400">Total Transfers</p>
-              <h3 className="text-2xl font-black text-white mt-1">{totalCount}</h3>
-            </div>
-            <div className="w-10 h-10 rounded-lg bg-slate-800/80 flex items-center justify-center text-slate-300">
-              <Truck className="w-5 h-5" />
-            </div>
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 sm:p-5 grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-slate-800/70 gap-4 lg:gap-0">
+          <div className="lg:px-4 first:pl-0">
+            <span className="text-xs text-slate-400 block mb-1">Total Transfers</span>
+            <div className="text-xl sm:text-2xl font-bold font-mono text-white">{totalCount}</div>
+            <div className="text-[11px] text-slate-500 mt-0.5">Recorded manifests</div>
           </div>
 
-          <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80 shadow-sm flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium text-sky-400">In Transit</p>
-              <h3 className="text-2xl font-black text-sky-300 mt-1">{inTransitCount}</h3>
-            </div>
-            <div className="w-10 h-10 rounded-lg bg-sky-500/10 flex items-center justify-center text-sky-400">
-              <Truck className="w-5 h-5" />
-            </div>
+          <div className="pt-3 lg:pt-0 lg:px-4">
+            <span className="text-xs text-slate-400 block mb-1">In Transit</span>
+            <div className="text-xl sm:text-2xl font-bold font-mono text-white">{inTransitCount}</div>
+            <div className="text-[11px] text-slate-500 mt-0.5">Dispatched shipments</div>
           </div>
 
-          <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80 shadow-sm flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium text-amber-400">Requested</p>
-              <h3 className="text-2xl font-black text-amber-300 mt-1">{requestedCount}</h3>
-            </div>
-            <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400">
-              <Clock className="w-5 h-5" />
-            </div>
+          <div className="pt-3 lg:pt-0 lg:px-4">
+            <span className="text-xs text-slate-400 block mb-1">Requested</span>
+            <div className="text-xl sm:text-2xl font-bold font-mono text-amber-400">{requestedCount}</div>
+            <div className="text-[11px] text-slate-500 mt-0.5">Awaiting dispatch</div>
           </div>
 
-          <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80 shadow-sm flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium text-emerald-400">Completed</p>
-              <h3 className="text-2xl font-black text-emerald-300 mt-1">{completedCount}</h3>
-            </div>
-            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
+          <div className="pt-3 lg:pt-0 lg:px-4 last:pr-0">
+            <span className="text-xs text-slate-400 block mb-1">Completed</span>
+            <div className="text-xl sm:text-2xl font-bold font-mono text-emerald-400">{completedCount}</div>
+            <div className="text-[11px] text-slate-500 mt-0.5">Received &amp; stocked</div>
           </div>
         </div>
       </section>
 
       {/* 3. Filters & Search Strip */}
       <section className="px-4 sm:px-6 pt-4 pb-2">
-        <div className="bg-slate-900/60 border border-slate-800/80 p-3 rounded-xl flex flex-wrap items-center justify-between gap-3">
+        <div className="bg-slate-900 border border-slate-800 p-3 rounded-lg flex flex-wrap items-center justify-between gap-3">
           {/* Status Tabs */}
-          <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800/80 overflow-x-auto">
+          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800 overflow-x-auto">
             {['ALL', 'REQUESTED', 'IN_TRANSIT', 'COMPLETED', 'CANCELLED'].map((st) => (
               <button
                 key={st}
                 onClick={() => setStatusFilter(st)}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
                   statusFilter === st
-                    ? 'bg-sky-600 text-white shadow-sm shadow-sky-600/40'
+                    ? 'bg-slate-800 text-white shadow-xs'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                 }`}
               >
@@ -599,7 +583,7 @@ function TransfersContent() {
 
           <div className="flex items-center gap-2 flex-1 max-w-md">
             {/* Store Filter */}
-            <div className="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1.5 rounded-xl border border-slate-800/80 text-xs">
+            <div className="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1.5 rounded-lg border border-slate-800/80 text-xs">
               <Building2 className="w-3.5 h-3.5 text-slate-400" />
               <select
                 value={storeFilter}
@@ -625,7 +609,7 @@ function TransfersContent() {
                 placeholder="Search by transfer #, product, or staff..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 bg-slate-950/80 border border-slate-800/80 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-sky-500"
+                className="w-full pl-9 pr-3 py-1.5 bg-slate-950/80 border border-slate-800/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500"
               />
             </div>
           </div>
@@ -635,24 +619,24 @@ function TransfersContent() {
       {/* 4. Main Transfers Table */}
       <main className="flex-1 px-4 sm:px-6 py-4 pb-24 lg:pb-8">
         {error && (
-          <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-300 flex items-center gap-2">
+          <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-300 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl overflow-hidden shadow-xl">
+        <div className="bg-slate-900/60 border border-slate-800/80 rounded-lg overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-950/80 border-b border-slate-800/80 text-slate-400 uppercase tracking-wider text-[11px] font-semibold">
-                  <th className="py-3 px-4">Transfer #</th>
-                  <th className="py-3 px-4">Route</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4">Items</th>
-                  <th className="py-3 px-4">Staff</th>
-                  <th className="py-3 px-4">Date</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Transfer #</th>
+                  <th className="py-3 px-4 min-w-[160px]">Route</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Status</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Items</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Staff</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Date</th>
+                  <th className="py-3 px-4 text-right whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 font-sans">
@@ -667,7 +651,7 @@ function TransfersContent() {
                   <tr>
                     <td colSpan={7} className="text-center py-12 px-4">
                       <div className="max-w-sm mx-auto space-y-3">
-                        <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
+                        <div className="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
                           <Truck className="w-5 h-5" />
                         </div>
                         <div>
@@ -695,7 +679,7 @@ function TransfersContent() {
                               setActionError(null);
                               setShowCreateModal(true);
                             }}
-                            className="px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-sm transition-colors inline-flex items-center gap-1.5"
+                            className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-sm transition-colors inline-flex items-center gap-1.5"
                           >
                             <Plus className="w-3.5 h-3.5" />
                             Create First Transfer
@@ -923,7 +907,7 @@ function TransfersContent() {
             {/* Content Body */}
             <div className="flex-1 py-4 space-y-6">
               {/* Route Card */}
-              <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+              <div className="bg-slate-950/60 p-4 rounded-lg border border-slate-800">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <span className="text-[10px] text-slate-400 uppercase font-semibold">
@@ -1047,7 +1031,7 @@ function TransfersContent() {
                   <span>Items</span>
                 </h3>
 
-                <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden">
+                <div className="bg-slate-950/60 border border-slate-800 rounded-lg overflow-hidden">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
                       <tr className="bg-slate-900 border-b border-slate-800 text-slate-400 uppercase text-[10px] font-semibold">
@@ -1144,7 +1128,7 @@ function TransfersContent() {
       ============================================================================== */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 shadow-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg w-full max-w-2xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 shadow-xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center">
@@ -1163,7 +1147,7 @@ function TransfersContent() {
             </div>
 
             {actionError && (
-              <div className="mt-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-300 flex items-center gap-2">
+              <div className="mt-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-300 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{actionError}</span>
               </div>
@@ -1181,7 +1165,7 @@ function TransfersContent() {
                     onChange={(e) =>
                       setCreateForm({ ...createForm, sourceStoreId: e.target.value })
                     }
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-hidden focus:border-sky-500"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white focus:outline-hidden focus:border-emerald-500"
                     required
                   >
                     <option value="">Select origin store...</option>
@@ -1202,7 +1186,7 @@ function TransfersContent() {
                     onChange={(e) =>
                       setCreateForm({ ...createForm, targetStoreId: e.target.value })
                     }
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-hidden focus:border-sky-500"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white focus:outline-hidden focus:border-emerald-500"
                     required
                   >
                     <option value="">Select destination store...</option>
@@ -1225,7 +1209,7 @@ function TransfersContent() {
                   placeholder="e.g. Stock replenishment"
                   value={createForm.notes}
                   onChange={(e) => setCreateForm({ ...createForm, notes: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-hidden focus:border-sky-500"
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white focus:outline-hidden focus:border-emerald-500"
                 />
               </div>
 
@@ -1257,7 +1241,7 @@ function TransfersContent() {
                   {createForm.items.map((item, idx) => (
                     <div
                       key={idx}
-                      className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl grid grid-cols-1 sm:grid-cols-12 gap-2 items-center"
+                      className="p-3 bg-slate-950/70 border border-slate-800 rounded-lg grid grid-cols-1 sm:grid-cols-12 gap-2 items-center"
                     >
                       <div className="sm:col-span-6">
                         <select
@@ -1340,7 +1324,7 @@ function TransfersContent() {
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5"
                 >
                   {actionLoading ? (
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -1360,7 +1344,7 @@ function TransfersContent() {
       ============================================================================== */}
       {showSendModal && selectedTransfer && (
         <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 shadow-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg w-full max-w-xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 shadow-xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center">
@@ -1384,7 +1368,7 @@ function TransfersContent() {
               </button>
             </div>
 
-            <div className="mt-3 p-3 bg-sky-500/10 border border-sky-500/30 rounded-xl text-xs text-sky-300 flex items-start gap-2">
+            <div className="mt-3 p-3 bg-sky-500/10 border border-sky-500/30 rounded-lg text-xs text-sky-300 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>
                 This will deduct stock from <strong>{selectedTransfer.sourceStoreName}</strong> and mark the transfer as <strong>IN_TRANSIT</strong>.
@@ -1392,7 +1376,7 @@ function TransfersContent() {
             </div>
 
             {actionError && (
-              <div className="mt-3 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-300 flex items-center gap-2">
+              <div className="mt-3 p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-300 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{actionError}</span>
               </div>
@@ -1408,7 +1392,7 @@ function TransfersContent() {
                   placeholder="e.g. Driver name, vehicle info"
                   value={sendForm.notes}
                   onChange={(e) => setSendForm({ ...sendForm, notes: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-hidden focus:border-sky-500"
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white focus:outline-hidden focus:border-emerald-500"
                 />
               </div>
 
@@ -1421,7 +1405,7 @@ function TransfersContent() {
                   {selectedTransfer.items.map((item, idx) => (
                     <div
                       key={item.id}
-                      className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl flex items-center justify-between gap-3"
+                      className="p-3 bg-slate-950/70 border border-slate-800 rounded-lg flex items-center justify-between gap-3"
                     >
                       <div>
                         <p className="text-xs font-semibold text-white">{item.productName}</p>
@@ -1466,7 +1450,7 @@ function TransfersContent() {
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5"
                 >
                   {actionLoading ? (
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -1486,7 +1470,7 @@ function TransfersContent() {
       ============================================================================== */}
       {showReceiveModal && selectedTransfer && (
         <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 shadow-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg w-full max-w-xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 shadow-xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
@@ -1509,7 +1493,7 @@ function TransfersContent() {
               </button>
             </div>
 
-            <div className="mt-3 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs text-emerald-300 flex items-start gap-2">
+            <div className="mt-3 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-xs text-emerald-300 flex items-start gap-2">
               <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
               <span>
                 This will add stock to <strong>{selectedTransfer.targetStoreName}</strong> and mark the transfer as <strong>COMPLETED</strong>.
@@ -1517,7 +1501,7 @@ function TransfersContent() {
             </div>
 
             {actionError && (
-              <div className="mt-3 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-300 flex items-center gap-2">
+              <div className="mt-3 p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-300 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{actionError}</span>
               </div>
@@ -1533,7 +1517,7 @@ function TransfersContent() {
                   placeholder="e.g. Received in good condition"
                   value={receiveForm.notes}
                   onChange={(e) => setReceiveForm({ ...receiveForm, notes: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-hidden focus:border-emerald-500"
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white focus:outline-hidden focus:border-emerald-500"
                 />
               </div>
 
@@ -1551,7 +1535,7 @@ function TransfersContent() {
                     return (
                       <div
                         key={item.id}
-                        className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl flex items-center justify-between gap-3"
+                        className="p-3 bg-slate-950/70 border border-slate-800 rounded-lg flex items-center justify-between gap-3"
                       >
                         <div>
                           <p className="text-xs font-semibold text-white">{item.productName}</p>

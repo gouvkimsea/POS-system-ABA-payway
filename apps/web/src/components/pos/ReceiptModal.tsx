@@ -41,7 +41,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
   const handlePrint = async (reprint: boolean = false) => {
     setIsPrinting(true);
     setIsReprint(reprint);
-    setPrintStatus(reprint ? 'Reprinting duplicate slip...' : 'Sending to thermal printer...');
+    setPrintStatus(reprint ? 'Printing duplicate receipt...' : 'Printing receipt...');
 
     try {
       const res = await printerService.printReceipt(receiptData, {
@@ -68,11 +68,11 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
 
   const handleKickDrawer = async () => {
     try {
-      const res = await cashDrawerService.openDrawer('Manual drawer open from receipt');
-      setPrintStatus(res.message || 'Cash drawer kick signal sent.');
+      const res = await cashDrawerService.openDrawer('Manual test');
+      setPrintStatus(res.message || 'Cash drawer opened.');
       setTimeout(() => setPrintStatus(''), 3000);
     } catch {
-      setPrintStatus('Drawer kick failed.');
+      setPrintStatus('Failed to open drawer.');
     }
   };
 
@@ -80,7 +80,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-3 sm:p-4">
-      <div className="bg-white rounded-xl max-w-md w-full shadow-xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-white rounded-lg max-w-md w-full shadow-xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Success Header */}
         <div
           className={`p-4 flex items-center justify-between shrink-0 text-white ${
@@ -95,8 +95,8 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
               </h3>
               <p className="text-[11px] text-white/90 mt-0.5">
                 {isOffline
-                  ? 'Queued in IndexedDB • Syncs automatically'
-                  : 'Sale recorded in PostgreSQL'}
+                  ? 'Saved locally • Syncs automatically'
+                  : 'Sale completed'}
               </p>
             </div>
           </div>
@@ -118,7 +118,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                 onClick={() => setPreviewPaperSize('58mm')}
                 className={`px-2 py-0.5 rounded text-[11px] font-bold transition-colors ${
                   previewPaperSize === '58mm'
-                    ? 'bg-indigo-600 text-white shadow-xs'
+                    ? 'bg-emerald-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -129,7 +129,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                 onClick={() => setPreviewPaperSize('80mm')}
                 className={`px-2 py-0.5 rounded text-[11px] font-bold transition-colors ${
                   previewPaperSize === '80mm'
-                    ? 'bg-indigo-600 text-white shadow-xs'
+                    ? 'bg-emerald-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -141,7 +141,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
           <button
             onClick={handleKickDrawer}
             className="flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-100 hover:bg-amber-200 px-2 py-1 rounded-lg transition-colors"
-            title="Pop cash drawer open"
+            title="Open cash drawer"
           >
             <Coins className="w-3.5 h-3.5" />
             Open Drawer
@@ -150,7 +150,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
 
         {/* Feedback Alert Bar */}
         {printStatus && (
-          <div className="bg-indigo-900 text-indigo-100 text-xs px-4 py-1.5 text-center font-mono font-medium animate-in fade-in flex items-center justify-center gap-1.5 shrink-0">
+          <div className="bg-slate-900 text-emerald-300 text-xs px-4 py-1.5 text-center font-mono font-medium flex items-center justify-center gap-1.5 shrink-0 border-b border-slate-800">
             <Check className="w-3.5 h-3.5 text-emerald-400" />
             {printStatus}
           </div>
@@ -160,7 +160,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
         <div className="p-4 flex-1 overflow-y-auto bg-slate-50">
           <div
             id="pos-thermal-receipt"
-            className={`bg-white p-4 rounded-xl border border-slate-200 shadow-xs font-mono text-xs text-slate-800 space-y-3 mx-auto transition-all ${
+            className={`bg-white p-4 rounded-lg border border-slate-200 shadow-xs font-mono text-xs text-slate-800 space-y-3 mx-auto transition-all ${
               previewPaperSize === '58mm' ? 'max-w-[280px]' : 'max-w-[360px]'
             }`}
           >
@@ -169,7 +169,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
               <div className="text-center font-bold text-amber-900 bg-amber-50 border-2 border-dashed border-amber-400 py-1 rounded px-2">
                 *** OFFLINE TRANSACTION ***
                 <div className="text-[10px] font-normal text-amber-700 mt-0.5">
-                  Temporary Receipt • Queued for Sync
+                  Temporary receipt • Queued for sync
                 </div>
               </div>
             )}
@@ -224,7 +224,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                 <span>{formatDateTime(receiptData.createdAt)}</span>
               </div>
               {receiptData.customer && (
-                <div className="flex justify-between text-indigo-700 font-semibold">
+                <div className="flex justify-between text-emerald-700 font-semibold">
                   <span>Customer:</span>
                   <span>{receiptData.customer.name}</span>
                 </div>
@@ -341,8 +341,8 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
           <button
             onClick={() => handlePrint(false)}
             disabled={isPrinting}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors disabled:opacity-50"
-            title="Print receipt on thermal printer"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors disabled:opacity-50"
+            title="Print receipt"
           >
             <Printer className="w-4 h-4 text-slate-700" />
             <span>Print ({previewPaperSize})</span>
@@ -351,8 +351,8 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
           <button
             onClick={() => handlePrint(true)}
             disabled={isPrinting}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors disabled:opacity-50"
-            title="Reprint receipt with duplicate notice"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors disabled:opacity-50"
+            title="Reprint receipt"
           >
             <Copy className="w-3.5 h-3.5 text-slate-500" />
             <span>Reprint</span>
@@ -361,9 +361,9 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
           <button
             autoFocus
             onClick={onClose}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors"
           >
-            <span>Next Customer</span>
+            <span>Next Sale</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

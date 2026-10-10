@@ -76,14 +76,14 @@ export default function LoginPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Brand Header */}
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-600 text-white font-bold text-xl mb-3">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 font-bold text-xl mb-3">
             <ShoppingBag className="w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-100">Angkor Fresh Mart</h1>
-          <p className="mt-1 text-xs text-slate-400">Sign in to your account</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Angkor Fresh Mart</h1>
+          <p className="mt-1 text-xs text-slate-400">Sign in to POS workstation</p>
         </div>
 
-        <div className="mt-6 bg-slate-900 border border-slate-800 rounded-xl p-6 sm:p-8">
+        <div className="mt-6 bg-slate-900 border border-slate-800 rounded-lg p-6 sm:p-8">
           {/* Mode Switcher Tabs */}
           <div className="flex border-b border-slate-800 mb-6">
             <button
@@ -94,7 +94,7 @@ export default function LoginPage() {
               }}
               className={`flex-1 py-2 text-xs font-semibold text-center border-b-2 transition-colors flex items-center justify-center gap-2 ${
                 authMode === 'password'
-                  ? 'border-indigo-500 text-indigo-400'
+                  ? 'border-emerald-500 text-emerald-400'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -109,7 +109,7 @@ export default function LoginPage() {
               }}
               className={`flex-1 py-2 text-xs font-semibold text-center border-b-2 transition-colors flex items-center justify-center gap-2 ${
                 authMode === 'pin'
-                  ? 'border-indigo-500 text-indigo-400'
+                  ? 'border-emerald-500 text-emerald-400'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -142,7 +142,7 @@ export default function LoginPage() {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter username"
                   autoComplete="username"
-                  className="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
                   required
                 />
               </div>
@@ -155,7 +155,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
                   autoComplete="current-password"
-                  className="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
                   required
                 />
               </div>
@@ -186,7 +186,7 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="e.g. cashier"
-                  className="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
                   required
                 />
               </div>
@@ -219,7 +219,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={handlePinClear}
-                  className="h-12 bg-slate-850 hover:bg-slate-800 active:bg-slate-700 border border-slate-800 rounded-lg text-xs font-semibold text-slate-400 transition-colors"
+                  className="h-12 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 border border-slate-700 rounded-lg text-xs font-semibold text-slate-400 transition-colors"
                 >
                   Clear
                 </button>

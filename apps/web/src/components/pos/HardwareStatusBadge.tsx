@@ -50,10 +50,10 @@ export const HardwareStatusBadge: React.FC = () => {
 
   const handleKickDrawer = async () => {
     setIsTesting(true);
-    setTestStatus('Triggering drawer pulse...');
+    setTestStatus('Testing cash drawer...');
     try {
       const res = await cashDrawerService.openDrawer('Manual diagnostic test');
-      setTestStatus(res.success ? '✓ Cash drawer kick sent' : `Error: ${res.message}`);
+      setTestStatus(res.success ? '✓ Cash drawer opened' : `Error: ${res.message}`);
     } catch (e: any) {
       setTestStatus(`Failed: ${e.message}`);
     } finally {
@@ -77,7 +77,7 @@ export const HardwareStatusBadge: React.FC = () => {
             ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/80 hover:bg-emerald-900/60'
             : 'bg-amber-950/60 text-amber-300 border-amber-800/80 hover:bg-amber-900/60'
         }`}
-        title="Hardware & Device Bridge Status"
+        title="Hardware status"
       >
         <span
           className={`w-2 h-2 rounded-full ${
@@ -95,15 +95,15 @@ export const HardwareStatusBadge: React.FC = () => {
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 mt-2 w-80 bg-slate-900 text-slate-200 rounded-xl shadow-lg border border-slate-700/80 p-3.5 z-50 text-xs">
+          <div className="absolute right-0 mt-2 w-80 bg-slate-900 text-slate-200 rounded-lg shadow-lg border border-slate-700/80 p-3.5 z-50 text-xs">
             <div className="flex items-center justify-between pb-2.5 border-b border-slate-800">
               <span className="font-bold text-slate-100 text-xs flex items-center gap-1.5">
-                <Settings className="w-4 h-4 text-indigo-400" />
+                <Settings className="w-4 h-4 text-emerald-400" />
                 POS Hardware Status
               </span>
               <button
                 onClick={() => hardwareManager.checkBridgeHealth()}
-                className="text-[11px] text-slate-400 hover:text-indigo-400 flex items-center gap-1"
+                className="text-[11px] text-slate-400 hover:text-emerald-400 flex items-center gap-1"
                 title="Refresh hardware status"
               >
                 <RefreshCw className="w-3 h-3" />
@@ -116,7 +116,7 @@ export const HardwareStatusBadge: React.FC = () => {
               {/* Bridge Service */}
               <div className="flex items-center justify-between bg-slate-800/60 p-2 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <Monitor className="w-4 h-4 text-indigo-400" />
+                  <Monitor className="w-4 h-4 text-emerald-400" />
                   <div>
                     <div className="font-semibold text-slate-200">Device Bridge</div>
                     <div className="text-[10px] text-slate-400">
@@ -138,7 +138,7 @@ export const HardwareStatusBadge: React.FC = () => {
               {/* Receipt Printer */}
               <div className="flex items-center justify-between bg-slate-800/60 p-2 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <Printer className="w-4 h-4 text-indigo-400" />
+                  <Printer className="w-4 h-4 text-emerald-400" />
                   <div>
                     <div className="font-semibold text-slate-200 truncate max-w-[140px]">
                       {profile.printer.name}
@@ -156,7 +156,7 @@ export const HardwareStatusBadge: React.FC = () => {
               {/* Barcode Scanner */}
               <div className="flex items-center justify-between bg-slate-800/60 p-2 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <Barcode className="w-4 h-4 text-indigo-400" />
+                  <Barcode className="w-4 h-4 text-emerald-400" />
                   <div>
                     <div className="font-semibold text-slate-200">Barcode Scanner</div>
                     <div className="text-[10px] text-slate-400">
@@ -174,7 +174,7 @@ export const HardwareStatusBadge: React.FC = () => {
               {/* Customer Display */}
               <div className="flex items-center justify-between bg-slate-800/60 p-2 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <Tv className="w-4 h-4 text-indigo-400" />
+                  <Tv className="w-4 h-4 text-emerald-400" />
                   <div>
                     <div className="font-semibold text-slate-200">Customer Display</div>
                     <div className="text-[10px] text-slate-400">
@@ -184,7 +184,7 @@ export const HardwareStatusBadge: React.FC = () => {
                 </div>
                 <button
                   onClick={handleLaunchCustomerDisplay}
-                  className="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-0.5"
+                  className="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-0.5"
                 >
                   Launch <ExternalLink className="w-2.5 h-2.5" />
                 </button>
@@ -192,7 +192,7 @@ export const HardwareStatusBadge: React.FC = () => {
             </div>
 
             {testStatus && (
-              <div className="mb-2 p-2 bg-indigo-950/80 border border-indigo-800 text-indigo-200 text-[11px] rounded-lg text-center animate-in fade-in">
+              <div className="mb-2 p-2 bg-emerald-950/80 border border-emerald-800 text-emerald-200 text-[11px] rounded-lg text-center">
                 {testStatus}
               </div>
             )}
@@ -204,7 +204,7 @@ export const HardwareStatusBadge: React.FC = () => {
                 disabled={isTesting}
                 className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-[11px] font-medium transition-colors flex items-center justify-center gap-1 disabled:opacity-50"
               >
-                <Printer className="w-3 h-3 text-indigo-400" />
+                <Printer className="w-3 h-3 text-emerald-400" />
                 Test Print
               </button>
               <button
@@ -213,17 +213,17 @@ export const HardwareStatusBadge: React.FC = () => {
                 className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-[11px] font-medium transition-colors flex items-center justify-center gap-1 disabled:opacity-50"
               >
                 <Volume2 className="w-3 h-3 text-amber-400" />
-                Kick Drawer
+                Test Drawer
               </button>
             </div>
 
             {/* Navigation link to full settings */}
             <div className="mt-2.5 pt-2 border-t border-slate-800 flex justify-between items-center text-[11px]">
-              <span className="text-slate-400">Fault-tolerant fallback active</span>
+              <span className="text-slate-400">Fallback active</span>
               <Link
                 href="/settings/hardware"
                 onClick={() => setIsOpen(false)}
-                className="text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-1"
+                className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1"
               >
                 Configure <Settings className="w-3 h-3" />
               </Link>

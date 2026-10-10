@@ -146,18 +146,18 @@ export default function HardwareSettingsPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/pos"
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
             title="Return to POS"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
             <h1 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-              <Cpu className="w-5 h-5 text-indigo-400" />
-              Hardware Integration & Device Settings
+              <Cpu className="w-5 h-5 text-emerald-400" />
+              Hardware Settings
             </h1>
             <p className="text-xs text-slate-400">
-              Configure POS peripherals, thermal printers, scanners & bridge
+              Configure printers, scanners, cash drawers, and displays.
             </p>
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function HardwareSettingsPage() {
         <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={handleReset}
-            className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Reset Defaults</span>
@@ -174,7 +174,7 @@ export default function HardwareSettingsPage() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
+            className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
           >
             <Save className="w-3.5 h-3.5" />
             <span>{isSaving ? 'Saving...' : 'Save Settings'}</span>
@@ -184,7 +184,7 @@ export default function HardwareSettingsPage() {
 
       {/* Save Notification Toast */}
       {saveMessage && (
-        <div className="bg-emerald-600 text-white text-xs font-bold py-2 px-4 text-center animate-in slide-in-from-top flex items-center justify-center gap-2">
+        <div className="bg-emerald-600 text-white text-xs font-bold py-2 px-4 text-center flex items-center justify-center gap-2">
           <CheckCircle2 className="w-4 h-4" />
           {saveMessage}
         </div>
@@ -198,8 +198,8 @@ export default function HardwareSettingsPage() {
             onClick={() => setActiveTab('printer')}
             className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-xs font-semibold transition-colors ${
               activeTab === 'printer'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-900/60 text-slate-300 hover:bg-slate-850 hover:text-white border border-slate-800/80'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80'
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -213,8 +213,8 @@ export default function HardwareSettingsPage() {
             onClick={() => setActiveTab('scanner')}
             className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-xs font-semibold transition-colors ${
               activeTab === 'scanner'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-900/60 text-slate-300 hover:bg-slate-850 hover:text-white border border-slate-800/80'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80'
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -228,8 +228,8 @@ export default function HardwareSettingsPage() {
             onClick={() => setActiveTab('drawer')}
             className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-xs font-semibold transition-colors ${
               activeTab === 'drawer'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-900/60 text-slate-300 hover:bg-slate-850 hover:text-white border border-slate-800/80'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80'
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -245,8 +245,8 @@ export default function HardwareSettingsPage() {
             onClick={() => setActiveTab('display')}
             className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-xs font-semibold transition-colors ${
               activeTab === 'display'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-900/60 text-slate-300 hover:bg-slate-850 hover:text-white border border-slate-800/80'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80'
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -260,8 +260,8 @@ export default function HardwareSettingsPage() {
             onClick={() => setActiveTab('bridge')}
             className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-xs font-semibold transition-colors ${
               activeTab === 'bridge'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-900/60 text-slate-300 hover:bg-slate-850 hover:text-white border border-slate-800/80'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80'
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -276,7 +276,7 @@ export default function HardwareSettingsPage() {
           </button>
 
           {/* Quick Hardware Diagnostic Card */}
-          <div className="mt-6 p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-2.5">
+          <div className="mt-6 p-4 rounded-lg bg-slate-900 border border-slate-800 text-xs space-y-2.5">
             <div className="font-bold text-slate-300 flex items-center justify-between">
               <span>Bridge Status</span>
               <span
@@ -290,33 +290,32 @@ export default function HardwareSettingsPage() {
               </span>
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              If the local companion service is offline, the POS safely falls back to browser
-              printing, keyboard wedge scanning, and chime alerts without disruption.
+              If the local service is offline, the POS uses browser printing, keyboard wedge scanning, and audio alerts.
             </p>
           </div>
         </div>
 
         {/* Right Active Tab Content */}
-        <div className="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-6 sm:p-8 flex flex-col justify-between">
+        <div className="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-6 sm:p-8 flex flex-col justify-between">
           <div>
             {/* TAB 1: RECEIPT PRINTER */}
             {activeTab === 'printer' && (
-              <div className="space-y-6 animate-in fade-in duration-150">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                   <div>
                     <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                      <Printer className="w-5 h-5 text-indigo-400" />
-                      Thermal Receipt Printer Configuration
+                      <Printer className="w-5 h-5 text-emerald-400" />
+                      Receipt Printer
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      Support for ESC/POS USB, Serial, Network TCP (Port 9100), and Browser Print
+                      ESC/POS USB, Serial, Network TCP (Port 9100), and Browser Print
                     </p>
                   </div>
 
                   <div className="flex gap-2">
                     <button
                       onClick={() => setShowPreviewModal(true)}
-                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       Preview
@@ -324,7 +323,7 @@ export default function HardwareSettingsPage() {
                     <button
                       onClick={handleTestPrint}
                       disabled={isTesting}
-                      className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
+                      className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
                     >
                       <Printer className="w-3.5 h-3.5" />
                       {isTesting ? 'Testing...' : 'Test Print'}
@@ -336,7 +335,7 @@ export default function HardwareSettingsPage() {
                   {/* Driver Selection */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Printer Driver Architecture
+                      Driver
                     </label>
                     <select
                       value={profile.printer.driver}
@@ -346,29 +345,29 @@ export default function HardwareSettingsPage() {
                           printer: { ...profile.printer, driver: e.target.value as any },
                         })
                       }
-                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     >
                       <option value="LOCAL_BRIDGE">
-                        Local Device Bridge (Recommended ESC/POS)
+                        Local Device Bridge (ESC/POS)
                       </option>
                       <option value="NETWORK_TCP">
-                        Network Thermal Printer (Raw TCP Port 9100)
+                        Network Printer (Raw TCP Port 9100)
                       </option>
                       <option value="BROWSER_FALLBACK">
-                        Browser Print Fallback (HTML5 Dialog)
+                        Browser Print
                       </option>
                     </select>
                     <p className="text-[11px] text-slate-400 mt-1">
                       {profile.printer.driver === 'BROWSER_FALLBACK'
-                        ? 'Uses the browser print dialog with custom thermal layout.'
-                        : 'Transmits binary ESC/POS commands directly to thermal roll printer.'}
+                        ? 'Uses the browser print dialog.'
+                        : 'Sends ESC/POS commands directly to the printer.'}
                     </p>
                   </div>
 
                   {/* Paper Size Configuration (58mm vs 80mm) */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Roll Paper Width
+                      Paper Width
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                       <button
@@ -379,9 +378,9 @@ export default function HardwareSettingsPage() {
                             printer: { ...profile.printer, paperSize: '58mm' },
                           })
                         }
-                        className={`p-3 rounded-xl border text-center transition-all ${
+                        className={`p-3 rounded-lg border text-center transition-all ${
                           profile.printer.paperSize === '58mm'
-                            ? 'bg-indigo-600/20 border-indigo-500 text-white font-bold'
+                            ? 'bg-emerald-600/20 border-emerald-500 text-white font-bold'
                             : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-white'
                         }`}
                       >
@@ -399,9 +398,9 @@ export default function HardwareSettingsPage() {
                             printer: { ...profile.printer, paperSize: '80mm' },
                           })
                         }
-                        className={`p-3 rounded-xl border text-center transition-all ${
+                        className={`p-3 rounded-lg border text-center transition-all ${
                           profile.printer.paperSize === '80mm'
-                            ? 'bg-indigo-600/20 border-indigo-500 text-white font-bold'
+                            ? 'bg-emerald-600/20 border-emerald-500 text-white font-bold'
                             : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-white'
                         }`}
                       >
@@ -416,7 +415,7 @@ export default function HardwareSettingsPage() {
                   {/* Printer Target / Spooler Name */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Printer Spooler / Device Name
+                      Printer Name
                     </label>
                     <input
                       type="text"
@@ -428,7 +427,7 @@ export default function HardwareSettingsPage() {
                         })
                       }
                       placeholder="e.g. POS-80C Thermal Printer"
-                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
                     />
                   </div>
 
@@ -448,7 +447,7 @@ export default function HardwareSettingsPage() {
                               printer: { ...profile.printer, networkIp: e.target.value },
                             })
                           }
-                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white font-mono"
+                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white font-mono"
                         />
                       </div>
                       <div>
@@ -467,7 +466,7 @@ export default function HardwareSettingsPage() {
                               },
                             })
                           }
-                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white font-mono"
+                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white font-mono"
                         />
                       </div>
                     </div>
@@ -476,7 +475,7 @@ export default function HardwareSettingsPage() {
                   {/* Options: Auto-Cut & Auto-Drawer */}
                   <div className="space-y-3">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Automation Settings
+                      Options
                     </label>
                     <label className="flex items-center gap-2.5 cursor-pointer">
                       <input
@@ -488,7 +487,7 @@ export default function HardwareSettingsPage() {
                             printer: { ...profile.printer, autoCut: e.target.checked },
                           })
                         }
-                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
+                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-600 focus:ring-emerald-500"
                       />
                       <span className="text-xs text-slate-300">
                         Auto-cut paper at end of receipt
@@ -505,10 +504,10 @@ export default function HardwareSettingsPage() {
                             printer: { ...profile.printer, autoOpenDrawer: e.target.checked },
                           })
                         }
-                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
+                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-600 focus:ring-emerald-500"
                       />
                       <span className="text-xs text-slate-300">
-                        Trigger cash drawer pulse on Cash checkout
+                        Open cash drawer on cash payment
                       </span>
                     </label>
                   </div>
@@ -529,7 +528,7 @@ export default function HardwareSettingsPage() {
                           })
                         }
                         placeholder="Store name & branch"
-                        className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
+                        className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white"
                       />
                     </div>
                     <div>
@@ -546,7 +545,7 @@ export default function HardwareSettingsPage() {
                           })
                         }
                         placeholder="e.g. Thank you for your visit!"
-                        className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
+                        className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white"
                       />
                     </div>
                   </div>
@@ -556,21 +555,21 @@ export default function HardwareSettingsPage() {
 
             {/* TAB 2: BARCODE SCANNER */}
             {activeTab === 'scanner' && (
-              <div className="space-y-6 animate-in fade-in duration-150">
+              <div className="space-y-6">
                 <div className="pb-4 border-b border-slate-800">
                   <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Barcode className="w-5 h-5 text-indigo-400" />
-                    Barcode Scanner Integration
+                    <Barcode className="w-5 h-5 text-emerald-400" />
+                    Barcode Scanner
                   </h2>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Supports USB Barcode Scanners, Bluetooth Handhelds, and Camera Scanner
+                    USB scanners, Bluetooth scanners, and camera scanning.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Scanner Operating Mode
+                      Scanner Mode
                     </label>
                     <select
                       value={profile.scanner.mode}
@@ -580,23 +579,22 @@ export default function HardwareSettingsPage() {
                           scanner: { ...profile.scanner, mode: e.target.value as any },
                         })
                       }
-                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     >
                       <option value="KEYBOARD_WEDGE">
-                        USB / Bluetooth HID Keyboard Wedge (Zero-Driver)
+                        USB / Bluetooth HID Keyboard Wedge
                       </option>
-                      <option value="CAMERA">Built-in Camera Scanner (Webcam/Mobile)</option>
-                      <option value="LOCAL_BRIDGE">Local Device Bridge Serial/COM Port</option>
+                      <option value="CAMERA">Camera (Webcam / Mobile)</option>
+                      <option value="LOCAL_BRIDGE">Local Device Bridge (Serial / COM)</option>
                     </select>
                     <p className="text-[11px] text-slate-400 mt-1">
-                      Standard handheld barcode scanners output keystrokes automatically without
-                      special drivers.
+                      Standard handheld barcode scanners output keystrokes automatically without special drivers.
                     </p>
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Keystroke Burst Velocity Threshold (ms)
+                      Keystroke Speed Threshold (ms)
                     </label>
                     <input
                       type="number"
@@ -612,7 +610,7 @@ export default function HardwareSettingsPage() {
                           },
                         })
                       }
-                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white font-mono"
+                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white font-mono"
                     />
                     <p className="text-[11px] text-slate-400 mt-1">
                       Distinguishes automated laser scanner bursts (&lt; 50ms) from manual human
@@ -622,7 +620,7 @@ export default function HardwareSettingsPage() {
 
                   <div className="space-y-3">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Feedback Alerts
+                      Feedback
                     </label>
                     <label className="flex items-center gap-2.5 cursor-pointer">
                       <input
@@ -634,10 +632,10 @@ export default function HardwareSettingsPage() {
                             scanner: { ...profile.scanner, soundBeepOnScan: e.target.checked },
                           })
                         }
-                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
+                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-600 focus:ring-emerald-500"
                       />
                       <span className="text-xs text-slate-300">
-                        Play audio beep sound upon scan
+                        Beep on scan
                       </span>
                     </label>
 
@@ -651,38 +649,37 @@ export default function HardwareSettingsPage() {
                             scanner: { ...profile.scanner, vibrateOnScan: e.target.checked },
                           })
                         }
-                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
+                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-600 focus:ring-emerald-500"
                       />
                       <span className="text-xs text-slate-300">
-                        Haptic vibration (mobile & tablets)
+                        Vibrate on scan (mobile and tablets)
                       </span>
                     </label>
                   </div>
 
                   {/* Interactive Live Scanner Debugger */}
-                  <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                  <div className="bg-slate-950 p-4 rounded-lg border border-slate-800">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                         <Zap className="w-3.5 h-3.5 text-amber-400" />
-                        Live Scanner Input Test
+                        Scanner Input Test
                       </span>
                       <button
                         onClick={() => scannerService.playBeepSound()}
-                        className="text-[11px] text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-semibold"
+                        className="text-[11px] text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-semibold"
                       >
                         <Volume2 className="w-3 h-3" /> Test Beep
                       </button>
                     </div>
 
                     <p className="text-[11px] text-slate-400 mb-3">
-                      Pull your USB or Bluetooth barcode scanner trigger now to verify instant
-                      detection:
+                      Scan a barcode to verify input:
                     </p>
 
                     <div className="space-y-1.5 max-h-36 overflow-y-auto font-mono text-[11px]">
                       {scannedTestHistory.length === 0 ? (
                         <div className="text-slate-600 italic py-3 text-center">
-                          Awaiting scanner input...
+                          Waiting for barcode scan...
                         </div>
                       ) : (
                         scannedTestHistory.map((item, idx) => (
@@ -703,32 +700,32 @@ export default function HardwareSettingsPage() {
 
             {/* TAB 3: CASH DRAWER */}
             {activeTab === 'drawer' && (
-              <div className="space-y-6 animate-in fade-in duration-150">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                   <div>
                     <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                      <Coins className="w-5 h-5 text-indigo-400" />
-                      Cash Drawer Configuration
+                      <Coins className="w-5 h-5 text-emerald-400" />
+                      Cash Drawer
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      Standard RJ11/RJ12 drawer pulse kick via thermal printer or direct relay
+                      RJ11/RJ12 drawer kick via printer or bridge.
                     </p>
                   </div>
 
                   <button
                     onClick={handleKickDrawer}
                     disabled={isTesting}
-                    className="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
+                    className="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
                   >
                     <Coins className="w-3.5 h-3.5" />
-                    {isTesting ? 'Kicking...' : 'Test Kick Drawer'}
+                    {isTesting ? 'Testing...' : 'Test Drawer'}
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Drawer Trigger Mechanism
+                      Drawer Connection
                     </label>
                     <select
                       value={profile.cashDrawer.driver}
@@ -738,19 +735,19 @@ export default function HardwareSettingsPage() {
                           cashDrawer: { ...profile.cashDrawer, driver: e.target.value as any },
                         })
                       }
-                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     >
                       <option value="PRINTER_KICK">
-                        Printer RJ11 Kick (Standard Thermal Drawer Port)
+                        Printer RJ11 Port
                       </option>
-                      <option value="LOCAL_BRIDGE_DIRECT">Local Bridge Direct Relay Pulse</option>
-                      <option value="MANUAL_FALLBACK">Manual Drawer (No Hardware Connected)</option>
+                      <option value="LOCAL_BRIDGE_DIRECT">Bridge Relay</option>
+                      <option value="MANUAL_FALLBACK">Manual Drawer</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Drawer Kick Pulse Pin
+                      Drawer Pin
                     </label>
                     <select
                       value={profile.cashDrawer.kickPin}
@@ -763,16 +760,16 @@ export default function HardwareSettingsPage() {
                           },
                         })
                       }
-                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
                     >
-                      <option value="2">Pin 2 (Standard Epson ESC/POS Compatible)</option>
-                      <option value="5">Pin 5 (Star / Citizen / Citizen Alternative)</option>
+                      <option value="2">Pin 2 (Epson compatible)</option>
+                      <option value="5">Pin 5 (Star / Citizen compatible)</option>
                     </select>
                   </div>
 
                   <div className="space-y-3">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Drawer Behavior
+                      Drawer Options
                     </label>
                     <label className="flex items-center gap-2.5 cursor-pointer">
                       <input
@@ -787,10 +784,10 @@ export default function HardwareSettingsPage() {
                             },
                           })
                         }
-                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
+                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-600 focus:ring-emerald-500"
                       />
                       <span className="text-xs text-slate-300">
-                        Automatically pop drawer on Cash checkout completion
+                        Open drawer on cash payment
                       </span>
                     </label>
 
@@ -804,10 +801,10 @@ export default function HardwareSettingsPage() {
                             cashDrawer: { ...profile.cashDrawer, soundChirp: e.target.checked },
                           })
                         }
-                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
+                        className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-600 focus:ring-emerald-500"
                       />
                       <span className="text-xs text-slate-300">
-                        Play mechanical cash register bell chime
+                        Play chime on cash payment
                       </span>
                     </label>
                   </div>
@@ -817,31 +814,31 @@ export default function HardwareSettingsPage() {
 
             {/* TAB 4: CUSTOMER DISPLAY */}
             {activeTab === 'display' && (
-              <div className="space-y-6 animate-in fade-in duration-150">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                   <div>
                     <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                      <Tv className="w-5 h-5 text-indigo-400" />
-                      Customer Facing Display Configuration
+                      <Tv className="w-5 h-5 text-emerald-400" />
+                      Customer Display
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      Dual-screen customer display, secondary monitor, or VFD 2x20 pole display
+                      Secondary screen or VFD 2x20 pole display.
                     </p>
                   </div>
 
                   <button
                     onClick={handleLaunchCustomerDisplay}
-                    className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+                    className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
-                    Launch Customer Screen
+                    Open Customer Screen
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Display Output Mode
+                      Display Mode
                     </label>
                     <select
                       value={profile.customerDisplay.driver}
@@ -854,19 +851,19 @@ export default function HardwareSettingsPage() {
                           },
                         })
                       }
-                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     >
                       <option value="SECONDARY_WINDOW">
-                        Secondary Screen / Dual-Monitor Window (BroadcastChannel)
+                        Secondary Window (Dual-Monitor)
                       </option>
-                      <option value="LOCAL_BRIDGE_VFD">Physical VFD 2x20 Line Pole Display</option>
+                      <option value="LOCAL_BRIDGE_VFD">Physical VFD 2x20 Pole Display</option>
                       <option value="DISABLED">Disabled</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Idle Welcome Greeting (Line 1)
+                      Idle Greeting (Line 1)
                     </label>
                     <input
                       type="text"
@@ -880,7 +877,7 @@ export default function HardwareSettingsPage() {
                           },
                         })
                       }
-                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white"
                     />
                   </div>
                 </div>
@@ -889,32 +886,31 @@ export default function HardwareSettingsPage() {
 
             {/* TAB 5: DEVICE BRIDGE */}
             {activeTab === 'bridge' && (
-              <div className="space-y-6 animate-in fade-in duration-150">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                   <div>
                     <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                      <Cpu className="w-5 h-5 text-indigo-400" />
-                      Local Device Bridge (Companion Service)
+                      <Cpu className="w-5 h-5 text-emerald-400" />
+                      Device Bridge
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      Cross-platform service allowing browsers to control raw USB, Serial, and TCP
-                      printers
+                      Local service for direct USB, Serial, and TCP communication.
                     </p>
                   </div>
 
                   <button
                     onClick={() => hardwareManager.checkBridgeHealth()}
-                    className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                    className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
-                    Ping Bridge
+                    Check Bridge
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Local Bridge Companion URL
+                      Bridge URL
                     </label>
                     <input
                       type="text"
@@ -926,15 +922,15 @@ export default function HardwareSettingsPage() {
                         })
                       }
                       placeholder="http://127.0.0.1:9123"
-                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white font-mono"
+                      className="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white font-mono"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Status & Latency
+                      Status &amp; Latency
                     </label>
-                    <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+                    <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span
                           className={`w-2.5 h-2.5 rounded-full ${
@@ -943,8 +939,8 @@ export default function HardwareSettingsPage() {
                         />
                         <span className="text-xs font-bold text-white">
                           {isBridgeConnected
-                            ? 'Companion Bridge Active'
-                            : 'Bridge Offline (Fallback Active)'}
+                            ? 'Bridge Connected'
+                            : 'Bridge Disconnected'}
                         </span>
                       </div>
                       {report.bridgeDetails?.latencyMs !== undefined && (
@@ -960,21 +956,21 @@ export default function HardwareSettingsPage() {
                 {report.bridgeDetails?.discoveredPrinters && (
                   <div className="mt-4 pt-4 border-t border-slate-800">
                     <h4 className="text-xs font-bold text-slate-300 mb-2">
-                      Detected Operating System Printers (
+                      Installed Printers (
                       {report.bridgeDetails.discoveredPrinters.length})
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
                       {report.bridgeDetails.discoveredPrinters.map((p, idx) => (
                         <div
                           key={idx}
-                          className="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between"
+                          className="p-2.5 bg-slate-950 rounded-lg border border-slate-800 flex items-center justify-between"
                         >
                           <div className="truncate mr-2">
                             <div className="font-semibold text-white truncate">{p.name}</div>
                             <div className="text-[10px] text-slate-500">{p.type}</div>
                           </div>
                           {p.isDefault && (
-                            <span className="text-[9px] font-bold bg-indigo-950 text-indigo-400 px-1.5 py-0.5 rounded">
+                            <span className="text-[9px] font-bold bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded">
                               Default
                             </span>
                           )}
@@ -989,7 +985,7 @@ export default function HardwareSettingsPage() {
 
           {/* Test Log Status Bar */}
           {testLog && (
-            <div className="mt-6 p-3 bg-slate-950 rounded-xl border border-indigo-900/60 text-xs font-mono text-indigo-300 flex items-center justify-between">
+            <div className="mt-6 p-3 bg-slate-950 rounded-lg border border-slate-800 text-xs font-mono text-emerald-300 flex items-center justify-between">
               <span>{testLog}</span>
               <button
                 onClick={() => setTestLog('')}
@@ -1006,7 +1002,7 @@ export default function HardwareSettingsPage() {
       {/* 58mm vs 80mm Preview Modal */}
       {showPreviewModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4">
-          <div className="bg-white rounded-xl max-w-sm w-full p-5 text-slate-800 shadow-xl space-y-4">
+          <div className="bg-white rounded-lg max-w-sm w-full p-5 text-slate-800 shadow-xl space-y-4">
             <div className="flex justify-between items-center border-b pb-2">
               <h3 className="font-bold text-sm">Receipt Preview ({profile.printer.paperSize})</h3>
               <button
@@ -1047,7 +1043,7 @@ export default function HardwareSettingsPage() {
 
             <button
               onClick={() => setShowPreviewModal(false)}
-              className="w-full py-2 bg-slate-900 text-white rounded-xl text-xs font-bold"
+              className="w-full py-2 bg-slate-900 text-white rounded-lg text-xs font-bold"
             >
               Close Preview
             </button>

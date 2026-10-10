@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { RegisterSessionSummary, CashMovementRecord, DenominationBreakdown } from '@pos/types';
 import {
   X,
@@ -36,6 +36,68 @@ interface RegisterManagementModalProps {
   }) => Promise<void>;
 }
 
+type ManagementTab = 'overview' | 'cash_in' | 'cash_out' | 'expense' | 'count' | 'close';
+
+// Configured denomination definitions for physical cash counting
+const USD_DENOMINATIONS = [
+  { key: '100', label: '$100 Bills', multiplier: 100, step: '1' },
+  { key: '50', label: '$50 Bills', multiplier: 50, step: '1' },
+  { key: '20', label: '$20 Bills', multiplier: 20, step: '1' },
+  { key: '10', label: '$10 Bills', multiplier: 10, step: '1' },
+  { key: '5', label: '$5 Bills', multiplier: 5, step: '1' },
+  { key: '1', label: '$1 Bills', multiplier: 1, step: '1' },
+  { key: 'coins', label: 'Coins ($)', multiplier: 1, step: '0.01' },
+] as const;
+
+const KHR_DENOMINATIONS = [
+  { key: '100000', label: '100,000 ៛', multiplier: 100000 },
+  { key: '50000', label: '50,000 ៛', multiplier: 50000 },
+  { key: '20000', label: '20,000 ៛', multiplier: 20000 },
+  { key: '15000', label: '15,000 ៛', multiplier: 15000 },
+  { key: '10000', label: '10,000 ៛', multiplier: 10000 },
+  { key: '5000', label: '5,000 ៛', multiplier: 5000 },
+  { key: '2000', label: '2,000 ៛', multiplier: 2000 },
+  { key: '1000', label: '1,000 ៛', multiplier: 1000 },
+  { key: '500', label: '500 ៛', multiplier: 500 },
+  { key: '100', label: '100 ៛', multiplier: 100 },
+] as const;
+
+const MOVEMENT_CONFIGS = {
+  cash_in: {
+    type: 'CASH_IN' as const,
+    title: 'Record Cash In',
+    desc: 'Add change or funds to the drawer.',
+    icon: ArrowDownLeft,
+    iconColor: 'text-emerald-400',
+    btnClass: 'bg-emerald-600 hover:bg-emerald-500',
+    btnLabel: 'Record Cash In',
+    reasonPlaceholder: 'e.g. Added change from vault',
+    refPlaceholder: 'e.g. SLIP-10294 or SAFE-DROP-1',
+  },
+  cash_out: {
+    type: 'CASH_OUT' as const,
+    title: 'Record Cash Out',
+    desc: 'Remove cash for deposits or safe drops.',
+    icon: ArrowUpRight,
+    iconColor: 'text-amber-400',
+    btnClass: 'bg-amber-600 hover:bg-amber-500',
+    btnLabel: 'Record Cash Out',
+    reasonPlaceholder: 'e.g. Safe drop',
+    refPlaceholder: 'e.g. SLIP-10294 or SAFE-DROP-1',
+  },
+  expense: {
+    type: 'EXPENSE' as const,
+    title: 'Store Expense',
+    desc: 'Record store expense paid from register cash.',
+    icon: Receipt,
+    iconColor: 'text-rose-400',
+    btnClass: 'bg-rose-600 hover:bg-rose-500',
+    btnLabel: 'Record Expense',
+    reasonPlaceholder: 'e.g. Purchased floor disinfectant and mops',
+    refPlaceholder: 'e.g. RCP-7729',
+  },
+} as const;
+
 export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = ({
   isOpen,
   onClose,
@@ -45,19 +107,17 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
   onRecordCashMovement,
   onCloseRegister,
 }) => {
-  const [activeTab, setActiveTab] = useState<
-    'overview' | 'cash_in' | 'cash_out' | 'expense' | 'count' | 'close'
-  >('overview');
+  const [activeTab, setActiveTab] = useState<ManagementTab>('overview');
 
-  // Cash In / Out Form State
+  // Cash In / Out / Expense Form State
   const [movementUSD, setMovementUSD] = useState<string>('');
   const [movementKHR, setMovementKHR] = useState<string>('');
   const [movementReason, setMovementReason] = useState<string>('');
   const [movementRef, setMovementRef] = useState<string>('');
   const [expenseCategory, setExpenseCategory] = useState<string>('Store Operations');
 
-  // Cash Count Denominations State
-  const [usdCounts, setUsdCounts] = useState<{ [key: string]: number }>({
+  // Physical Cash Count Denominations State
+  const [usdCounts, setUsdCounts] = useState<Record<string, number>>({
     '100': 0,
     '50': 0,
     '20': 0,
@@ -67,7 +127,7 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
     coins: 0,
   });
 
-  const [khrCounts, setKhrCounts] = useState<{ [key: string]: number }>({
+  const [khrCounts, setKhrCounts] = useState<Record<string, number>>({
     '100000': 0,
     '50000': 0,
     '20000': 0,
@@ -90,30 +150,21 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Compute Denomination Totals
-  const countedUSD = Number(
-    (
-      (usdCounts['100'] || 0) * 100 +
-      (usdCounts['50'] || 0) * 50 +
-      (usdCounts['20'] || 0) * 20 +
-      (usdCounts['10'] || 0) * 10 +
-      (usdCounts['5'] || 0) * 5 +
-      (usdCounts['1'] || 0) * 1 +
-      (usdCounts['coins'] || 0)
-    ).toFixed(2),
-  );
+  // Compute Counted Totals via Declarative Denominations
+  const countedUSD = useMemo(() => {
+    const total = USD_DENOMINATIONS.reduce(
+      (sum, d) => sum + (usdCounts[d.key] || 0) * d.multiplier,
+      0,
+    );
+    return Number(total.toFixed(2));
+  }, [usdCounts]);
 
-  const countedKHR =
-    (khrCounts['100000'] || 0) * 100000 +
-    (khrCounts['50000'] || 0) * 50000 +
-    (khrCounts['20000'] || 0) * 20000 +
-    (khrCounts['15000'] || 0) * 15000 +
-    (khrCounts['10000'] || 0) * 10000 +
-    (khrCounts['5000'] || 0) * 5000 +
-    (khrCounts['2000'] || 0) * 2000 +
-    (khrCounts['1000'] || 0) * 1000 +
-    (khrCounts['500'] || 0) * 500 +
-    (khrCounts['100'] || 0) * 100;
+  const countedKHR = useMemo(() => {
+    return KHR_DENOMINATIONS.reduce(
+      (sum, d) => sum + (khrCounts[d.key] || 0) * d.multiplier,
+      0,
+    );
+  }, [khrCounts]);
 
   useEffect(() => {
     if (session) {
@@ -214,19 +265,28 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
   const diffUSD = Number((closeInputUSD - expectedUSD).toFixed(2));
   const diffKHR = closeInputKHR - expectedKHR;
 
+  const tabs = [
+    { id: 'overview' as const, label: 'Overview & Cash', icon: DollarSign },
+    { id: 'cash_in' as const, label: 'Cash In', icon: ArrowDownLeft },
+    { id: 'cash_out' as const, label: 'Cash Out', icon: ArrowUpRight },
+    { id: 'expense' as const, label: 'Expenses', icon: Receipt },
+    { id: 'count' as const, label: 'Cash Count', icon: Calculator },
+    { id: 'close' as const, label: 'Close Register', icon: Lock },
+  ];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80">
-      <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Top Header */}
         <div className="px-6 py-4 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
               <Calculator className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-bold text-white leading-tight">
-                  Register Session Manager
+                  Register Management
                 </h2>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                   {session.status}
@@ -248,30 +308,23 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
 
         {/* Navigation Tabs */}
         <div className="flex items-center gap-1 px-6 pt-3 border-b border-slate-800 bg-slate-950/40 shrink-0 overflow-x-auto no-scrollbar">
-          {[
-            { id: 'overview', label: 'Overview & Cash', icon: DollarSign },
-            { id: 'cash_in', label: 'Cash In', icon: ArrowDownLeft },
-            { id: 'cash_out', label: 'Cash Out', icon: ArrowUpRight },
-            { id: 'expense', label: 'Expenses', icon: Receipt },
-            { id: 'count', label: 'Cash Count', icon: Calculator },
-            { id: 'close', label: 'Close Register', icon: Lock },
-          ].map((tab) => {
+          {tabs.map((tab) => {
             const Icon = tab.icon;
             const active = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => {
-                  setActiveTab(tab.id as any);
+                  setActiveTab(tab.id);
                   setErrorMessage(null);
                 }}
-                className={`flex items-center gap-2 px-3.5 py-2.5 rounded-t-xl text-xs font-bold transition-all border-b-2 whitespace-nowrap ${
+                className={`flex items-center gap-2 px-3.5 py-2.5 rounded-t-lg text-xs font-bold transition-all border-b-2 whitespace-nowrap ${
                   active
-                    ? 'border-indigo-500 text-white bg-slate-800/80'
+                    ? 'border-emerald-500 text-white bg-slate-800/80'
                     : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${active ? 'text-indigo-400' : 'text-slate-400'}`} />
+                <Icon className={`w-3.5 h-3.5 ${active ? 'text-emerald-400' : 'text-slate-400'}`} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -282,14 +335,14 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Alerts */}
           {errorMessage && (
-            <div className="p-3.5 rounded-xl bg-rose-950/80 border border-rose-800/80 text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-3.5 rounded-lg bg-rose-950/80 border border-rose-800/80 text-rose-300 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {successMessage && (
-            <div className="p-3.5 rounded-xl bg-emerald-950/80 border border-emerald-800/80 text-emerald-300 text-xs flex items-center gap-2">
+            <div className="p-3.5 rounded-lg bg-emerald-950/80 border border-emerald-800/80 text-emerald-300 text-xs flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
               <span>{successMessage}</span>
             </div>
@@ -297,35 +350,35 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
 
           {/* TAB 1: OVERVIEW & CURRENT CASH */}
           {activeTab === 'overview' && (
-            <div className="space-y-6 animate-in fade-in-50 duration-150">
-              {/* Prominent Expected Cash Cards */}
+            <div className="space-y-6">
+              {/* Expected Cash Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 relative">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
-                    Current Expected Cash (USD)
+                <div className="p-5 rounded-lg bg-slate-950 border border-slate-800 relative">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                    Expected Cash (USD)
                   </div>
                   <div className="text-3xl font-bold font-mono text-white mt-1">
                     ${session.expectedCashUSD.toFixed(2)}
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1">
-                    Net cash currently expected in register drawer
+                    Expected cash in drawer
                   </p>
                 </div>
 
-                <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 relative">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
-                    Current Expected Cash (KHR)
+                <div className="p-5 rounded-lg bg-slate-950 border border-slate-800 relative">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-amber-400">
+                    Expected Cash (KHR)
                   </div>
                   <div className="text-3xl font-bold font-mono text-white mt-1">
                     {session.expectedCashKHR.toLocaleString()} ៛
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-1">Riel currency drawer balance</p>
+                  <p className="text-[11px] text-slate-400 mt-1">Expected Riel in drawer</p>
                 </div>
               </div>
 
               {/* Financial Breakdown Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
                   <span className="text-[10px] text-slate-400 font-bold uppercase block">
                     Opening Float
                   </span>
@@ -337,7 +390,7 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                   </span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
                   <span className="text-[10px] text-emerald-400 font-bold uppercase block">
                     Cash Sales ({session.totalSalesCount})
                   </span>
@@ -349,11 +402,11 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                   </span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-[10px] text-indigo-400 font-bold uppercase block">
-                    Cash In (Added)
+                <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
+                  <span className="text-[10px] text-emerald-400 font-bold uppercase block">
+                    Cash In
                   </span>
-                  <span className="text-sm font-bold font-mono text-indigo-400 mt-0.5 block">
+                  <span className="text-sm font-bold font-mono text-emerald-400 mt-0.5 block">
                     +${session.cashInUSD.toFixed(2)}
                   </span>
                   <span className="text-[10px] text-slate-500 font-mono">
@@ -361,9 +414,9 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                   </span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
                   <span className="text-[10px] text-amber-400 font-bold uppercase block">
-                    Cash Out (Drop)
+                    Cash Out
                   </span>
                   <span className="text-sm font-bold font-mono text-amber-400 mt-0.5 block">
                     -${session.cashOutUSD.toFixed(2)}
@@ -373,7 +426,7 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                   </span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
                   <span className="text-[10px] text-rose-400 font-bold uppercase block">
                     Expenses
                   </span>
@@ -385,7 +438,7 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                   </span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
                   <span className="text-[10px] text-purple-400 font-bold uppercase block">
                     Refunds
                   </span>
@@ -402,23 +455,22 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                    Recent Cash Movements in Shift ({movements.length})
+                    Recent Cash Movements ({movements.length})
                   </h3>
                   <button
                     onClick={() => setActiveTab('cash_in')}
-                    className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold"
+                    className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold"
                   >
                     + Record Movement
                   </button>
                 </div>
 
                 {movements.length === 0 ? (
-                  <div className="p-6 rounded-xl bg-slate-950/60 border border-slate-800 text-center text-xs text-slate-500">
-                    No mid-shift cash movements recorded yet. Use Cash In, Cash Out, or Expenses
-                    tabs above.
+                  <div className="p-6 rounded-lg bg-slate-950/60 border border-slate-800 text-center text-xs text-slate-500">
+                    No cash movements recorded yet.
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-950/60">
+                  <div className="rounded-lg border border-slate-800 overflow-hidden bg-slate-950/60">
                     <table className="w-full text-left text-xs">
                       <thead className="bg-slate-900 border-b border-slate-800 text-[10px] uppercase font-bold text-slate-400">
                         <tr>
@@ -476,216 +528,116 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
             </div>
           )}
 
-          {/* TAB 2 & 3: CASH IN & CASH OUT */}
-          {(activeTab === 'cash_in' || activeTab === 'cash_out') && (
-            <div className="max-w-md mx-auto space-y-4 animate-in fade-in-50 duration-150">
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  {activeTab === 'cash_in' ? (
-                    <>
-                      <ArrowDownLeft className="w-4 h-4 text-emerald-400" />
-                      <span>Record Cash In (Drawer Addition)</span>
-                    </>
-                  ) : (
-                    <>
-                      <ArrowUpRight className="w-4 h-4 text-amber-400" />
-                      <span>Record Cash Out (Drawer Drop / Removal)</span>
-                    </>
-                  )}
-                </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  {activeTab === 'cash_in'
-                    ? 'Add replenishment funds, vault transfers, or change additions to the drawer.'
-                    : 'Remove cash for banking deposits, vault drops, or cash skimming.'}
-                </p>
-              </div>
+          {/* TABS 2, 3, 4: UNIFIED CASH MOVEMENT FORM (CASH IN / CASH OUT / EXPENSE) */}
+          {(activeTab === 'cash_in' || activeTab === 'cash_out' || activeTab === 'expense') && (() => {
+            const cfg = MOVEMENT_CONFIGS[activeTab];
+            const Icon = cfg.icon;
+            const isExpense = activeTab === 'expense';
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Amount USD ($)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={movementUSD}
-                  onChange={(e) => setMovementUSD(e.target.value)}
-                  placeholder="0.00"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-indigo-500"
-                />
-              </div>
+            return (
+              <div className="max-w-md mx-auto space-y-4">
+                <div className="p-4 rounded-lg bg-slate-950 border border-slate-800">
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <Icon className={`w-4 h-4 ${cfg.iconColor}`} />
+                    <span>{cfg.title}</span>
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1">{cfg.desc}</p>
+                </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Amount KHR (៛)
-                </label>
-                <input
-                  type="number"
-                  step="100"
-                  min="0"
-                  value={movementKHR}
-                  onChange={(e) => setMovementKHR(e.target.value)}
-                  placeholder="0"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-indigo-500"
-                />
-              </div>
+                {isExpense && (
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                      Expense Category
+                    </label>
+                    <select
+                      value={expenseCategory}
+                      onChange={(e) => setExpenseCategory(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-emerald-500"
+                    >
+                      <option value="Store Operations">Store Operations</option>
+                      <option value="Cleaning Supplies">Cleaning Supplies</option>
+                      <option value="Refreshments">Refreshments &amp; Water</option>
+                      <option value="Courier / Delivery">Courier / Delivery</option>
+                      <option value="Emergency Maintenance">Emergency Maintenance</option>
+                      <option value="Other">Other Miscellaneous</option>
+                    </select>
+                  </div>
+                )}
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Reason / Purpose <span className="text-rose-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={movementReason}
-                  onChange={(e) => setMovementReason(e.target.value)}
-                  placeholder={
-                    activeTab === 'cash_in'
-                      ? 'e.g. Change fund replenishment from vault'
-                      : 'e.g. Midday safe drop'
-                  }
-                  required
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-indigo-500"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Amount USD ($)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={movementUSD}
+                    onChange={(e) => setMovementUSD(e.target.value)}
+                    placeholder="0.00"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Reference # (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={movementRef}
-                  onChange={(e) => setMovementRef(e.target.value)}
-                  placeholder="e.g. SLIP-10294 or SAFE-DROP-1"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-indigo-500"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Amount KHR (៛)
+                  </label>
+                  <input
+                    type="number"
+                    step="100"
+                    min="0"
+                    value={movementKHR}
+                    onChange={(e) => setMovementKHR(e.target.value)}
+                    placeholder="0"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
 
-              <button
-                type="button"
-                onClick={() =>
-                  handleCashMovementSubmit(activeTab === 'cash_in' ? 'CASH_IN' : 'CASH_OUT')
-                }
-                disabled={isSubmitting}
-                className={`w-full py-2.5 rounded-xl font-bold text-xs text-white shadow-xs transition-colors disabled:opacity-50 ${
-                  activeTab === 'cash_in'
-                    ? 'bg-emerald-600 hover:bg-emerald-500'
-                    : 'bg-amber-600 hover:bg-amber-500'
-                }`}
-              >
-                {isSubmitting
-                  ? 'Recording Movement...'
-                  : activeTab === 'cash_in'
-                    ? 'Confirm Cash In'
-                    : 'Confirm Cash Out'}
-              </button>
-            </div>
-          )}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    {isExpense ? 'Description / Reason' : 'Reason / Purpose'} <span className="text-rose-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={movementReason}
+                    onChange={(e) => setMovementReason(e.target.value)}
+                    placeholder={cfg.reasonPlaceholder}
+                    required
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
 
-          {/* TAB 4: EXPENSES */}
-          {activeTab === 'expense' && (
-            <div className="max-w-md mx-auto space-y-4 animate-in fade-in-50 duration-150">
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Receipt className="w-4 h-4 text-rose-400" />
-                  <span>Store Petty Cash Expense</span>
-                </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Pay out cash from register for emergency or operational store supplies.
-                </p>
-              </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    {isExpense ? 'Receipt / Invoice # (Optional)' : 'Reference # (Optional)'}
+                  </label>
+                  <input
+                    type="text"
+                    value={movementRef}
+                    onChange={(e) => setMovementRef(e.target.value)}
+                    placeholder={cfg.refPlaceholder}
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Expense Category
-                </label>
-                <select
-                  value={expenseCategory}
-                  onChange={(e) => setExpenseCategory(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-indigo-500"
+                <button
+                  type="button"
+                  onClick={() => handleCashMovementSubmit(cfg.type)}
+                  disabled={isSubmitting}
+                  className={`w-full py-2.5 rounded-lg font-bold text-xs text-white shadow-xs transition-colors disabled:opacity-50 ${cfg.btnClass}`}
                 >
-                  <option value="Store Operations">Store Operations</option>
-                  <option value="Cleaning Supplies">Cleaning Supplies</option>
-                  <option value="Refreshments">Refreshments &amp; Water</option>
-                  <option value="Courier / Delivery">Courier / Delivery</option>
-                  <option value="Emergency Maintenance">Emergency Maintenance</option>
-                  <option value="Other">Other Miscellaneous</option>
-                </select>
+                  {isSubmitting ? 'Saving...' : cfg.btnLabel}
+                </button>
               </div>
+            );
+          })()}
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Amount USD ($)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={movementUSD}
-                  onChange={(e) => setMovementUSD(e.target.value)}
-                  placeholder="0.00"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Amount KHR (៛)
-                </label>
-                <input
-                  type="number"
-                  step="100"
-                  min="0"
-                  value={movementKHR}
-                  onChange={(e) => setMovementKHR(e.target.value)}
-                  placeholder="0"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Description / Reason <span className="text-rose-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={movementReason}
-                  onChange={(e) => setMovementReason(e.target.value)}
-                  placeholder="e.g. Purchased floor disinfectant and mops"
-                  required
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Receipt / Invoice # (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={movementRef}
-                  onChange={(e) => setMovementRef(e.target.value)}
-                  placeholder="e.g. RCP-7729"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={() => handleCashMovementSubmit('EXPENSE')}
-                disabled={isSubmitting}
-                className="w-full py-2.5 rounded-xl font-bold text-xs text-white bg-rose-600 hover:bg-rose-500 shadow-xs transition-colors disabled:opacity-50"
-              >
-                {isSubmitting ? 'Recording Expense...' : 'Record Store Expense'}
-              </button>
-            </div>
-          )}
-
-          {/* TAB 5: CASH COUNT (DENOMINATION COUNTER) */}
+          {/* TAB 5: PHYSICAL CASH COUNT (DENOMINATION COUNTER) */}
           {activeTab === 'count' && (
-            <div className="space-y-6 animate-in fade-in-50 duration-150">
+            <div className="space-y-6">
               {/* Header and comparison bar */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-slate-950 border border-slate-800">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-lg bg-slate-950 border border-slate-800">
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase">
                     Expected Cash
@@ -696,10 +648,10 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                 </div>
 
                 <div>
-                  <span className="text-[10px] font-bold text-indigo-400 uppercase">
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase">
                     Counted Cash Total
                   </span>
-                  <div className="text-lg font-bold font-mono text-indigo-300 mt-0.5">
+                  <div className="text-lg font-bold font-mono text-emerald-300 mt-0.5">
                     ${countedUSD.toFixed(2)} &bull; {countedKHR.toLocaleString()}៛
                   </div>
                 </div>
@@ -731,7 +683,7 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                       {countedUSD - expectedUSD === 0
                         ? 'Exact Match'
                         : countedUSD - expectedUSD > 0
-                          ? 'Over (Surplus)'
+                          ? 'Over'
                           : 'Short'}
                     </span>
                   </div>
@@ -741,34 +693,26 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
               {/* Denominations Split Layout */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* USD Denominations */}
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+                <div className="p-4 rounded-lg bg-slate-950/60 border border-slate-800 space-y-3">
                   <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center justify-between">
                     <span>US Dollar Denominations ($)</span>
                     <span className="font-mono text-white">${countedUSD.toFixed(2)}</span>
                   </h4>
                   <div className="space-y-2 text-xs">
-                    {[
-                      { key: '100', label: '$100 Bills' },
-                      { key: '50', label: '$50 Bills' },
-                      { key: '20', label: '$20 Bills' },
-                      { key: '10', label: '$10 Bills' },
-                      { key: '5', label: '$5 Bills' },
-                      { key: '1', label: '$1 Bills' },
-                      { key: 'coins', label: 'Coins ($ value)' },
-                    ].map((d) => (
+                    {USD_DENOMINATIONS.map((d) => (
                       <div key={d.key} className="flex items-center justify-between gap-3">
                         <span className="text-slate-400 font-semibold">{d.label}</span>
                         <div className="flex items-center gap-2">
                           <input
                             type="number"
                             min="0"
-                            step={d.key === 'coins' ? '0.01' : '1'}
+                            step={d.step}
                             value={usdCounts[d.key] || ''}
                             onChange={(e) =>
-                              setUsdCounts({
-                                ...usdCounts,
+                              setUsdCounts((prev) => ({
+                                ...prev,
                                 [d.key]: parseFloat(e.target.value) || 0,
-                              })
+                              }))
                             }
                             placeholder="0"
                             className="w-24 px-2.5 py-1 text-right bg-slate-900 border border-slate-700 rounded-lg text-white font-mono font-bold focus:outline-none focus:border-emerald-500"
@@ -780,24 +724,13 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                 </div>
 
                 {/* KHR Denominations */}
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
-                  <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center justify-between">
+                <div className="p-4 rounded-lg bg-slate-950/60 border border-slate-800 space-y-3">
+                  <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
                     <span>Khmer Riel Denominations (៛)</span>
                     <span className="font-mono text-white">{countedKHR.toLocaleString()} ៛</span>
                   </h4>
                   <div className="space-y-2 text-xs">
-                    {[
-                      { key: '100000', label: '100,000 ៛' },
-                      { key: '50000', label: '50,000 ៛' },
-                      { key: '20000', label: '20,000 ៛' },
-                      { key: '15000', label: '15,000 ៛' },
-                      { key: '10000', label: '10,000 ៛' },
-                      { key: '5000', label: '5,000 ៛' },
-                      { key: '2000', label: '2,000 ៛' },
-                      { key: '1000', label: '1,000 ៛' },
-                      { key: '500', label: '500 ៛' },
-                      { key: '100', label: '100 ៛' },
-                    ].map((d) => (
+                    {KHR_DENOMINATIONS.map((d) => (
                       <div key={d.key} className="flex items-center justify-between gap-3">
                         <span className="text-slate-400 font-semibold">{d.label}</span>
                         <div className="flex items-center gap-2">
@@ -807,13 +740,13 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                             step="1"
                             value={khrCounts[d.key] || ''}
                             onChange={(e) =>
-                              setKhrCounts({
-                                ...khrCounts,
+                              setKhrCounts((prev) => ({
+                                ...prev,
                                 [d.key]: parseInt(e.target.value, 10) || 0,
-                              })
+                              }))
                             }
                             placeholder="0"
-                            className="w-24 px-2.5 py-1 text-right bg-slate-900 border border-slate-700 rounded-lg text-white font-mono font-bold focus:outline-none focus:border-indigo-500"
+                            className="w-24 px-2.5 py-1 text-right bg-slate-900 border border-slate-700 rounded-lg text-white font-mono font-bold focus:outline-none focus:border-amber-500"
                           />
                         </div>
                       </div>
@@ -826,9 +759,9 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                 <button
                   type="button"
                   onClick={handleApplyCountToClose}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xs transition-colors"
+                  className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors"
                 >
-                  Apply Denomination Totals to Shift Close &rarr;
+                  Use Counted Total &rarr;
                 </button>
               </div>
             </div>
@@ -838,20 +771,20 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
           {activeTab === 'close' && (
             <form
               onSubmit={handleCloseShiftSubmit}
-              className="max-w-lg mx-auto space-y-5 animate-in fade-in-50 duration-150"
+              className="max-w-lg mx-auto space-y-5"
             >
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
+              <div className="p-4 rounded-lg bg-slate-950 border border-slate-800">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <Lock className="w-4 h-4 text-amber-400" />
-                  <span>Reconcile &amp; Close Register Session</span>
+                  <span>Close Register</span>
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
-                  Count the drawer cash, record any discrepancies, and finalize the shift.
+                  Count drawer cash, record discrepancies, and close the shift.
                 </p>
               </div>
 
-              {/* Expected vs Counted vs Difference Comparison Card */}
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 font-mono text-xs">
+              {/* Comparison Card */}
+              <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3 font-mono text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400">Expected Cash (USD):</span>
                   <span className="font-bold text-slate-200">${expectedUSD.toFixed(2)}</span>
@@ -884,7 +817,7 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                             : 'bg-rose-500/20 text-rose-300'
                       }`}
                     >
-                      {diffUSD === 0 ? 'Balanced' : diffUSD > 0 ? 'Surplus (Over)' : 'Shortage'}
+                      {diffUSD === 0 ? 'Balanced' : diffUSD > 0 ? 'Over' : 'Short'}
                     </span>
                   </div>
                 </div>
@@ -894,14 +827,14 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs font-semibold text-slate-300">
-                    Counted Cash in Drawer (USD $) <span className="text-rose-400">*</span>
+                    Counted Cash (USD) <span className="text-rose-400">*</span>
                   </label>
                   <button
                     type="button"
                     onClick={() => setActiveTab('count')}
-                    className="text-[11px] text-indigo-400 hover:text-indigo-300"
+                    className="text-[11px] text-emerald-400 hover:text-emerald-300 font-medium"
                   >
-                    Use Denomination Counter
+                    Use cash counter
                   </button>
                 </div>
                 <input
@@ -912,14 +845,14 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                   onChange={(e) => setCloseUSD(e.target.value)}
                   placeholder="0.00"
                   required
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono text-base font-bold focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-white font-mono text-base font-bold focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
               {/* Counted Cash KHR Input */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Counted Cash in Drawer (KHR ៛) <span className="text-rose-400">*</span>
+                  Counted Cash (KHR) <span className="text-rose-400">*</span>
                 </label>
                 <input
                   type="number"
@@ -929,21 +862,21 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
                   onChange={(e) => setCloseKHR(e.target.value)}
                   placeholder="0"
                   required
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono text-base font-bold focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-white font-mono text-base font-bold focus:outline-none focus:border-amber-500"
                 />
               </div>
 
               {/* Closing Notes */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Closing Notes &amp; Variance Explanation
+                  Closing Notes
                 </label>
                 <textarea
                   value={closingNotes}
                   onChange={(e) => setClosingNotes(e.target.value)}
                   placeholder="e.g. End of shift balance verified with manager. All drops completed."
                   rows={2}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -951,11 +884,11 @@ export const RegisterManagementModal: React.FC<RegisterManagementModalProps> = (
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <Lock className="w-4 h-4" />
                 <span>
-                  {isSubmitting ? 'Closing Shift...' : 'Reconcile & Close Register Shift'}
+                  {isSubmitting ? 'Closing Register...' : 'Close Register'}
                 </span>
               </button>
             </form>

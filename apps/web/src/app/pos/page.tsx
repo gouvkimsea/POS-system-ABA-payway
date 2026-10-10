@@ -246,7 +246,7 @@ function PosTerminalContent() {
             taxRate: store?.taxRate || 0.1,
           });
           setIsOnline(false);
-          showNotification('Operating in Offline Mode (Loaded from IndexedDB)', 'warn');
+          showNotification('Offline mode (loaded from local cache)', 'warn');
           return;
         }
       } catch (idbErr) {
@@ -258,12 +258,12 @@ function PosTerminalContent() {
       if (cached) {
         setInitData(JSON.parse(cached));
         setIsOnline(false);
-        showNotification('Operating in Offline Cache mode (localStorage)', 'warn');
+        showNotification('Offline mode (loaded from local storage)', 'warn');
         const cachedHeld = localStorage.getItem(HELD_CACHE_KEY);
         if (cachedHeld) setHeldOrders(JSON.parse(cachedHeld));
       } else {
         setIsError(true);
-        setErrorMessage(err.message || 'Unable to connect to POS database server');
+        setErrorMessage(err.message || 'Unable to connect to server');
       }
     } finally {
       setIsLoading(false);
@@ -810,7 +810,7 @@ function PosTerminalContent() {
     setIsOpenRegisterModalOpen(false);
     posSounds.playSuccessChime();
     showNotification(
-      `Register session #${json.data.id.slice(-6).toUpperCase()} opened successfully!`,
+      `Register session #${json.data.id.slice(-6).toUpperCase()} opened.`,
       'success',
     );
   };
@@ -895,7 +895,7 @@ function PosTerminalContent() {
     setIsShiftReportModalOpen(true);
     posSounds.playSuccessChime();
     showNotification(
-      `Session #${closed.id.slice(-6).toUpperCase()} closed successfully. Shift report generated.`,
+      `Session #${closed.id.slice(-6).toUpperCase()} closed. Shift report generated.`,
       'success',
     );
   };
@@ -1019,11 +1019,11 @@ function PosTerminalContent() {
   }, [cart, discountUSD, initData?.exchangeRateKHR]);
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-100 font-sans select-none">
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-950 font-sans select-none">
       {/* Notification Toast */}
       {notification && (
         <div
-          className={`fixed top-16 right-4 z-50 px-4 py-2.5 rounded-xl shadow-xl text-xs font-bold border animate-in slide-in-from-top duration-200 ${
+          className={`fixed top-16 right-4 z-50 px-4 py-2.5 rounded-lg shadow-xl text-xs font-bold border ${
             notification.type === 'success'
               ? 'bg-emerald-600 text-white border-emerald-500'
               : notification.type === 'warn'
@@ -1063,9 +1063,8 @@ function PosTerminalContent() {
           <div className="flex items-center gap-2">
             <WifiOff className="w-4 h-4 text-slate-950 shrink-0" />
             <span>
-              <strong>Offline Mode Active:</strong> Operating without network connection. Product
-              lookup, barcode scanning, cart, and checkout are active locally. Sales will
-              automatically sync when connection returns.
+              <strong>Offline Mode:</strong> No network connection. Product lookup, scanning, and
+              checkout work locally. Sales will sync when connection returns.
             </span>
           </div>
           <Link
@@ -1080,7 +1079,7 @@ function PosTerminalContent() {
       {/* Main Terminal Split Layout */}
       <div className="flex-1 flex overflow-hidden">
         {/* LEFT / MAIN AREA: Products & Search (65% on Desktop) */}
-        <section className="flex-1 flex flex-col min-w-0 bg-slate-100 overflow-hidden">
+        <section className="flex-1 flex flex-col min-w-0 bg-slate-950 overflow-hidden">
           {/* Search & Barcode Top Bar */}
           <ProductSearchBarcode
             searchQuery={searchQuery}
@@ -1251,7 +1250,7 @@ function PosTerminalContent() {
           loadTerminalData();
           fetchCurrentSession();
           setNotification({
-            message: 'Return & refund completed successfully. Inventory and cash drawer updated.',
+            message: 'Refund complete. Inventory and cash drawer updated.',
             type: 'success',
           });
         }}

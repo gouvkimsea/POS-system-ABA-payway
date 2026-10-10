@@ -403,11 +403,11 @@ function ReportsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-600 selection:text-white">
       {/* 1. Header Bar */}
       <header className="sticky top-0 z-30 bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center text-white shrink-0">
             <BarChart3 className="w-5 h-5" />
           </div>
           <div>
@@ -432,7 +432,7 @@ function ReportsContent() {
             href="/pos"
             className="hidden md:flex px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors items-center gap-1.5"
           >
-            <ShoppingCart className="w-3.5 h-3.5 text-indigo-400" />
+            <ShoppingCart className="w-3.5 h-3.5 text-emerald-400" />
             <span>Open POS</span>
           </Link>
 
@@ -456,13 +456,13 @@ function ReportsContent() {
           <div className="relative group">
             <button
               disabled={exportLoading}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-1.5 transition-colors disabled:opacity-50"
+              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 transition-colors disabled:opacity-50"
             >
               <Download className="w-3.5 h-3.5" />
               <span>{exportLoading ? 'Exporting...' : 'Export'}</span>
-              <ChevronDown className="w-3 h-3 text-indigo-200" />
+              <ChevronDown className="w-3 h-3 text-emerald-100" />
             </button>
-            <div className="absolute right-0 top-full mt-1.5 w-44 bg-slate-900 border border-slate-700 rounded-xl shadow-xl py-1.5 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all z-50">
+            <div className="absolute right-0 top-full mt-1.5 w-44 bg-slate-900 border border-slate-700 rounded-lg shadow-xl py-1.5 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all z-50">
               <button
                 onClick={() => handleExport('csv')}
                 className="w-full text-left px-3.5 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2"
@@ -487,7 +487,7 @@ function ReportsContent() {
             className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
             title="Refresh Report Data"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-indigo-400' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-emerald-400' : ''}`} />
           </button>
         </div>
       </header>
@@ -496,7 +496,7 @@ function ReportsContent() {
       <section className="bg-slate-900/60 border-b border-slate-800/80 px-4 sm:px-6 py-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Date Presets */}
-          <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800/80 overflow-x-auto">
+          <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-lg border border-slate-800/80 overflow-x-auto">
             {(
               [
                 { id: 'today', label: 'Today' },
@@ -513,7 +513,7 @@ function ReportsContent() {
                 onClick={() => setDatePreset(preset.id)}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
                   datePreset === preset.id
-                    ? 'bg-indigo-600 text-white font-semibold'
+                    ? 'bg-emerald-600 text-white font-semibold'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                 }`}
               >
@@ -524,7 +524,7 @@ function ReportsContent() {
 
           {/* Custom Date Inputs if Custom selected */}
           {datePreset === 'custom' && (
-            <div className="flex items-center gap-2 bg-slate-950/80 p-1 rounded-xl border border-slate-800/80 text-xs">
+            <div className="flex items-center gap-2 bg-slate-950/80 p-1 rounded-lg border border-slate-800/80 text-xs">
               <Calendar className="w-3.5 h-3.5 text-slate-400 ml-2" />
               <input
                 type="date"
@@ -549,9 +549,9 @@ function ReportsContent() {
               <button
                 type="button"
                 onClick={() => setShowStoreDropdown(!showStoreDropdown)}
-                className="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800/80 text-xs font-semibold text-slate-200 hover:border-slate-700 hover:bg-slate-900 transition shadow-xs"
+                className="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800/80 text-xs font-semibold text-slate-200 hover:border-slate-700 hover:bg-slate-900 transition shadow-xs"
               >
-                <Building2 className="w-3.5 h-3.5 text-indigo-400" />
+                <Building2 className="w-3.5 h-3.5 text-emerald-400" />
                 <span>
                   {selectedStoreIds.includes('all') || selectedStoreIds.length === 0
                     ? 'All Stores'
@@ -563,7 +563,7 @@ function ReportsContent() {
               </button>
 
               {showStoreDropdown && (
-                <div className="absolute left-0 top-full mt-2 w-72 bg-slate-900 border border-slate-700 rounded-xl shadow-xl p-3 z-50">
+                <div className="absolute left-0 top-full mt-2 w-72 bg-slate-900 border border-slate-700 rounded-lg shadow-xl p-3 z-50">
                   <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[11px]">
                     <span className="font-bold text-white uppercase tracking-wider">
                       Stores
@@ -574,7 +574,7 @@ function ReportsContent() {
                         setSelectedStoreIds(['all']);
                         setShowStoreDropdown(false);
                       }}
-                      className="text-indigo-400 hover:text-indigo-300 font-bold"
+                      className="text-emerald-400 hover:text-emerald-300 font-bold"
                     >
                       All Stores
                     </button>
@@ -584,7 +584,7 @@ function ReportsContent() {
                     <label
                       className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition ${
                         selectedStoreIds.includes('all')
-                          ? 'bg-indigo-600/20 text-indigo-300 font-bold border border-indigo-500/30'
+                          ? 'bg-emerald-600/20 text-emerald-300 font-bold border border-emerald-500/30'
                           : 'text-slate-300 hover:bg-slate-800'
                       }`}
                     >
@@ -592,7 +592,7 @@ function ReportsContent() {
                         type="checkbox"
                         checked={selectedStoreIds.includes('all')}
                         onChange={() => setSelectedStoreIds(['all'])}
-                        className="rounded border-slate-700 text-indigo-600 focus:ring-0"
+                        className="rounded border-slate-700 text-emerald-600 focus:ring-0"
                       />
                       <span>All Stores</span>
                     </label>
@@ -605,7 +605,7 @@ function ReportsContent() {
                           key={s.id}
                           className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition ${
                             isChecked
-                              ? 'bg-indigo-600/20 text-indigo-300 font-bold border border-indigo-500/30'
+                              ? 'bg-emerald-600/20 text-emerald-300 font-bold border border-emerald-500/30'
                               : 'text-slate-300 hover:bg-slate-800'
                           }`}
                         >
@@ -622,7 +622,7 @@ function ReportsContent() {
                               }
                               setSelectedStoreIds(updated);
                             }}
-                            className="rounded border-slate-700 text-indigo-600 focus:ring-0"
+                            className="rounded border-slate-700 text-emerald-600 focus:ring-0"
                           />
                           <div className="truncate">
                             <span className="text-white font-medium">{s.name}</span>
@@ -644,7 +644,7 @@ function ReportsContent() {
                     <button
                       type="button"
                       onClick={() => setShowStoreDropdown(false)}
-                      className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-bold transition"
+                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold transition"
                     >
                       Apply
                     </button>
@@ -654,7 +654,7 @@ function ReportsContent() {
             </div>
 
             {/* Cashier Filter */}
-            <div className="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1.5 rounded-xl border border-slate-800/80 text-xs">
+            <div className="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1.5 rounded-lg border border-slate-800/80 text-xs">
               <Users className="w-3.5 h-3.5 text-slate-400" />
               <select
                 value={selectedCashierId}
@@ -673,7 +673,7 @@ function ReportsContent() {
             </div>
 
             {/* Payment Method Filter */}
-            <div className="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1.5 rounded-xl border border-slate-800/80 text-xs">
+            <div className="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1.5 rounded-lg border border-slate-800/80 text-xs">
               <CreditCard className="w-3.5 h-3.5 text-slate-400" />
               <select
                 value={selectedPaymentMethodCode}
@@ -705,7 +705,7 @@ function ReportsContent() {
               onClick={() => setSelectedStoreIds(['all'])}
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border transition shrink-0 ${
                 selectedStoreIds.includes('all') || selectedStoreIds.length === 0
-                  ? 'bg-indigo-600 text-white border-indigo-500 shadow-xs'
+                  ? 'bg-emerald-600 text-white border-emerald-500 shadow-xs'
                   : 'bg-slate-950/80 text-slate-400 border-slate-800 hover:text-slate-200'
               }`}
             >
@@ -727,7 +727,7 @@ function ReportsContent() {
                   }}
                   className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border transition shrink-0 whitespace-nowrap ${
                     isChecked
-                      ? 'bg-indigo-600 text-white border-indigo-500 shadow-xs'
+                      ? 'bg-emerald-600 text-white border-emerald-500 shadow-xs'
                       : 'bg-slate-950/80 text-slate-400 border-slate-800 hover:text-slate-200'
                   }`}
                 >
@@ -768,20 +768,20 @@ function ReportsContent() {
                   setActiveTab(tab.id);
                   setSearchQuery('');
                 }}
-                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
                   isActive
-                    ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/40 shadow-sm'
+                    ? 'bg-emerald-600/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                 }`}
               >
                 <Icon
-                  className={`w-3.5 h-3.5 ${isActive ? 'text-indigo-400' : 'text-slate-500'}`}
+                  className={`w-3.5 h-3.5 ${isActive ? 'text-emerald-400' : 'text-slate-500'}`}
                 />
                 <span>{tab.label}</span>
                 {tab.badge && (
                   <span
                     className={`text-[9px] px-1.5 py-0.2 rounded-md font-bold uppercase tracking-wider ${
-                      isActive ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-slate-400'
+                      isActive ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400'
                     }`}
                   >
                     {tab.badge}
@@ -796,7 +796,7 @@ function ReportsContent() {
       {/* 4. Main Body */}
       <main className="flex-1 p-4 sm:p-6 pb-24 lg:pb-8 space-y-6 max-w-7xl w-full mx-auto">
         {error && (
-          <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center gap-3">
+          <div className="p-4 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center gap-3">
             <ShieldAlert className="w-5 h-5 text-rose-400 shrink-0" />
             <div className="text-xs">
               <span className="font-bold">Error loading report: </span>
@@ -811,11 +811,11 @@ function ReportsContent() {
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="h-32 rounded-xl bg-slate-900 border border-slate-800 animate-pulse"
+                  className="h-32 rounded-lg bg-slate-900 border border-slate-800 animate-pulse"
                 />
               ))}
             </div>
-            <div className="h-96 rounded-xl bg-slate-900 border border-slate-800 animate-pulse" />
+            <div className="h-96 rounded-lg bg-slate-900 border border-slate-800 animate-pulse" />
           </div>
         ) : (
           <>
@@ -825,7 +825,7 @@ function ReportsContent() {
                 {/* Top 4 KPI Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {/* Today's Sales */}
-                  <div className="p-5 rounded-xl bg-slate-900 border border-slate-800">
+                  <div className="p-5 rounded-lg bg-slate-900 border border-slate-800">
                     <div className="flex items-center justify-between text-slate-400 mb-2">
                       <span className="text-xs font-semibold uppercase tracking-wider">
                         Today&apos;s Sales
@@ -849,12 +849,12 @@ function ReportsContent() {
                   </div>
 
                   {/* Period Gross Sales & AOV */}
-                  <div className="p-5 rounded-xl bg-slate-900 border border-slate-800">
+                  <div className="p-5 rounded-lg bg-slate-900 border border-slate-800">
                     <div className="flex items-center justify-between text-slate-400 mb-2">
                       <span className="text-xs font-semibold uppercase tracking-wider">
                         Gross Sales (Period)
                       </span>
-                      <div className="w-8 h-8 rounded-lg bg-indigo-950/80 border border-indigo-800/80 flex items-center justify-center text-indigo-400">
+                      <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-emerald-400">
                         <TrendingUp className="w-4 h-4" />
                       </div>
                     </div>
@@ -866,14 +866,14 @@ function ReportsContent() {
                     </div>
                     <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
                       <span className="text-slate-400">Avg Order Value (AOV)</span>
-                      <span className="font-semibold text-indigo-400 font-mono">
+                      <span className="font-semibold text-slate-200 font-mono">
                         ${dashboardData.todayAverageOrderValueUSD.toFixed(2)}
                       </span>
                     </div>
                   </div>
 
                   {/* Refunds & Discounts Deductions */}
-                  <div className="p-5 rounded-xl bg-slate-900 border border-slate-800">
+                  <div className="p-5 rounded-lg bg-slate-900 border border-slate-800">
                     <div className="flex items-center justify-between text-slate-400 mb-2">
                       <span className="text-xs font-semibold uppercase tracking-wider">
                         Refunds &amp; Discounts
@@ -897,7 +897,7 @@ function ReportsContent() {
                   </div>
 
                   {/* Profit Estimate & Margin */}
-                  <div className="p-5 rounded-xl bg-slate-900 border border-slate-800">
+                  <div className="p-5 rounded-lg bg-slate-900 border border-slate-800">
                     <div className="flex items-center justify-between text-slate-400 mb-2">
                       <span className="text-xs font-semibold uppercase tracking-wider">
                         Estimated Profit
@@ -924,10 +924,10 @@ function ReportsContent() {
                 {/* Middle Grid: Payment Breakdown & Cashier Performance */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Payment Breakdown Card */}
-                  <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-4">
+                  <div className="p-5 rounded-lg bg-slate-900 border border-slate-800 space-y-4">
                     <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                       <div className="flex items-center gap-2">
-                        <CreditCard className="w-4 h-4 text-indigo-400" />
+                        <CreditCard className="w-4 h-4 text-emerald-400" />
                         <h2 className="text-sm font-bold text-white">Payment Method Breakdown</h2>
                       </div>
                       <span className="text-xs text-slate-400 font-mono">
@@ -956,7 +956,7 @@ function ReportsContent() {
                           {/* Progress bar */}
                           <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
                             <div
-                              className="bg-indigo-500 h-full rounded-full transition-all duration-300"
+                              className="bg-emerald-500 h-full rounded-full transition-all duration-300"
                               style={{ width: `${Math.min(100, pm.percentage)}%` }}
                             />
                           </div>
@@ -971,7 +971,7 @@ function ReportsContent() {
                   </div>
 
                   {/* Cashier Performance Card */}
-                  <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-lg space-y-4">
+                  <div className="p-5 rounded-lg bg-slate-900 border border-slate-800 shadow-lg space-y-4">
                     <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                       <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-emerald-400" />
@@ -1011,7 +1011,7 @@ function ReportsContent() {
                               <td className="py-2.5 text-right font-bold text-emerald-400">
                                 ${c.netSalesUSD.toFixed(2)}
                               </td>
-                              <td className="py-2.5 text-right text-indigo-300">
+                              <td className="py-2.5 text-right text-slate-300">
                                 ${c.avgOrderValueUSD.toFixed(2)}
                               </td>
                             </tr>
@@ -1030,13 +1030,13 @@ function ReportsContent() {
                 {/* Bottom Grid: Top Products & Low Stock Alerts */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Top Products */}
-                  <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-lg space-y-4">
+                  <div className="p-5 rounded-lg bg-slate-900 border border-slate-800 shadow-lg space-y-4">
                     <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                       <div className="flex items-center gap-2">
-                        <Package className="w-4 h-4 text-indigo-400" />
+                        <Package className="w-4 h-4 text-emerald-400" />
                         <h2 className="text-sm font-bold text-white">Top Performing Products</h2>
                       </div>
-                      <span className="text-xs text-indigo-400 font-mono font-semibold">
+                      <span className="text-xs text-slate-400 font-mono font-semibold">
                         By Revenue
                       </span>
                     </div>
@@ -1085,7 +1085,7 @@ function ReportsContent() {
                   </div>
 
                   {/* Low Stock Alerts */}
-                  <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-lg space-y-4">
+                  <div className="p-5 rounded-lg bg-slate-900 border border-slate-800 shadow-lg space-y-4">
                     <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4 text-amber-400" />
@@ -1276,7 +1276,7 @@ function ReportsContent() {
                       <tbody className="divide-y divide-slate-800 font-mono">
                         {filtered.map((p) => (
                           <tr key={p.productId} className="hover:bg-slate-900/40 transition-colors">
-                            <td className="p-3 text-indigo-400 font-bold">{p.sku}</td>
+                            <td className="p-3 text-slate-300 font-semibold">{p.sku}</td>
                             <td className="p-3 font-sans font-medium text-slate-200">
                               {p.productName}
                             </td>
@@ -1368,7 +1368,7 @@ function ReportsContent() {
                               ${c.netSalesUSD.toFixed(2)}
                             </td>
                             <td className="p-3 text-right">
-                              <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 font-bold text-[10px]">
+                              <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">
                                 {c.revenueSharePercent}%
                               </span>
                             </td>
@@ -1433,7 +1433,7 @@ function ReportsContent() {
                             <td className="p-3 text-right font-bold text-emerald-400">
                               ${c.netSalesUSD.toFixed(2)}
                             </td>
-                            <td className="p-3 text-right font-bold text-indigo-300">
+                            <td className="p-3 text-right font-bold text-slate-300">
                               ${c.avgOrderValueUSD.toFixed(2)}
                             </td>
                           </tr>
@@ -1495,7 +1495,7 @@ function ReportsContent() {
                               {p.totalKHR.toLocaleString()} ៛
                             </td>
                             <td className="p-3 text-right">
-                              <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 font-bold text-[10px]">
+                              <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">
                                 {p.percentage}%
                               </span>
                             </td>
@@ -1553,7 +1553,7 @@ function ReportsContent() {
                             key={`${inv.productId}-${inv.storeName}`}
                             className="hover:bg-slate-900/40 transition-colors"
                           >
-                            <td className="p-3 text-indigo-400 font-bold">{inv.sku}</td>
+                            <td className="p-3 text-slate-300 font-semibold">{inv.sku}</td>
                             <td className="p-3 font-sans font-medium text-slate-200">
                               {inv.productName}
                             </td>
@@ -1652,7 +1652,7 @@ function ReportsContent() {
                               <span
                                 className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
                                   m.type === 'SALE'
-                                    ? 'bg-indigo-500/10 text-indigo-400'
+                                    ? 'bg-blue-500/10 text-blue-400'
                                     : m.type === 'REFUND' || m.type === 'RETURN'
                                       ? 'bg-amber-500/10 text-amber-400'
                                       : m.type === 'PURCHASE' || m.type === 'ADJUSTMENT_IN'
@@ -1847,7 +1847,7 @@ function ReportsContent() {
                                 ? `${s.differenceUSD > 0 ? '+' : ''}$${s.differenceUSD.toFixed(2)}`
                                 : 'N/A'}
                             </td>
-                            <td className="p-3 text-right text-indigo-300 font-bold">
+                            <td className="p-3 text-right text-slate-300 font-semibold">
                               {s.totalSalesCount}
                             </td>
                           </tr>
@@ -1868,10 +1868,10 @@ function ReportsContent() {
 
             {/* TAB 13: PROFIT & LOSS ESTIMATE */}
             {activeTab === 'profit' && profitReport && (
-              <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl bg-slate-900 border border-slate-800 space-y-6">
+              <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-lg bg-slate-900 border border-slate-800 space-y-6">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
                       <Calculator className="w-5 h-5" />
                     </div>
                     <div>
@@ -1885,7 +1885,7 @@ function ReportsContent() {
                   </div>
                   <button
                     onClick={() => handleExport('csv')}
-                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-1.5 transition-colors"
+                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 transition-colors"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Export CSV</span>
@@ -1905,7 +1905,7 @@ function ReportsContent() {
                     <span>-${profitReport.discountsUSD.toFixed(2)}</span>
                   </div>
 
-                  <div className="flex items-center justify-between py-2.5 font-bold text-slate-100 bg-slate-950/40 px-3 rounded-xl">
+                  <div className="flex items-center justify-between py-2.5 font-bold text-slate-100 bg-slate-950/40 px-3 rounded-lg">
                     <span className="font-sans">Net Sales</span>
                     <span className="text-sm">${profitReport.netSalesUSD.toFixed(2)}</span>
                   </div>
@@ -1915,7 +1915,7 @@ function ReportsContent() {
                     <span>-${profitReport.cogsUSD.toFixed(2)}</span>
                   </div>
 
-                  <div className="flex items-center justify-between py-2.5 font-bold text-emerald-400 bg-emerald-500/10 px-3 rounded-xl border border-emerald-500/20">
+                  <div className="flex items-center justify-between py-2.5 font-bold text-emerald-400 bg-emerald-500/10 px-3 rounded-lg border border-emerald-500/20">
                     <span className="font-sans">Gross Profit</span>
                     <div className="flex items-center gap-3">
                       <span className="text-sm">${profitReport.grossProfitUSD.toFixed(2)}</span>
@@ -1940,7 +1940,7 @@ function ReportsContent() {
                     <span>${profitReport.taxesCollectedUSD.toFixed(2)}</span>
                   </div>
 
-                  <div className="flex items-center justify-between py-3.5 font-bold text-emerald-300 bg-emerald-950/60 px-4 rounded-xl border border-emerald-800/80">
+                  <div className="flex items-center justify-between py-3.5 font-bold text-emerald-300 bg-emerald-950/60 px-4 rounded-lg border border-emerald-800/80">
                     <div className="font-sans">
                       <div className="text-sm text-white">Estimated Net Operating Profit</div>
                       <div className="text-[10px] text-slate-400 font-normal">
@@ -1976,7 +1976,7 @@ function ReportTableContainer({
   children: React.ReactNode;
 }) {
   return (
-    <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-xl space-y-4">
+    <div className="p-5 rounded-lg bg-slate-900 border border-slate-800 shadow-xl space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
         <div>
           <h2 className="text-sm font-bold text-white tracking-tight">{title}</h2>
@@ -1994,7 +1994,7 @@ function ReportTableContainer({
               placeholder="Search in table..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="bg-slate-950 border border-slate-800 rounded-lg pl-8 pr-3 py-1 text-xs text-slate-200 placeholder-slate-500 outline-hidden focus:border-indigo-500 transition-colors w-40 sm:w-56"
+              className="bg-slate-950 border border-slate-800 rounded-lg pl-8 pr-3 py-1 text-xs text-slate-200 placeholder-slate-500 outline-hidden focus:border-emerald-500 transition-colors w-40 sm:w-56"
             />
           </div>
 
@@ -2018,7 +2018,7 @@ function ReportTableContainer({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-slate-800/80">{children}</div>
+      <div className="overflow-x-auto rounded-lg border border-slate-800/80">{children}</div>
     </div>
   );
 }

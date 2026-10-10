@@ -98,12 +98,12 @@ export function LocationModal({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/75 flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-md overflow-hidden text-slate-100 shadow-xl">
-        <div className="px-6 py-4 bg-slate-850 border-b border-slate-800 flex items-center justify-between">
+      <div className="bg-slate-900 border border-slate-800 rounded-lg w-full max-w-md overflow-hidden text-slate-100 shadow-xl">
+        <div className="px-6 py-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <MapPin className="w-5 h-5 text-indigo-400" />
+            <MapPin className="w-5 h-5 text-emerald-400" />
             <h2 className="text-base font-bold text-white">
-              {isEditing ? `Edit Location: ${location?.name}` : 'New Inventory Location'}
+              {isEditing ? `Edit Location: ${location?.name}` : 'Add Location'}
             </h2>
           </div>
           <button
@@ -125,42 +125,42 @@ export function LocationModal({
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Location Name * (e.g. Sales Floor Coolers, Warehouse Rack A)
+              Location Name *
             </label>
             <input
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Main Sales Floor"
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+              placeholder="e.g. Sales Floor, Warehouse A"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
             />
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Location Code *
+              Code *
             </label>
             <input
               type="text"
               required
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="LOC-FL-01"
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-mono text-white focus:ring-2 focus:ring-indigo-500"
+              placeholder="LOC-01"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-mono text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
             />
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Description / Notes
+              Description
             </label>
             <textarea
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Storage room, display shelf aisle, or cold room rack..."
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white"
+              placeholder="Storage room, display shelf, or cold room rack..."
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
             />
           </div>
 
@@ -172,9 +172,9 @@ export function LocationModal({
                 onChange={(e) => setIsDefault(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
               <span className="ml-3 text-xs font-medium text-slate-200">
-                Set as Store Default Location (Primary POS Floor)
+                Default location for sales floor
               </span>
             </label>
           </div>
@@ -190,9 +190,9 @@ export function LocationModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold shadow-md shadow-indigo-600/30 transition disabled:opacity-50"
+              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-semibold shadow-sm transition-colors disabled:opacity-50"
             >
-              {isSubmitting ? 'Saving...' : isEditing ? 'Update' : 'Create Location'}
+              {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Add Location'}
             </button>
           </div>
         </form>

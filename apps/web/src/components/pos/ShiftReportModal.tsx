@@ -23,17 +23,17 @@ export const ShiftReportModal: React.FC<ShiftReportModalProps> = ({ isOpen, onCl
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 print:p-0 print:bg-white">
-      <div className="w-full max-w-md bg-white text-slate-900 rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[92dvh] border border-slate-200 print:border-none print:shadow-none print:max-w-none">
+      <div className="w-full max-w-md bg-white text-slate-900 rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[92dvh] border border-slate-200 print:border-none print:shadow-none print:max-w-none">
         {/* Top Header (Hidden on print) */}
         <div className="px-5 py-3.5 bg-slate-100 border-b border-slate-200 flex items-center justify-between shrink-0 print:hidden">
           <div className="flex items-center gap-2">
             <Printer className="w-4 h-4 text-slate-600" />
-            <h3 className="text-sm font-bold text-slate-800">Register Shift Report (Z-Report)</h3>
+            <h3 className="text-sm font-bold text-slate-800">Register Shift Report</h3>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print</span>
@@ -56,7 +56,7 @@ export const ShiftReportModal: React.FC<ShiftReportModalProps> = ({ isOpen, onCl
             </h1>
             <p className="text-[11px] text-slate-600 font-sans">{session.storeName}</p>
             <div className="text-[11px] font-bold text-slate-800 uppercase mt-2">
-              *** REGISTER SHIFT Z-REPORT ***
+              *** REGISTER SHIFT REPORT ***
             </div>
             <p className="text-[10px] text-slate-500">Session ID: {session.id.slice(0, 16)}...</p>
           </div>
@@ -122,11 +122,11 @@ export const ShiftReportModal: React.FC<ShiftReportModalProps> = ({ isOpen, onCl
               <span>+${session.cashSalesUSD.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
-              <span>(+) Cash In (Additions):</span>
+              <span>(+) Cash In:</span>
               <span>+${session.cashInUSD.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
-              <span>(-) Cash Out (Drops):</span>
+              <span>(-) Cash Out:</span>
               <span>-${session.cashOutUSD.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
@@ -159,7 +159,7 @@ export const ShiftReportModal: React.FC<ShiftReportModalProps> = ({ isOpen, onCl
                 }`}
               >
                 {diffUSD >= 0 ? '+' : ''}${diffUSD.toFixed(2)} (
-                {isBalanced ? 'Balanced' : isOver ? 'OVER' : 'SHORT'})
+                {isBalanced ? 'Balanced' : isOver ? 'Over' : 'Short'})
               </span>
             </div>
           </div>

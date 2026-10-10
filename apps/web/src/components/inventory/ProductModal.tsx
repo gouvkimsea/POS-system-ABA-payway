@@ -154,20 +154,19 @@ export function ProductModal({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/75 flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-3xl overflow-hidden text-slate-100 shadow-xl">
+      <div className="bg-slate-900 border border-slate-800 rounded-lg w-full max-w-3xl overflow-hidden text-slate-100 shadow-xl">
         {/* Header */}
-        <div className="px-6 py-4 bg-slate-850 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
               <Package className="w-5 h-5" />
             </div>
             <div>
               <h2 className="text-base font-bold text-white">
-                {isEditing ? `Edit Product: ${product?.name}` : 'Create New Product'}
+                {isEditing ? `Edit Product: ${product?.name}` : 'Add Product'}
               </h2>
               <p className="text-xs text-slate-400">
-                Configure item details, dual-language Khmer labels, barcode, pricing, and reorder
-                levels
+                Enter product details, barcode, pricing, and reorder levels.
               </p>
             </div>
           </div>
@@ -193,7 +192,7 @@ export function ProductModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Product Name (English / Primary) *
+                Product Name *
               </label>
               <input
                 type="text"
@@ -201,26 +200,26 @@ export function ProductModal({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Cambodia Premium Lager Beer 330ml Can"
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Khmer Name (ឈ្មោះជាភាសាខ្មែរ)
+                Khmer Name
               </label>
               <input
                 type="text"
                 value={nameKhmer}
                 onChange={(e) => setNameKhmer(e.target.value)}
                 placeholder="ឧ. ស្រាបៀរកម្ពុជា កំប៉ុង ៣៣០មីលីលីត្រ"
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                SKU (Stock Keeping Unit) *
+                SKU *
               </label>
               <input
                 type="text"
@@ -228,20 +227,20 @@ export function ProductModal({
                 value={sku}
                 onChange={(e) => setSku(e.target.value)}
                 placeholder="BEV-CAM-330"
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-mono text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-mono text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Barcode (EAN / UPC / Code128)
+                Barcode
               </label>
               <input
                 type="text"
                 value={barcode}
                 onChange={(e) => setBarcode(e.target.value)}
                 placeholder="8840001001"
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-mono text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-mono text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               />
             </div>
           </div>
@@ -253,7 +252,7 @@ export function ProductModal({
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               >
                 <option value="">-- No Category --</option>
                 {categories.map((c) => (
@@ -269,7 +268,7 @@ export function ProductModal({
               <select
                 value={brandId}
                 onChange={(e) => setBrandId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               >
                 <option value="">-- No Brand --</option>
                 {brands.map((b) => (
@@ -285,7 +284,7 @@ export function ProductModal({
               <select
                 value={supplierId}
                 onChange={(e) => setSupplierId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               >
                 <option value="">-- No Supplier --</option>
                 {suppliers.map((s) => (
@@ -298,10 +297,10 @@ export function ProductModal({
           </div>
 
           {/* Pricing & Units */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-800/40 p-3.5 rounded-xl border border-slate-800">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-800/40 p-3.5 rounded-lg border border-slate-800">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Cost Price ($ USD)
+                Cost ($ USD)
               </label>
               <input
                 type="number"
@@ -309,13 +308,13 @@ export function ProductModal({
                 min="0"
                 value={costPriceUSD}
                 onChange={(e) => setCostPriceUSD(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-semibold text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-semibold text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Selling Price ($ USD)
+                Price ($ USD)
               </label>
               <input
                 type="number"
@@ -323,7 +322,7 @@ export function ProductModal({
                 min="0"
                 value={sellingPriceUSD}
                 onChange={(e) => setSellingPriceUSD(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-semibold text-emerald-400 focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-semibold text-emerald-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               />
               <p className="text-[10px] text-slate-400 mt-1">
                 ≈ ៛{(parseFloat(sellingPriceUSD || '0') * 4100).toLocaleString()} KHR
@@ -332,7 +331,7 @@ export function ProductModal({
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Tax Rate (e.g. 0.10 = 10%)
+                Tax Rate
               </label>
               <input
                 type="number"
@@ -341,18 +340,18 @@ export function ProductModal({
                 max="1"
                 value={taxRate}
                 onChange={(e) => setTaxRate(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Unit of Measure
+                Unit
               </label>
               <select
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               >
                 <option value="pcs">pcs (Pieces)</option>
                 <option value="can">can (Can)</option>
@@ -370,31 +369,31 @@ export function ProductModal({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Reorder Level (Low Stock Alert)
+                Reorder Level
               </label>
               <input
                 type="number"
                 min="0"
                 value={reorderLevel}
                 onChange={(e) => setReorderLevel(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               />
               <p className="text-[10px] text-slate-400 mt-1">
-                Triggers low-stock warnings when inventory ≤ this value
+                Alerts when stock is at or below this level.
               </p>
             </div>
 
             {!isEditing && (
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Initial Opening Stock
+                  Starting Stock
                 </label>
                 <input
                   type="number"
                   min="0"
                   value={initialStock}
                   onChange={(e) => setInitialStock(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
                 />
               </div>
             )}
@@ -402,12 +401,12 @@ export function ProductModal({
             {!isEditing && (
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Stock Receiving Location
+                  Storage Location
                 </label>
                 <select
                   value={initialLocationId}
                   onChange={(e) => setInitialLocationId(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
                 >
                   {locations.map((loc) => (
                     <option key={loc.id} value={loc.id}>
@@ -430,7 +429,7 @@ export function ProductModal({
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="https://images.unsplash.com/photo-..."
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               />
             </div>
 
@@ -444,7 +443,7 @@ export function ProductModal({
                 />
                 <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
                 <span className="ml-3 text-sm font-medium text-slate-200">
-                  {isActive ? 'Active (Ready for POS)' : 'Inactive (Hidden from POS)'}
+                  {isActive ? 'Active (available in POS)' : 'Inactive (hidden in POS)'}
                 </span>
               </label>
             </div>
@@ -453,14 +452,14 @@ export function ProductModal({
           {/* Description */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Product Notes / Description
+              Description / Notes
             </label>
             <textarea
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Merchandise packaging, allergen warnings, or handling notes..."
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
             />
           </div>
 
@@ -476,9 +475,9 @@ export function ProductModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold shadow-md shadow-indigo-600/30 transition disabled:opacity-50"
+              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-semibold shadow-sm transition-colors disabled:opacity-50"
             >
-              {isSubmitting ? 'Saving...' : isEditing ? 'Update Product' : 'Create Product'}
+              {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Add Product'}
             </button>
           </div>
         </form>

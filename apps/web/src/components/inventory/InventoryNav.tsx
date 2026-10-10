@@ -74,7 +74,7 @@ export function InventoryNav({
           {/* Logo & System Title */}
           <div className="flex items-center space-x-3">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-base">
+              <div className="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-base">
                 <Package className="w-5 h-5" />
               </div>
               <div>
@@ -103,11 +103,11 @@ export function InventoryNav({
                 value={quickBarcode}
                 onChange={(e) => setQuickBarcode(e.target.value)}
                 placeholder="Scan or enter barcode (e.g. 8840001001)..."
-                className="w-full pl-9 pr-16 py-1.5 bg-slate-950 text-sm rounded-lg border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-white placeholder-slate-500 transition"
+                className="w-full pl-9 pr-16 py-1.5 bg-slate-950 text-sm rounded-lg border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 text-white placeholder-slate-500 transition"
               />
               <button
                 type="submit"
-                className="absolute right-1 top-1 bottom-1 px-3 bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold rounded text-white transition flex items-center"
+                className="absolute right-1 top-1 bottom-1 px-3 bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold rounded text-white transition flex items-center"
               >
                 Find
               </button>
@@ -118,7 +118,7 @@ export function InventoryNav({
           <div className="flex items-center space-x-2">
             <Link
               href="/inventory/transfers"
-              className="hidden md:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-850 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-medium transition"
+              className="hidden md:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-medium transition"
             >
               <Truck className="w-3.5 h-3.5 text-slate-400" />
               <span>Transfers</span>
@@ -126,7 +126,7 @@ export function InventoryNav({
 
             <Link
               href="/settings/stores"
-              className="hidden lg:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-850 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-medium transition"
+              className="hidden lg:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-medium transition"
             >
               <Building2 className="w-3.5 h-3.5 text-slate-400" />
               <span>Branches</span>
@@ -134,7 +134,7 @@ export function InventoryNav({
 
             <Link
               href="/pos"
-              className="hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition"
+              className="hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition"
             >
               <ShoppingCart className="w-3.5 h-3.5" />
               <span>POS</span>
@@ -142,7 +142,7 @@ export function InventoryNav({
 
             <Link
               href="/"
-              className="hidden sm:inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-slate-850 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-medium transition"
+              className="hidden sm:inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-medium transition"
             >
               <Home className="w-3.5 h-3.5 text-slate-400" />
               <span>Dashboard</span>
@@ -179,7 +179,7 @@ export function InventoryNav({
                 onClick={() => onTabChange(item.id)}
                 className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
                   isActive
-                    ? 'bg-indigo-600 text-white font-semibold'
+                    ? 'bg-emerald-600 text-white font-semibold'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
@@ -189,7 +189,7 @@ export function InventoryNav({
                   <span
                     className={`ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold ${
                       isActive
-                        ? 'bg-indigo-900 text-indigo-100'
+                        ? 'bg-emerald-800 text-emerald-100'
                         : item.id === 'stock' && lowStockCount > 0
                           ? 'bg-amber-950/80 text-amber-300 border border-amber-800'
                           : 'bg-slate-800 text-slate-400'

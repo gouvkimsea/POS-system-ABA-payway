@@ -30,8 +30,8 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <div className="text-center space-y-3">
-          <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs font-medium text-slate-400">Verifying session credentials...</p>
+          <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs font-medium text-slate-400">Loading...</p>
         </div>
       </div>
     );
@@ -49,14 +49,13 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
           <Card title="Access Denied" description="Insufficient Permissions">
             <div className="space-y-4">
               <div className="p-3 bg-amber-950/40 border border-amber-800/60 rounded-md text-amber-300 text-xs">
-                Your account (<strong className="text-white">{user.username}</strong>) does not possess the required
-                permission:{' '}
+                Your account (<strong className="text-white">{user.username}</strong>) does not have permission:{' '}
                 <code className="bg-amber-900/60 text-amber-200 px-1 py-0.5 rounded font-mono font-semibold">
                   {requiredPermission}
                 </code>
               </div>
               <div className="text-xs text-slate-400">
-                Your assigned roles:{' '}
+                Your roles:{' '}
                 {user.roles.map((r) => (
                   <span
                     key={r}

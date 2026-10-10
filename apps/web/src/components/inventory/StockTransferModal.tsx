@@ -93,25 +93,25 @@ export function StockTransferModal({
     setError(null);
 
     if (!fromLocationId || !toLocationId) {
-      setError('Both source and destination locations are required');
+      setError('Select source and destination locations.');
       return;
     }
     if (fromLocationId === toLocationId) {
-      setError('Source and destination locations cannot be identical');
+      setError('Source and destination locations cannot be the same.');
       return;
     }
     if (parsedQty <= 0) {
-      setError('Transfer quantity must be greater than zero');
+      setError('Transfer quantity must be greater than zero.');
       return;
     }
     if (parsedQty > availableStock) {
       setError(
-        `Requested transfer quantity (${parsedQty}) exceeds source location stock (${availableStock})`,
+        `Transfer quantity (${parsedQty}) exceeds available stock (${availableStock}).`,
       );
       return;
     }
     if (!reason.trim() || reason.trim().length < 3) {
-      setError('A descriptive transfer reason is strictly required (minimum 3 characters)');
+      setError('Please enter a transfer reason with at least 3 characters.');
       return;
     }
 
@@ -150,16 +150,16 @@ export function StockTransferModal({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-xl overflow-hidden shadow-xl text-slate-100">
+      <div className="bg-slate-900 border border-slate-800 rounded-lg w-full max-w-xl overflow-hidden shadow-xl text-slate-100">
         <div className="px-6 py-4 bg-slate-800/80 border-b border-slate-700/60 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-lg bg-teal-600/20 text-teal-400 border border-teal-500/30 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
               <ArrowLeftRight className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Transfer Stock Between Locations</h2>
+              <h2 className="text-base font-bold text-white">Transfer Stock</h2>
               <p className="text-xs text-slate-400">
-                Atomic two-way movement (Outflow &amp; Inflow)
+                Move stock from one location to another.
               </p>
             </div>
           </div>
@@ -184,13 +184,13 @@ export function StockTransferModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                From (Source) Location *
+                From Location *
               </label>
               <select
                 required
                 value={fromLocationId}
                 onChange={(e) => setFromLocationId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               >
                 {locations.map((loc) => (
                   <option key={loc.id} value={loc.id}>
@@ -202,13 +202,13 @@ export function StockTransferModal({
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                To (Destination) Location *
+                To Location *
               </label>
               <select
                 required
                 value={toLocationId}
                 onChange={(e) => setToLocationId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               >
                 {locations.map((loc) => (
                   <option key={loc.id} value={loc.id} disabled={loc.id === fromLocationId}>
@@ -230,7 +230,7 @@ export function StockTransferModal({
                   setProductId(e.target.value);
                   setVariantId('');
                 }}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               >
                 {products.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -242,7 +242,7 @@ export function StockTransferModal({
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Transfer Quantity *
+                Quantity *
               </label>
               <input
                 type="number"
@@ -251,7 +251,7 @@ export function StockTransferModal({
                 required
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-bold text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm font-bold text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               />
             </div>
           </div>
@@ -259,14 +259,14 @@ export function StockTransferModal({
           {availableVariants.length > 0 && (
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Product Variant (Optional)
+                Variant
               </label>
               <select
                 value={variantId}
                 onChange={(e) => setVariantId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
               >
-                <option value="">-- Main Product --</option>
+                <option value="">-- No Variant --</option>
                 {availableVariants.map((v) => (
                   <option key={v.id} value={v.id}>
                     {v.name} (SKU: {v.sku})
@@ -277,8 +277,8 @@ export function StockTransferModal({
           )}
 
           {/* Balance Indicator */}
-          <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
-            <span className="text-slate-400">Available in Source Location:</span>
+          <div className="p-3 bg-slate-800/60 rounded-lg border border-slate-800 flex items-center justify-between text-xs">
+            <span className="text-slate-400">In Source Location:</span>
             <span className="font-bold text-slate-200">
               {availableStock} {selectedProduct?.unit || 'pcs'}
             </span>
@@ -287,7 +287,7 @@ export function StockTransferModal({
           {/* Reason */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Transfer Reason * (Strictly Required)
+              Reason *
             </label>
             <textarea
               required
@@ -295,7 +295,7 @@ export function StockTransferModal({
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="e.g. Replenishing retail display cooler before evening rush..."
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
             />
           </div>
 
@@ -311,9 +311,9 @@ export function StockTransferModal({
             <button
               type="submit"
               disabled={isSubmitting || parsedQty > availableStock}
-              className="px-5 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-sm font-semibold shadow-xs transition disabled:opacity-50"
+              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-semibold shadow-xs transition disabled:opacity-50"
             >
-              {isSubmitting ? 'Transferring...' : 'Execute Stock Transfer'}
+              {isSubmitting ? 'Transferring...' : 'Transfer Stock'}
             </button>
           </div>
         </form>

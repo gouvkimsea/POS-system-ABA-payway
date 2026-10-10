@@ -72,10 +72,10 @@ export function PwaInstallPrompt() {
       {(deferredPrompt || isIos) && (
         <button
           onClick={handleInstallClick}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 text-xs font-semibold transition-colors"
-          title="Install Angkor POS App to home screen / desktop"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-800/60 text-xs font-semibold transition-colors"
+          title="Install app"
         >
-          <Download className="w-3.5 h-3.5 text-indigo-400" />
+          <Download className="w-3.5 h-3.5 text-emerald-400" />
           <span className="hidden sm:inline">Install App</span>
         </button>
       )}
@@ -83,10 +83,10 @@ export function PwaInstallPrompt() {
       {/* iOS Instructions Sheet */}
       {showIosTip && (
         <div className="fixed inset-0 z-50 bg-black/75 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 max-w-sm w-full text-slate-100 shadow-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 max-w-sm w-full text-slate-100 shadow-xl">
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <h3 className="text-sm font-bold flex items-center gap-2">
-                <Share className="w-4 h-4 text-indigo-400" />
+                <Share className="w-4 h-4 text-emerald-400" />
                 <span>Install on iPhone / iPad</span>
               </h3>
               <button
@@ -98,7 +98,7 @@ export function PwaInstallPrompt() {
               </button>
             </div>
             <div className="mt-3 space-y-2 text-xs text-slate-300">
-              <p>To install Angkor POS on iOS for fullscreen offline use:</p>
+              <p>To install Angkor POS on iOS:</p>
               <ol className="list-decimal list-inside space-y-1.5 pl-1 text-slate-400">
                 <li>
                   Tap the <strong className="text-white">Share</strong> button (box with arrow) in
@@ -109,13 +109,13 @@ export function PwaInstallPrompt() {
                   <strong className="text-white">"Add to Home Screen"</strong>.
                 </li>
                 <li>
-                  Tap <strong className="text-indigo-400">Add</strong> in the top-right corner.
+                  Tap <strong className="text-emerald-400">Add</strong> in the top-right corner.
                 </li>
               </ol>
             </div>
             <button
               onClick={() => setShowIosTip(false)}
-              className="mt-4 w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition-colors"
+              className="mt-4 w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors"
             >
               Got it
             </button>
