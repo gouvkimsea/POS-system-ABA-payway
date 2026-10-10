@@ -1057,6 +1057,29 @@ settingsRouter.post(
         return;
       }
 
+      // Validate that assigned store IDs belong to current organization
+      if (parsed.data.storeIds && parsed.data.storeIds.length > 0) {
+        const validStores = await prisma.store.findMany({
+          where: {
+            id: { in: parsed.data.storeIds },
+            businessId: authUser.businessId,
+            deletedAt: null,
+          },
+          select: { id: true },
+        });
+        if (validStores.length !== parsed.data.storeIds.length) {
+          res.status(400).json({
+            success: false,
+            error: {
+              code: 'INVALID_STORE_ASSIGNMENT',
+              message: 'One or more assigned stores do not belong to your organization.',
+            },
+            timestamp: new Date().toISOString(),
+          });
+          return;
+        }
+      }
+
       const passwordHash = await bcrypt.hash(parsed.data.password, 10);
       const pinCodeHash = parsed.data.pinCode ? await bcrypt.hash(parsed.data.pinCode, 10) : null;
 
@@ -1216,14 +1239,53 @@ settingsRouter.put(
         updateData.pinCodeHash = await bcrypt.hash(parsed.data.pinCode, 10);
       }
 
+      // Reassign role and store access if roleId or storeIds provided
+      const roleIdToAssign = parsed.data.roleId || parsed.data.roleIds?.[0];
+      if (roleIdToAssign) {
+        const validRole = await prisma.role.findFirst({
+          where: { id: roleIdToAssign, businessId: authUser.businessId },
+        });
+        if (!validRole) {
+          res.status(404).json({
+            success: false,
+            error: {
+              code: 'ROLE_NOT_FOUND',
+              message: 'Assigned role does not exist in your organization.',
+            },
+            timestamp: new Date().toISOString(),
+          });
+          return;
+        }
+      }
+
+      if (parsed.data.storeIds && parsed.data.storeIds.length > 0) {
+        const validStores = await prisma.store.findMany({
+          where: {
+            id: { in: parsed.data.storeIds },
+            businessId: authUser.businessId,
+            deletedAt: null,
+          },
+          select: { id: true },
+        });
+        if (validStores.length !== parsed.data.storeIds.length) {
+          res.status(400).json({
+            success: false,
+            error: {
+              code: 'INVALID_STORE_ASSIGNMENT',
+              message: 'One or more assigned stores do not belong to your organization.',
+            },
+            timestamp: new Date().toISOString(),
+          });
+          return;
+        }
+      }
+
       await prisma.$transaction(async (tx) => {
         await tx.user.update({
           where: { id: userId },
           data: updateData,
         });
 
-        // Reassign role and store access if roleId or storeIds provided
-        const roleIdToAssign = parsed.data.roleId || parsed.data.roleIds?.[0];
         if (roleIdToAssign) {
           await tx.userRole.deleteMany({ where: { userId } });
 
@@ -1399,6 +1461,18 @@ settingsRouter.put(
         res.status(404).json({
           success: false,
           error: { code: 'ROLE_NOT_FOUND', message: 'Role not found' },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (role.isSystem && role.name === 'ADMIN') {
+        res.status(403).json({
+          success: false,
+          error: {
+            code: 'SYSTEM_ROLE_PROTECTED',
+            message: 'System Administrator role permissions cannot be modified.',
+          },
           timestamp: new Date().toISOString(),
         });
         return;

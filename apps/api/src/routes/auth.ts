@@ -13,7 +13,7 @@ import { PERMISSIONS } from '@pos/types';
 export const authRouter: Router = Router();
 
 function getClientIp(req: Request): string {
-  return (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '127.0.0.1';
+  return req.ip || req.socket.remoteAddress || '127.0.0.1';
 }
 
 /**

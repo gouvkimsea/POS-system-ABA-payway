@@ -491,7 +491,6 @@ export class AuthService {
     return {
       message:
         'If an account matches those details, password reset instructions have been generated.',
-      token: process.env.NODE_ENV !== 'production' ? resetToken : undefined,
     };
   }
 

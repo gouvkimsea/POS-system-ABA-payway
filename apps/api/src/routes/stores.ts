@@ -294,6 +294,18 @@ storesRouter.put(
       const user = req.user!;
       const storeId = req.params.id as string;
 
+      const existingStore = await prisma.store.findFirst({
+        where: { id: storeId, businessId: user.businessId, deletedAt: null },
+      });
+      if (!existingStore) {
+        res.status(404).json({
+          success: false,
+          error: { code: 'NOT_FOUND', message: 'Store not found' },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
       if (!isUserAuthorizedForStore(user, storeId)) {
         res.status(403).json({
           success: false,
@@ -436,6 +448,18 @@ storesRouter.put(
       const user = req.user!;
       const storeId = req.params.id as string;
 
+      const targetStore = await prisma.store.findFirst({
+        where: { id: storeId, businessId: user.businessId, deletedAt: null },
+      });
+      if (!targetStore) {
+        res.status(404).json({
+          success: false,
+          error: { code: 'NOT_FOUND', message: 'Store not found' },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
       if (!isUserAuthorizedForStore(user, storeId)) {
         res.status(403).json({
           success: false,
@@ -497,6 +521,18 @@ storesRouter.get(
       const user = req.user!;
       const storeId = req.params.id as string;
 
+      const targetStore = await prisma.store.findFirst({
+        where: { id: storeId, businessId: user.businessId, deletedAt: null },
+      });
+      if (!targetStore) {
+        res.status(404).json({
+          success: false,
+          error: { code: 'NOT_FOUND', message: 'Store not found' },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
       if (!isUserAuthorizedForStore(user, storeId)) {
         res.status(403).json({
           success: false,
@@ -507,7 +543,7 @@ storesRouter.get(
       }
 
       const registers = await prisma.cashRegister.findMany({
-        where: { storeId },
+        where: { storeId, store: { businessId: user.businessId } },
         include: {
           sessions: {
             where: { status: 'OPEN' },
@@ -896,6 +932,18 @@ storesRouter.delete(
       const storeId = req.params.id as string;
       const userId = req.params.userId as string;
       const roleId = req.params.roleId as string;
+
+      const targetStore = await prisma.store.findFirst({
+        where: { id: storeId, businessId: user.businessId, deletedAt: null },
+      });
+      if (!targetStore) {
+        res.status(404).json({
+          success: false,
+          error: { code: 'NOT_FOUND', message: 'Store not found' },
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
 
       if (!isUserAuthorizedForStore(user, storeId)) {
         res.status(403).json({
