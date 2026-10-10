@@ -20,8 +20,8 @@ customerRouter.get(
       const query = typeof req.query.query === 'string' ? req.query.query : undefined;
       const isWalkIn =
         req.query.isWalkIn === 'true' ? true : req.query.isWalkIn === 'false' ? false : undefined;
-      const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
-      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 20;
+      const page = Math.max(1, req.query.page ? parseInt(req.query.page as string, 10) : 1);
+      const limit = Math.min(100, Math.max(1, req.query.limit ? parseInt(req.query.limit as string, 10) : 20));
 
       const result = await CustomerService.getCustomers(user.businessId, {
         query,

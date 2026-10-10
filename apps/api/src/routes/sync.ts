@@ -108,7 +108,7 @@ syncRouter.get(
  * GET /api/sync/monitor
  * Administrator endpoint to view offline queue synchronization status and records
  */
-syncRouter.get('/monitor', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+syncRouter.get('/monitor', requireAuth, requirePermission(PERMISSIONS.SETTINGS_MANAGE), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.user!;
     const businessId = user.businessId;

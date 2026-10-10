@@ -250,13 +250,23 @@ authRouter.post('/reset-password', async (req: Request, res: Response, next: Nex
 
 // ------------------------------------------------------------------------------
 // TEST ROUTES DEMONSTRATING PERMISSION & ROLE GUARDS
+// NOTE: Blocked in non-development environments by the devOnly middleware.
 // ------------------------------------------------------------------------------
+
+/** Middleware: reject request with 404 when not running in development mode. */
+function devOnly(_req: Request, res: Response, next: NextFunction): void {
+  if (process.env.NODE_ENV !== 'development') {
+    res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Not found' } });
+    return;
+  }
+  next();
+}
 
 /**
  * GET /api/auth/test/protected
  * Requires any valid authenticated session
  */
-authRouter.get('/test/protected', requireAuth, (req: Request, res: Response) => {
+authRouter.get('/test/protected', devOnly, requireAuth, (req: Request, res: Response) => {
   res.json({
     success: true,
     message: `Hello ${req.user?.username}! You have authenticated access.`,
@@ -270,6 +280,7 @@ authRouter.get('/test/protected', requireAuth, (req: Request, res: Response) => 
  */
 authRouter.get(
   '/test/admin-only',
+  devOnly,
   requireAuth,
   requirePermission(PERMISSIONS.USERS_MANAGE),
   (req: Request, res: Response) => {
@@ -286,6 +297,7 @@ authRouter.get(
  */
 authRouter.get(
   '/test/sales-only',
+  devOnly,
   requireAuth,
   requirePermission(PERMISSIONS.SALES_CREATE),
   (req: Request, res: Response) => {
@@ -302,6 +314,7 @@ authRouter.get(
  */
 authRouter.get(
   '/test/inventory-only',
+  devOnly,
   requireAuth,
   requirePermission(PERMISSIONS.INVENTORY_ADJUST),
   (req: Request, res: Response) => {
@@ -318,6 +331,7 @@ authRouter.get(
  */
 authRouter.get(
   '/test/role-admin-only',
+  devOnly,
   requireAuth,
   requireRole('ADMIN'),
   (req: Request, res: Response) => {
